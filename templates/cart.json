@@ -30,6 +30,32 @@
         "show_shipping_estimator": false
       }
     },
+    "belt_suggestions": {
+      "type": "cart-belt-suggestions",
+      "blocks": {
+        "combo_1": { "type": "combination", "settings": { "buckle_slot": "classica", "strap_slot": "nera" } },
+        "combo_2": { "type": "combination", "settings": { "buckle_slot": "classica", "strap_slot": "marrone" } },
+        "combo_3": { "type": "combination", "settings": { "buckle_slot": "silver",   "strap_slot": "nera" } },
+        "combo_4": { "type": "combination", "settings": { "buckle_slot": "silver",   "strap_slot": "marrone" } }
+      },
+      "block_order": ["combo_1", "combo_2", "combo_3", "combo_4"],
+      "settings": {
+        "color_scheme": "",
+        "separate_section_with_border": false,
+        "title": "Le più acquistate",
+        "subheading": "Acquista altre cinture e risparmia",
+        "atc_button_text": "Aggiungi al Carrello",
+        "use_custom_section_spacing": false,
+        "mobile_section_spacing_top": 40,
+        "mobile_section_spacing_right": 20,
+        "mobile_section_spacing_bottom": 40,
+        "mobile_section_spacing_left": 20,
+        "desktop_section_spacing_top": 60,
+        "desktop_section_spacing_right": 0,
+        "desktop_section_spacing_bottom": 60,
+        "desktop_section_spacing_left": 0
+      }
+    },
     "faq_y9kK7f": {
       "type": "faq",
       "blocks": {
@@ -790,6 +816,7 @@
   },
   "order": [
     "main",
+    "belt_suggestions",
     "faq_y9kK7f",
     "text_with_icons_4Jdw7t",
     "media_grid_gzfeUE"

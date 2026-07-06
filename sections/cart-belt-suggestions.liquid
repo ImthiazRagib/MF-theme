@@ -1,0 +1,664 @@
+{%- assign bsc_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+{%- if section.settings.use_custom_section_spacing -%}
+  <style>
+    #shopify-section-{{ section.id }} .section-spacing {
+      padding-block-start: {{ section.settings.mobile_section_spacing_top | default: 40 }}px;
+      padding-block-end: {{ section.settings.mobile_section_spacing_bottom | default: 40 }}px;
+      padding-inline-start: {{ section.settings.mobile_section_spacing_left | default: 20 }}px;
+      padding-inline-end: {{ section.settings.mobile_section_spacing_right | default: 20 }}px;
+    }
+    @media screen and (min-width: 700px) {
+      #shopify-section-{{ section.id }} .section-spacing {
+        padding-block-start: {{ section.settings.desktop_section_spacing_top | default: 60 }}px;
+        padding-block-end: {{ section.settings.desktop_section_spacing_bottom | default: 60 }}px;
+        padding-inline-start: {{ section.settings.desktop_section_spacing_left | default: 0 }}px;
+        padding-inline-end: {{ section.settings.desktop_section_spacing_right | default: 0 }}px;
+      }
+    }
+  </style>
+{%- endif -%}
+
+<style>
+  #shopify-section-{{ section.id }} .bsc-nav-wrapper {
+    position: relative;
+    padding-inline: 28px;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-block-end: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-card {
+    flex: 0 0 calc(75% - 8px);
+    max-width: 320px;
+    scroll-snap-align: start;
+    background: #f7f6f4;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media screen and (min-width: 600px) {
+    #shopify-section-{{ section.id }} .bsc-card {
+      flex: 0 0 calc(50% - 8px);
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    #shopify-section-{{ section.id }} .bsc-card {
+      flex: 0 0 calc(33.333% - 11px);
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    #shopify-section-{{ section.id }} .bsc-card {
+      flex: 0 0 calc(25% - 12px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .bsc-card__image {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-card:hover .bsc-card__image img {
+    transform: scale(1.04);
+  }
+
+  #shopify-section-{{ section.id }} .bsc-card__body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-size-btn {
+    border: 1.5px solid #ddd;
+    background: #fff;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    font-family: inherit;
+    line-height: 1.4;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-size-btn.is-active,
+  #shopify-section-{{ section.id }} .bsc-size-btn:hover {
+    border-color: #000;
+    background: #000;
+    color: #fff;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-price__sale {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-price__compare {
+    font-size: 13px;
+    color: #c0392b;
+    text-decoration: line-through;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-atc-btn {
+    width: 100%;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 9px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s, background 0.2s;
+    margin-top: auto;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 600px) {
+    #shopify-section-{{ section.id }} .bsc-atc-btn {
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .bsc-atc-btn:hover {
+    opacity: 0.85;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-atc-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-atc-btn.is-added {
+    background: #2ecc71;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+    z-index: 2;
+    transition: box-shadow 0.2s;
+    padding: 0;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-nav-btn:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  #shopify-section-{{ section.id }} .bsc-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-nav-btn--prev {
+    left: -4px;
+  }
+
+  #shopify-section-{{ section.id }} .bsc-nav-btn--next {
+    right: -4px;
+  }
+
+
+</style>
+
+{%- if section.blocks.size > 0 -%}
+  {%- comment -%} Mirror the belt-count + tiered-price logic from the cart recap {%- endcomment -%}
+  {%- assign bsc_belt_count = 0 -%}
+  {%- for bsc_ci in cart.items -%}
+    {%- for bsc_p in bsc_ci.properties -%}
+      {%- if bsc_p.first contains 'Cintura ' and bsc_p.first contains ' - Pelle' -%}
+        {%- assign bsc_belt_count = bsc_belt_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {%- if bsc_belt_count == 0 -%}
+    {%- assign bsc_next_price_cents = 4999 -%}
+  {%- elsif bsc_belt_count == 1 -%}
+    {%- assign bsc_next_price_cents = 3999 -%}
+  {%- elsif bsc_belt_count == 2 -%}
+    {%- assign bsc_next_price_cents = 3499 -%}
+  {%- else -%}
+    {%- assign bsc_next_price_cents = 2999 -%}
+  {%- endif -%}
+  {%- assign bsc_full_price_cents = 4999 -%}
+
+  <div
+    class="section-spacing{% if section.settings.separate_section_with_border %} bordered-section{% endif %} color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ bsc_scheme_hash }}"
+  >
+    <div class="container">
+      <div class="section-stack">
+        {%- render 'section-header',
+          subheading: section.settings.subheading,
+          heading: section.settings.title,
+          text_alignment: 'center'
+        -%}
+
+        <div class="bsc-nav-wrapper">
+          <button
+            type="button"
+            class="bsc-nav-btn bsc-nav-btn--prev"
+            data-bsc-section="{{ section.id }}"
+            data-bsc-dir="prev"
+            aria-label="Precedente"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          <div class="bsc-carousel" id="bsc-carousel-{{ section.id }}">
+            {%- for block in section.blocks -%}
+              {%- assign bsc_b = block.settings.buckle_slot | default: 'classica' -%}
+              {%- assign bsc_s = block.settings.strap_slot  | default: 'nera' -%}
+
+              {%- assign bsc_lbl1 = section.settings.size_1_label | default: '130cm' -%}
+              {%- assign bsc_lbl2 = section.settings.size_2_label | default: '150cm' -%}
+
+              <belt-suggestion-card
+                class="bsc-card"
+                data-buckle="{{ bsc_b | escape }}"
+                data-strap="{{ bsc_s | escape }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="bsc-card__image">
+                  <img
+                    src=""
+                    alt="Cintura {{ bsc_b | escape }} {{ bsc_s | escape }}"
+                    loading="lazy"
+                    width="600"
+                    height="600"
+                  >
+                </div>
+
+                <div class="bsc-card__body">
+                  <div class="bsc-sizes">
+                    <button type="button" class="bsc-size-btn is-active" data-size="130" data-variant-id="">{{ bsc_lbl1 | escape }}</button>
+                    <button type="button" class="bsc-size-btn" data-size="150" data-variant-id="">{{ bsc_lbl2 | escape }}</button>
+                  </div>
+
+                  <div class="bsc-price">
+                    <span class="bsc-price__sale">{{ bsc_next_price_cents | money }}</span>
+                    {%- if bsc_next_price_cents < bsc_full_price_cents -%}
+                      <span class="bsc-price__compare">{{ bsc_full_price_cents | money }}</span>
+                    {%- endif -%}
+                  </div>
+
+                  <button type="button" class="bsc-atc-btn" data-variant-id="">
+                    {{ section.settings.atc_button_text | default: 'Aggiungi al Carrello' }}
+                  </button>
+                </div>
+              </belt-suggestion-card>
+            {%- endfor -%}
+          </div>
+
+          <button
+            type="button"
+            class="bsc-nav-btn bsc-nav-btn--next"
+            data-bsc-section="{{ section.id }}"
+            data-bsc-dir="next"
+            aria-label="Successivo"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+<script>
+  (function () {
+    const BUCKLE_MAP = {
+      classica: 'buckle-1',
+      silver:   'buckle-2',
+      gold:     'buckle-3',
+      luxury:   'buckle-4'
+    };
+
+    const STRAP_MAP = {
+      nera:               'strap-nero',
+      marrone:            'strap-marrone',
+      cammello:           'strap-cognac',
+      bianca:             'strap-cuoio',
+      beige:              'strap-beige',
+      marronecoccodrillo: 'strap-rosso',
+      neracoccodrillo:    'strap-verde',
+      blu:                'strap-blu',
+      grigia:             'strap-grigio'
+    };
+
+    let _bscMedia   = null;
+    let _bscCatalog = null;
+
+    const BSC_SET_KEYS = {
+      1: 'SET-CINTURA-SINGOLA',
+      2: 'SET-CINTURE-DOPPIO',
+      3: 'SET-CINTURE-TRIPLO',
+      4: 'SET-CINTURE-INFINITY'
+    };
+
+    function hydrateCards(mediaData) {
+      _bscMedia = mediaData;
+      document.querySelectorAll('belt-suggestion-card[data-buckle][data-strap]').forEach(card => {
+        const buckleKey = BUCKLE_MAP[card.dataset.buckle];
+        const strapKey  = STRAP_MAP[card.dataset.strap];
+        if (!buckleKey || !strapKey) return;
+        const entry = (mediaData.combinations || {})[strapKey + '__130__' + buckleKey];
+        const img   = card.querySelector('img');
+        if (img && entry && entry.photo) img.src = entry.photo;
+      });
+    }
+
+    async function addCombinationToCart(card) {
+      const buckleKey = BUCKLE_MAP[card.dataset.buckle];
+      const strapKey  = STRAP_MAP[card.dataset.strap];
+      if (!buckleKey || !strapKey || !_bscMedia || !_bscCatalog) throw new Error('not_ready');
+
+      const activeSize = (card.querySelector('.bsc-size-btn.is-active') || {}).dataset?.size || '130';
+      const entry      = (_bscMedia.combinations || {})[strapKey + '__' + activeSize + '__' + buckleKey];
+      if (!entry) throw new Error('no_entry');
+
+      const buckleName = (_bscMedia._fibbie         || {})[buckleKey] || buckleKey;
+      const strapName  = (_bscMedia._colori_cintura || {})[strapKey]  || strapKey;
+
+      const cartData  = await fetch('/cart.js').then(r => r.json());
+      let beltCount   = 0;
+      cartData.items.forEach(item => {
+        Object.keys(item.properties || {}).forEach(k => {
+          if (k.includes('Cintura ') && k.includes(' - Pelle')) beltCount++;
+        });
+      });
+
+      const newCount = beltCount + 1;
+      const setKey   = newCount <= 4 ? BSC_SET_KEYS[newCount] : 'SET-CINTURE-EXTRA';
+      const setVid   = Number(_bscCatalog[setKey]);
+      if (!setVid) throw new Error('no_set_vid');
+
+      const bundleId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+      const properties = {
+        _bundle_id:             bundleId,
+        'Cintura 1 - Pelle':    strapName,
+        'Cintura 1 - Lunghezza': activeSize + 'cm',
+        'Cintura 1 - Fibbia':   buckleName,
+        '_cintura_1_img':        entry.photo              || '',
+        '_cintura_1_strap_vid':  String(entry.variant_id_strap  || ''),
+        '_cintura_1_buckle_vid': String(entry.variant_id_buckle || '')
+      };
+
+      const resp = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: [{ id: setVid, quantity: 1, properties }] })
+      });
+      if (!resp.ok) throw new Error('ATC failed');
+    }
+
+    const mediaUrl   = {{ 'bundle-builder-media.json'   | asset_url | json }};
+    const catalogUrl = {{ 'bundle-builder-catalog.json' | asset_url | json }};
+
+    Promise.all([fetch(mediaUrl).then(r => r.json()), fetch(catalogUrl).then(r => r.json())])
+      .then(([media, catalog]) => { _bscCatalog = catalog; hydrateCards(media); })
+      .catch(() => {});
+
+    if (!customElements.get('belt-suggestion-card')) {
+      customElements.define('belt-suggestion-card', class extends HTMLElement {
+        connectedCallback() {
+          const sizeBtns = this.querySelectorAll('.bsc-size-btn');
+          const atcBtn   = this.querySelector('.bsc-atc-btn');
+
+          sizeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+              sizeBtns.forEach(b => b.classList.remove('is-active'));
+              btn.classList.add('is-active');
+            });
+          });
+
+          if (atcBtn) {
+            atcBtn.addEventListener('click', async () => {
+              const originalText = atcBtn.textContent.trim();
+              atcBtn.disabled = true;
+              try {
+                await addCombinationToCart(this);
+                atcBtn.classList.add('is-added');
+                atcBtn.textContent = '✓ Aggiunto!';
+                document.dispatchEvent(new CustomEvent('cart:refresh'));
+                setTimeout(() => {
+                  atcBtn.classList.remove('is-added');
+                  atcBtn.textContent = originalText;
+                  atcBtn.disabled = false;
+                }, 2200);
+              } catch (_) {
+                atcBtn.disabled = false;
+              }
+            });
+          }
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-bsc-section]').forEach(btn => {
+      const carousel = document.getElementById('bsc-carousel-' + btn.dataset.bscSection);
+      if (!carousel) return;
+      btn.addEventListener('click', () => {
+        const card = carousel.querySelector('.bsc-card');
+        const step = card ? (card.offsetWidth + 16) * 2 : 320;
+        carousel.scrollBy({ left: btn.dataset.bscDir === 'prev' ? -step : step, behavior: 'smooth' });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Belt Suggestions",
+  "class": "shopify-section--belt-suggestions",
+  "tag": "section",
+  "enabled_on": {
+    "templates": ["cart"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "Separate section with border",
+      "default": false
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Le più acquistate"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Acquista altre cinture e risparmia"
+    },
+    {
+      "type": "text",
+      "id": "atc_button_text",
+      "label": "Add to cart button text",
+      "default": "Aggiungi al Carrello"
+    },
+    {
+      "type": "header",
+      "content": "Size Labels"
+    },
+    {
+      "type": "text",
+      "id": "size_1_label",
+      "label": "Size 1 label",
+      "default": "130cm"
+    },
+    {
+      "type": "text",
+      "id": "size_2_label",
+      "label": "Size 2 label",
+      "default": "150cm"
+    },
+    {
+      "type": "header",
+      "content": "Custom Spacing"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_section_spacing",
+      "label": "Use custom section spacing",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing",
+      "visible_if": "{{ section.settings.use_custom_section_spacing }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_spacing_top",
+      "label": "Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_spacing_right",
+      "label": "Right",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_spacing_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_spacing_left",
+      "label": "Left",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing",
+      "visible_if": "{{ section.settings.use_custom_section_spacing }}"
+    },
+    {
+      "type": "range",
+      "id": "desktop_section_spacing_top",
+      "label": "Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "desktop_section_spacing_right",
+      "label": "Right",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_section_spacing_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "desktop_section_spacing_left",
+      "label": "Left",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "combination",
+      "name": "Belt Combination",
+      "settings": [
+        {
+          "type": "select",
+          "id": "buckle_slot",
+          "label": "Fibbia (Buckle)",
+          "options": [
+            { "value": "classica", "label": "Classic Matt" },
+            { "value": "silver",   "label": "Elegant Chrome Silver" },
+            { "value": "gold",     "label": "Elegant Chrome Gold" },
+            { "value": "luxury",   "label": "Mirror Chrome" }
+          ],
+          "default": "classica"
+        },
+        {
+          "type": "select",
+          "id": "strap_slot",
+          "label": "Cinturino (Strap)",
+          "options": [
+            { "value": "nera",               "label": "Black" },
+            { "value": "marrone",            "label": "Brown" },
+            { "value": "cammello",           "label": "Cognac" },
+            { "value": "bianca",             "label": "White" },
+            { "value": "beige",              "label": "Sand" },
+            { "value": "marronecoccodrillo", "label": "Brown Crocodile" },
+            { "value": "neracoccodrillo",    "label": "Black Crocodile" },
+            { "value": "blu",                "label": "Blue" },
+            { "value": "grigia",             "label": "Gray" }
+          ],
+          "default": "nera"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Belt Suggestions Slider",
+      "category": "Cart",
+      "blocks": [
+        { "type": "combination" },
+        { "type": "combination" },
+        { "type": "combination" },
+        { "type": "combination" }
+      ]
+    }
+  ]
+}
+{% endschema %}
