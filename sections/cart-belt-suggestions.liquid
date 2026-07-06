@@ -71,6 +71,7 @@
   #shopify-section-{{ section.id }} .bsc-card__image {
     aspect-ratio: 1 / 1;
     overflow: hidden;
+    position: relative;
   }
 
   #shopify-section-{{ section.id }} .bsc-card__image img {
@@ -94,9 +95,13 @@
   }
 
   #shopify-section-{{ section.id }} .bsc-sizes {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    z-index: 1;
   }
 
   #shopify-section-{{ section.id }} .bsc-size-btn {
@@ -279,13 +284,13 @@
                     width="600"
                     height="600"
                   >
-                </div>
-
-                <div class="bsc-card__body">
                   <div class="bsc-sizes">
                     <button type="button" class="bsc-size-btn is-active" data-size="130" data-variant-id="">{{ bsc_lbl1 | escape }}</button>
                     <button type="button" class="bsc-size-btn" data-size="150" data-variant-id="">{{ bsc_lbl2 | escape }}</button>
                   </div>
+                </div>
+
+                <div class="bsc-card__body">
 
                   <div class="bsc-price">
                     <span class="bsc-price__sale">{{ bsc_next_price_cents | money }}</span>
