@@ -52,19 +52,19 @@
 
   @media screen and (min-width: 600px) {
     #shopify-section-{{ section.id }} .bsc-card {
-      flex: 0 0 calc(50% - 8px);
+      flex: 0 0 calc(42% - 8px);
     }
   }
 
   @media screen and (min-width: 900px) {
     #shopify-section-{{ section.id }} .bsc-card {
-      flex: 0 0 calc(33.333% - 11px);
+      flex: 0 0 calc(26% - 11px);
     }
   }
 
   @media screen and (min-width: 1200px) {
     #shopify-section-{{ section.id }} .bsc-card {
-      flex: 0 0 calc(25% - 12px);
+      flex: 0 0 calc(20% - 12px);
     }
   }
 
@@ -163,12 +163,17 @@
   }
 
   #shopify-section-{{ section.id }} .bsc-atc-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: default;
   }
 
-  #shopify-section-{{ section.id }} .bsc-atc-btn.is-added {
-    background: #2ecc71;
+  @keyframes bsc-spin { to { transform: rotate(360deg); } }
+
+  #shopify-section-{{ section.id }} .bsc-spinner {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    animation: bsc-spin 0.7s linear infinite;
   }
 
   #shopify-section-{{ section.id }} .bsc-nav-btn {
@@ -233,7 +238,7 @@
   <div
     class="section-spacing{% if section.settings.separate_section_with_border %} bordered-section{% endif %} color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ bsc_scheme_hash }}"
   >
-    <div class="container">
+    <div class="container container--md">
       <div class="section-stack">
         {%- render 'section-header',
           subheading: section.settings.subheading,
@@ -422,20 +427,17 @@
 
           if (atcBtn) {
             atcBtn.addEventListener('click', async () => {
-              const originalText = atcBtn.textContent.trim();
+              const originalHTML = atcBtn.innerHTML;
               atcBtn.disabled = true;
+              atcBtn.innerHTML =
+                '<svg class="bsc-spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>'
+                + atcBtn.textContent.trim();
               try {
                 await addCombinationToCart(this);
-                atcBtn.classList.add('is-added');
-                atcBtn.textContent = '✓ Aggiunto!';
-                document.dispatchEvent(new CustomEvent('cart:refresh'));
-                setTimeout(() => {
-                  atcBtn.classList.remove('is-added');
-                  atcBtn.textContent = originalText;
-                  atcBtn.disabled = false;
-                }, 2200);
+                window.location.reload();
               } catch (_) {
-                atcBtn.disabled = false;
+                atcBtn.innerHTML  = originalHTML;
+                atcBtn.disabled   = false;
               }
             });
           }
