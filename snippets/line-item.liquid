@@ -1,0 +1,206 @@
+{%- comment -%}
+  ----------------------------------------------------------------------------------------------------------------------
+  LINE ITEM
+  ----------------------------------------------------------------------------------------------------------------------
+
+  This component renders a single line item product information, and is used on order and cart page.
+
+  ********************************************
+  Supported variables
+  ********************************************
+
+  * line_item: the line item to render (required)
+  * show_quantity_selector: if set to true, the quantity selector is displayed (useful for instance of mini-cart)
+{%- endcomment -%}
+
+<line-item
+  class="line-item"
+>
+  {%- assign _bn = belt_n | default: 1 -%}
+  {%- assign _bn_img_key = '_cintura_' | append: _bn | append: '_img' -%}
+  {%- assign photo = line_item.properties[_bn_img_key] -%}
+  {%- assign _li_is_belt = false -%}
+  {%- if line_item.properties['Cintura 1 - Pelle'] != blank or line_item.properties['Cintura 1 - Lunghezza'] != blank -%}
+    {%- assign _li_is_belt = true -%}
+    {%- assign _li_belt_pos = 0 -%}
+    {%- for _ci in cart.items -%}
+      {%- if _ci.key == line_item.key -%}{%- break -%}{%- endif -%}
+      {%- if _ci.properties['Cintura 1 - Pelle'] != blank or _ci.properties['Cintura 1 - Lunghezza'] != blank -%}
+        {%- assign _li_belt_pos = _li_belt_pos | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if _li_belt_pos == 0 -%}{%- assign _li_belt_price_display = '49,99' -%}
+    {%- elsif _li_belt_pos == 1 -%}{%- assign _li_belt_price_display = '39,99' -%}
+    {%- elsif _li_belt_pos == 2 -%}{%- assign _li_belt_price_display = '34,99' -%}
+    {%- else -%}{%- assign _li_belt_price_display = '29,99' -%}
+    {%- endif -%}
+  {%- endif -%}
+  {%- assign _bn_remove_total = belt_remove_total | default: 1 -%}
+  <div class="bb-line-item-img-wrap">
+    {%- if _bn_remove_total > 1 -%}
+      <button type="button" class="bb-remove-x bb-remove-belt"
+        data-item-key="{{ line_item.key }}"
+        data-belt-n="{{ _bn }}"
+        data-belt-total="{{ _bn_remove_total }}"
+        data-bundle-id="{{ line_item.properties._bundle_id | escape }}"
+        aria-label="{{ 'cart.order.remove_with_title' | t: title: line_item.title | escape }}">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    {%- else -%}
+      <a href="{{ line_item.url_to_remove }}" class="bb-remove-x" aria-label="{{ 'cart.order.remove_with_title' | t: title: line_item.title | escape }}">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </a>
+    {%- endif -%}
+    {%- if photo != blank -%}
+      <img src="{{ photo }}" alt="{{ line_item.product.title }}" loading="lazy"
+           class="line-item__media" style="object-fit:cover;">
+    {%- elsif line_item.image != blank -%}
+      {{-
+        line_item.image
+        | image_url: width: line_item.image.width
+        | image_tag:
+          loading: 'lazy',
+          sizes: '(max-width: 699px) 70px, 120px',
+          widths: '70,120,140,210,240,360',
+          class: 'line-item__media'
+      -}}
+    {%- endif -%}
+  </div>
+
+  <div class="line-item-info">
+    {%- assign text_class = '' -%}
+
+    {%- if settings.product_card_text_font == 'heading' -%}
+      {%- assign text_class = 'h6' -%}
+    {%- endif -%}
+
+    <div class="v-stack justify-items-start">
+      {%- if settings.show_vendor and line_item.vendor != blank -%}
+        {%- capture vendor_class -%}smallcaps {% if settings.product_card_text_font == 'heading' %}heading{% endif %}{% endcapture %}
+        {%- render 'vendor' with line_item.vendor, class: vendor_class -%}
+      {%- endif -%}
+
+      <div class="v-stack justify-items-start gap-1">
+        {%- assign _display_title = belt_label | default: line_item.product.title | default: line_item.title -%}
+        {%- if line_item.url != blank and belt_label == blank -%}
+          <a style="font-weight:700" href="{{ line_item.url }}" class="{{ text_class }}">{{- _display_title -}}</a>
+        {%- else -%}
+          <p style="font-weight:700;" class="{{ text_class }}">{{ _display_title }}</p>
+        {%- endif -%}
+
+        {% comment %} {%- if _li_is_belt -%}
+          <div class="bb-cart-belt-price">€ {{ _li_belt_price_display }}</div>
+        {%- else -%}
+          {%- render 'price-list',
+            line_item: line_item,
+            context: 'line_item',
+            extra_bundle_price: extra_bundle_price,
+            nfc_bundle_price: nfc_bundle_price
+          -%}
+        {%- endif -%} {% endcomment %}
+      </div>
+
+      {%- comment -%} Detect bundle items by "Cintura N" property keys and count belts {%- endcomment -%}
+      {%- assign is_bundle_item = false -%}
+      {%- assign bundle_belt_count = 0 -%}
+      {%- unless line_item.properties == empty -%}
+        {%- assign _last_cintura_detect = '' -%}
+        {%- for property in line_item.properties -%}
+          {%- assign _pkey = property.first | strip -%}
+          {%- if _pkey contains 'Cintura ' -%}
+            {%- assign is_bundle_item = true -%}
+            {%- assign _parts = _pkey | split: ' - ' -%}
+            {%- assign _clabel = _parts[0] -%}
+            {%- if _clabel != _last_cintura_detect -%}
+              {%- assign _last_cintura_detect = _clabel -%}
+              {%- assign bundle_belt_count = bundle_belt_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endunless -%}
+
+      {%- capture secondary_information -%}
+        {%- unless line_item.product.has_only_default_variant or line_item.gift_card -%}
+          {% comment %} <p class="smallcaps text-subdued">{{ line_item.variant.title }}</p> {% endcomment %}
+        {%- endunless -%}
+
+        {%- if line_item.selling_plan_allocation -%}
+          <p class="text-subdued">{{ line_item.selling_plan_allocation.selling_plan.name }}</p>
+        {%- endif -%}
+
+        {%- unless line_item.properties == empty -%}
+          {%- if is_bundle_item -%}
+            {%- assign _bn_pelle_key = 'Cintura ' | append: _bn | append: ' - Pelle' -%}
+            {%- assign _bn_lunghezza_key = 'Cintura ' | append: _bn | append: ' - Lunghezza' -%}
+            {%- assign _bn_fibbia_key = 'Cintura ' | append: _bn | append: ' - Fibbia' -%}
+            {%- assign _pelle_val = line_item.properties[_bn_pelle_key] -%}
+            {%- assign _lunghezza_val = line_item.properties[_bn_lunghezza_key] -%}
+            {%- assign _fibbia_val = line_item.properties[_bn_fibbia_key] -%}
+            <ul class="bb-cart-props">
+              {%- if _pelle_val != blank -%}
+                <li><span class="bb-cart-prop__key">Pelle:</span> {{ _pelle_val }}{% if _lunghezza_val != blank %} - {{ _lunghezza_val }}{% endif %}</li>
+              {%- endif -%}
+              {%- if _fibbia_val != blank -%}
+                <li><span class="bb-cart-prop__key">Fibbia:</span> {{ _fibbia_val }}</li>
+              {%- endif -%}
+            </ul>
+            {%- if belt_price_cents > 0 -%}
+              <div class="bb-li-price--mobile">
+                {{- belt_price_cents | money -}}
+                {%- if belt_price_pos > 0 -%}
+                  <span class="bb-li-original-price">{{- 4999 | money -}}</span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            <ul class="text-subdued">
+              {%- for property in line_item.properties -%}
+                {%- assign first_character_in_key = property.first | truncate: 1, '' -%}
+
+                {%- if property.last == blank or first_character_in_key == '_' -%}
+                  {%- continue -%}
+                {%- endif -%}
+
+                <li>
+                  {%- if property.last contains '/uploads/' or property.last contains '/files/' -%}
+                    <a href="{{ property.last }}">{{ property.last | split: '/' | last }}</a>
+                  {%- else -%}
+                    {{ property.first }}: {{ property.last }}
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        {%- endunless -%}
+      {%- endcapture -%}
+
+      {%- if secondary_information != blank -%}
+        <div class="v-stack justify-items-start gap-1">
+          {{- secondary_information -}}
+        </div>
+      {%- endif -%}
+
+      {%- if line_item.line_level_discount_allocations != blank -%}
+        <ul class="v-stack justify-items-start gap-1 unstyled-list" role="list">
+          {%- for discount_allocation in line_item.line_level_discount_allocations -%}
+            <li class="discount-badge text-xs">
+              {%- render 'icon' with 'discount', width: 12 -%}
+              {{ discount_allocation.discount_application.title }} (-{{ discount_allocation.amount | money }})
+
+              {%- if section.settings.allow_discount_application
+                and discount_allocation.discount_application.type != ''
+              -%}
+                <cart-discount-remove-button
+                  discount-code="{{ discount_allocation.discount_application.title }}"
+                  class="h-stack align-center"
+                >
+                  <button type="button">{%- render 'icon' with 'close', width: 8 -%}</button>
+                </cart-discount-remove-button>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</line-item>
