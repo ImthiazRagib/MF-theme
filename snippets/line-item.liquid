@@ -218,11 +218,13 @@
     {%- else -%}
       <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--minus bb-std-qty-btn"
         data-line-key="{{ line_item.key }}"
+        data-bundle-id="{{ line_item.properties._bundle_id | escape }}"
         data-delta="-1"
         data-qty="{{ line_item.quantity }}"
         aria-label="Diminuisci quantità">−</button>
       <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--plus bb-std-qty-btn"
         data-line-key="{{ line_item.key }}"
+        data-bundle-id="{{ line_item.properties._bundle_id | escape }}"
         data-delta="1"
         data-qty="{{ line_item.quantity }}"
         aria-label="Aumenta quantità">+</button>

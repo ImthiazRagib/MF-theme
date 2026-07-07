@@ -19,7 +19,7 @@
     border-radius: 0;
     background: transparent;
     color: #000;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     line-height: 1;
     cursor: pointer;
@@ -604,7 +604,8 @@
 
     function onBundleChange(changedKey, newQty) {
       var item = BB_ITEMS.find(function (i) { return i.key === changedKey; });
-      if (!item || !item.belts) return false;
+      if (!item) return false;
+      if (!item.belts && !(newQty === 0 && item.bundleId)) return false;
 
       var updates = {};
       updates[changedKey] = newQty;
@@ -615,12 +616,8 @@
         : [];
 
       if (newQty === 0) {
-        /* Removing the bundle — zero out ALL hidden satellites across every session.
-           After proceedToCheckout merges bundles into one SET-CINTURA, orphaned
-           NFC/component items from earlier sessions carry different bundleIds and
-           would be missed by a same-bundleId filter. */
         BB_ITEMS.forEach(function (i) {
-          if (i.key !== changedKey && (i.isNfc || i.isExtra || i.isComponent || i.isPrivileged)) {
+          if (i.key !== changedKey && i.bundleId && i.bundleId === item.bundleId) {
             updates[i.key] = 0;
           }
         });
@@ -671,6 +668,34 @@
         e.stopImmediatePropagation();
       }
     }, { capture: true });
+
+    /* Standard (non-belt) quantity +/- — uses data-bundle-id to remove children */
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bb-std-qty-btn');
+      if (!btn) return;
+      e.preventDefault();
+      btn.disabled = true;
+      var key      = btn.dataset.lineKey;
+      var current  = parseInt(btn.dataset.qty, 10) || 1;
+      var delta    = parseInt(btn.dataset.delta, 10);
+      var newQty   = Math.max(0, current + delta);
+      var bundleId = btn.dataset.bundleId || '';
+      var updates  = {};
+
+      if (newQty === 0 && bundleId) {
+        BB_ITEMS.forEach(function (i) {
+          if (i.bundleId === bundleId) updates[i.key] = 0;
+        });
+      }
+      if (!updates[key]) updates[key] = newQty;
+
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates: updates })
+      }).then(function () { window.location.reload(); })
+        .catch(function () { btn.disabled = false; });
+    });
   })();
 </script>
 
@@ -721,11 +746,42 @@
           }
           var hasVids = Object.keys(targetCompQtys).length > 0 || newBeltCount === 0;
 
+          var steps = [];
+
+          if (newBeltCount === 0) {
+            /* Determine if this is the last belt bundle in the cart */
+            var otherBeltItems = cart.items.filter(function (i) {
+              if (i.key === itemKey) return false;
+              var p = i.properties || {};
+              return Object.keys(p).some(function (k) {
+                return k.indexOf('Cintura ') === 0 && k.indexOf(' - Pelle') !== -1 && p[k];
+              });
+            });
+            var isLastBundle = otherBeltItems.length === 0;
+
+            /* Build a single batch update to avoid race conditions with concurrent /cart/change.js calls */
+            var batchUpdates = {};
+            cart.items.forEach(function (item) {
+              var p = item.properties || {};
+              var isSatellite = p._bundle_nfc === '1' || p._bundle_component === '1' ||
+                                p._bundle_privileged === '1' || p._bundle_extra === '1';
+              if (item.key === itemKey ||
+                  (p._bundle_id && p._bundle_id === bundleId) ||
+                  (isLastBundle && isSatellite)) {
+                batchUpdates[item.key] = 0;
+              }
+            });
+            return fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ updates: batchUpdates })
+            });
+          }
+
+          /* Still belts remaining — decrement NFC/privileged, rebalance components */
           var nfcItem = cart.items.find(function (i) {
             return i.properties && i.properties._bundle_id === bundleId && i.properties._bundle_nfc === '1';
           });
-
-          var steps = [];
 
           if (nfcItem) {
             steps.push(fetch('/cart/change.js', {
@@ -749,13 +805,6 @@
           }
 
           return Promise.all(steps).then(function () {
-            if (newBeltCount === 0) {
-              return fetch('/cart/change.js', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: itemKey, quantity: 0 })
-              });
-            }
             return fetch('/cart/change.js', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -1005,23 +1054,6 @@
       });
     });
 
-    /* Standard (non-belt) quantity +/- */
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('.bb-std-qty-btn');
-      if (!btn) return;
-      e.preventDefault();
-      btn.disabled = true;
-      var key     = btn.dataset.lineKey;
-      var current = parseInt(btn.dataset.qty, 10) || 1;
-      var delta   = parseInt(btn.dataset.delta, 10);
-      var newQty  = Math.max(0, current + delta);
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: key, quantity: newQty })
-      }).then(function () { window.location.reload(); })
-        .catch(function () { btn.disabled = false; });
-    });
   })();
 </script>
 {%- endif -%}
