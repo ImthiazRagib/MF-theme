@@ -20,12 +20,21 @@
 {%- endif -%}
 
 <style>
-  #shopify-section-{{ section.id }} .container {
-    margin-inline-end: auto;
+  @media screen and (max-width: 599px) {
+    #shopify-section-{{ section.id }} .container {
+      margin-inline-end: auto;
+    }
   }
 
   #shopify-section-{{ section.id }} .bsc-nav-wrapper {
     position: relative;
+  }
+
+  @media screen and (min-width: 600px) {
+    #shopify-section-{{ section.id }} .bsc-nav-wrapper {
+      padding-inline-start: 16px;
+      padding-inline-end: 16px;
+    }
   }
 
   #shopify-section-{{ section.id }} .bsc-carousel {
@@ -43,8 +52,7 @@
   }
 
   #shopify-section-{{ section.id }} .bsc-card {
-    flex: 0 0 calc(75% - 8px);
-    max-width: 320px;
+    flex: 0 0 calc(80% - 8px);
     scroll-snap-align: start;
     background: #f7f6f4;
     border-radius: 12px;
@@ -55,23 +63,24 @@
 
   @media screen and (min-width: 600px) {
     #shopify-section-{{ section.id }} .bsc-card {
-      flex: 0 0 calc(42% - 8px);
+      flex: 0 0 calc(50% - 8px);
     }
   }
 
   @media screen and (min-width: 900px) {
     #shopify-section-{{ section.id }} .bsc-card {
-      flex: 0 0 calc(26% - 11px);
-    }
-    #shopify-section-{{ section.id }} .bsc-carousel {
-      justify-content: center;
+      flex: 0 0 calc(33.333% - 11px);
     }
   }
 
   @media screen and (min-width: 1200px) {
     #shopify-section-{{ section.id }} .bsc-card {
-      flex: 0 0 calc(20% - 12px);
+      flex: 0 0 calc(25% - 12px);
     }
+  }
+
+  #shopify-section-{{ section.id }} .bsc-carousel.bsc-carousel--centered {
+    justify-content: center;
   }
 
   #shopify-section-{{ section.id }} .bsc-card__image {
@@ -206,7 +215,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex: 1;
   }
 
   #shopify-section-{{ section.id }} .bsc-sizes {
@@ -267,7 +275,6 @@
     cursor: pointer;
     font-family: inherit;
     transition: opacity 0.2s, background 0.2s;
-    margin-top: auto;
     text-align: center;
   }
 
@@ -312,6 +319,7 @@
     z-index: 2;
     transition: box-shadow 0.2s;
     padding: 0;
+    margin-right: 10px;
   }
 
   #shopify-section-{{ section.id }} .bsc-nav-btn:hover {
@@ -541,6 +549,18 @@
     const mediaUrl   = {{ 'bundle-builder-media.json'   | asset_url | json }};
     const catalogUrl = {{ 'bundle-builder-catalog.json' | asset_url | json }};
 
+    function updateCarouselAlign() {
+      const bscEl = document.getElementById('bsc-carousel-{{ section.id }}');
+      if (!bscEl) return;
+      bscEl.classList.remove('bsc-carousel--centered');
+      bscEl.classList.toggle('bsc-carousel--centered', bscEl.scrollWidth <= bscEl.clientWidth);
+    }
+    updateCarouselAlign();
+    if (window.ResizeObserver) {
+      const bscEl = document.getElementById('bsc-carousel-{{ section.id }}');
+      if (bscEl) new ResizeObserver(updateCarouselAlign).observe(bscEl);
+    }
+
     Promise.all([fetch(mediaUrl).then(r => r.json()), fetch(catalogUrl).then(r => r.json())])
       .then(([media, catalog]) => { _bscCatalog = catalog; hydrateCards(media); })
       .catch(() => {});
@@ -578,15 +598,34 @@
       });
     }
 
-    document.querySelectorAll('[data-bsc-section]').forEach(btn => {
-      const carousel = document.getElementById('bsc-carousel-' + btn.dataset.bscSection);
-      if (!carousel) return;
-      btn.addEventListener('click', () => {
+    (function () {
+      const sectionId = '{{ section.id }}';
+      const carousel  = document.getElementById('bsc-carousel-' + sectionId);
+      const prevBtn   = document.querySelector('[data-bsc-section="' + sectionId + '"][data-bsc-dir="prev"]');
+      const nextBtn   = document.querySelector('[data-bsc-section="' + sectionId + '"][data-bsc-dir="next"]');
+      if (!carousel || !prevBtn || !nextBtn) return;
+
+      function syncNavBtns() {
+        const atStart = carousel.scrollLeft <= 1;
+        const atEnd   = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 1;
+        prevBtn.disabled = atStart;
+        nextBtn.disabled = atEnd;
+      }
+
+      prevBtn.addEventListener('click', () => {
         const card = carousel.querySelector('.bsc-card');
-        const step = card ? (card.offsetWidth + 16) * 2 : 320;
-        carousel.scrollBy({ left: btn.dataset.bscDir === 'prev' ? -step : step, behavior: 'smooth' });
+        const step = card ? card.offsetWidth + 16 : 320;
+        carousel.scrollBy({ left: -step, behavior: 'smooth' });
       });
-    });
+      nextBtn.addEventListener('click', () => {
+        const card = carousel.querySelector('.bsc-card');
+        const step = card ? card.offsetWidth + 16 : 320;
+        carousel.scrollBy({ left: step, behavior: 'smooth' });
+      });
+
+      carousel.addEventListener('scroll', syncNavBtns, { passive: true });
+      syncNavBtns();
+    })();
 
     const modal       = document.getElementById('bsc-modal-{{ section.id }}');
     const modalImg    = modal && modal.querySelector('.bsc-modal__img');
