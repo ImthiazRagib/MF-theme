@@ -1060,28 +1060,39 @@
 
   function addToSet() {
     if (!validateCurrentBelt()) return;
+
+    const _spinnerSVG = '<svg class="bb-checkout-spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
+    const composerBtn    = document.getElementById('bb-composer-cta');
+    const composerBtnOrig = composerBtn ? composerBtn.innerHTML : null;
+    if (composerBtn) {
+      composerBtn.disabled  = true;
+      composerBtn.innerHTML = composerBtnOrig.replace('Aggiungi', _spinnerSVG + 'Aggiungi');
+    }
+
     state.belts[state.currentBelt - 1].done = true;
-    
+
     showBeltSuccess(function () {
+      if (composerBtn && composerBtnOrig) {
+        composerBtn.disabled  = false;
+        composerBtn.innerHTML = composerBtnOrig;
+      }
+
       if (state._editMode && state._editMode.isCurrent) {
-        // Editing a belt in the active bundle — restore selected belt and return to summary
         state.currentBelt = state._editMode.savedCurrentBelt;
         state._editMode = null;
-                showReview();
+        showReview();
       } else if (state.currentBelt < state.totalBelts) {
         state.currentBelt += 1;
         renderComposer();
-              } else if (state._editMode) {
-        // Save edited belt back into the pending bundle it came from
+      } else if (state._editMode) {
         const em = state._editMode;
         state.pendingBundles[em.bundleIdx].belts[em.beltInBundle] = JSON.parse(JSON.stringify(state.belts[0]));
-        // Restore the active bundle state that was saved before edit started
-        state.bundleType = em.savedType;
-        state.totalBelts = em.savedTotalBelts;
-        state.currentBelt = em.savedCurrentBelt;
-        state.belts = em.savedBelts;
-        state._editMode = null;
-                showReview();
+        state.bundleType   = em.savedType;
+        state.totalBelts   = em.savedTotalBelts;
+        state.currentBelt  = em.savedCurrentBelt;
+        state.belts        = em.savedBelts;
+        state._editMode    = null;
+        showReview();
       } else {
         addBundleToCart();
       }
@@ -1558,21 +1569,32 @@
 
     state.pendingBundles = [];
     
-    // Disable CTA and show loading while the request runs
-    const cta = document.querySelector('[data-action="add-to-cart"]');
-    const originalHTML = cta ? cta.innerHTML : null;
+    // Disable CTAs and show spinner while the request runs
+    const cta         = document.querySelector('[data-action="add-to-cart"]');
+    const composerCta = document.querySelector('#bb-composer-cta');
+    const originalHTML         = cta         ? cta.innerHTML         : null;
+    const composerOriginalHTML = composerCta ? composerCta.innerHTML : null;
+
+    const _spinnerSVG2 = '<svg class="bb-checkout-spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
     if (cta) {
-      cta.disabled = true;
-      cta.innerHTML = 'Aggiunta in corso…';
+      cta.disabled  = true;
+      cta.innerHTML = originalHTML.replace('Aggiungi', _spinnerSVG2 + 'Aggiungi');
+    }
+    if (composerCta) {
+      composerCta.disabled  = true;
+      composerCta.innerHTML = composerOriginalHTML.replace('Aggiungi', _spinnerSVG2 + 'Aggiungi');
     }
 
     try {
       await proceedToCheckout();
     } catch {
-      // Restore button — proceedToCheckout only throws on HTTP error (success redirects away)
       if (cta && originalHTML) {
-        cta.disabled = false;
+        cta.disabled  = false;
         cta.innerHTML = originalHTML;
+      }
+      if (composerCta && composerOriginalHTML) {
+        composerCta.disabled  = false;
+        composerCta.innerHTML = composerOriginalHTML;
       }
     }
   }

@@ -356,8 +356,18 @@
     color: var(--bp-accent);
   }
 
+  @keyframes bp-spin { to { transform: rotate(360deg); } }
+  .bp-spinner {
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: middle;
+    animation: bp-spin 0.7s linear infinite;
+  }
   .bp-btn-primary {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     background: var(--bp-accent);
     color: #fff;
@@ -884,8 +894,9 @@
       var btn  = document.getElementById('bp-checkout-btn');
       if (!plan || !state.selected.length) return;
 
-      btn.disabled    = true;
-      btn.textContent = 'Adding to cart\u2026';
+      var origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="bp-spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>' + origHTML;
 
       /* Build line items array */
       var items = [];
@@ -939,8 +950,8 @@
         .catch(function (err) {
           console.error('Bundle checkout error:', err);
           alert('Something went wrong adding to cart. Please try again.');
-          btn.disabled    = false;
-          btn.innerHTML   = 'Checkout &rarr;';
+          btn.disabled  = false;
+          btn.innerHTML = origHTML;
         });
     }
 

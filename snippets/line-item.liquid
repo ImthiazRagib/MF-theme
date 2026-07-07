@@ -17,7 +17,12 @@
   class="line-item"
 >
   {%- assign _bn = belt_n | default: 1 -%}
-  {%- assign _bn_img_key = '_cintura_' | append: _bn | append: '_img' -%}
+  {%- assign _bn_img_key        = '_cintura_' | append: _bn | append: '_img' -%}
+  {%- assign _bn_pelle_key      = 'Cintura '  | append: _bn | append: ' - Pelle' -%}
+  {%- assign _bn_lunghezza_key  = 'Cintura '  | append: _bn | append: ' - Lunghezza' -%}
+  {%- assign _bn_fibbia_key     = 'Cintura '  | append: _bn | append: ' - Fibbia' -%}
+  {%- assign _bn_strap_vid_key  = '_cintura_' | append: _bn | append: '_strap_vid' -%}
+  {%- assign _bn_buckle_vid_key = '_cintura_' | append: _bn | append: '_buckle_vid' -%}
   {%- assign photo = line_item.properties[_bn_img_key] -%}
   {%- assign _li_is_belt = false -%}
   {%- if line_item.properties['Cintura 1 - Pelle'] != blank or line_item.properties['Cintura 1 - Lunghezza'] != blank -%}
@@ -37,20 +42,6 @@
   {%- endif -%}
   {%- assign _bn_remove_total = belt_remove_total | default: 1 -%}
   <div class="bb-line-item-img-wrap">
-    {%- if _bn_remove_total > 1 -%}
-      <button type="button" class="bb-remove-x bb-remove-belt"
-        data-item-key="{{ line_item.key }}"
-        data-belt-n="{{ _bn }}"
-        data-belt-total="{{ _bn_remove_total }}"
-        data-bundle-id="{{ line_item.properties._bundle_id | escape }}"
-        aria-label="{{ 'cart.order.remove_with_title' | t: title: line_item.title | escape }}">
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    {%- else -%}
-      <a href="{{ line_item.url_to_remove }}" class="bb-remove-x" aria-label="{{ 'cart.order.remove_with_title' | t: title: line_item.title | escape }}">
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </a>
-    {%- endif -%}
     {%- if photo != blank -%}
       <img src="{{ photo }}" alt="{{ line_item.product.title }}" loading="lazy"
            class="line-item__media" style="object-fit:cover;">
@@ -74,7 +65,7 @@
       {%- assign text_class = 'h6' -%}
     {%- endif -%}
 
-    <div class="v-stack justify-items-start">
+    <div class="v-stack">
       {%- if settings.show_vendor and line_item.vendor != blank -%}
         {%- capture vendor_class -%}smallcaps {% if settings.product_card_text_font == 'heading' %}heading{% endif %}{% endcapture %}
         {%- render 'vendor' with line_item.vendor, class: vendor_class -%}
@@ -82,11 +73,13 @@
 
       <div class="v-stack justify-items-start gap-1">
         {%- assign _display_title = belt_label | default: line_item.product.title | default: line_item.title -%}
-        {%- if line_item.url != blank and belt_label == blank -%}
-          <a style="font-weight:700" href="{{ line_item.url }}" class="{{ text_class }}">{{- _display_title -}}</a>
-        {%- else -%}
-          <p style="font-weight:700;" class="{{ text_class }}">{{ _display_title }}</p>
-        {%- endif -%}
+        <div class="bb-title-actions">
+          {%- if line_item.url != blank and belt_label == blank -%}
+            <a style="font-weight:700" href="{{ line_item.url }}" class="{{ text_class }}">{{- _display_title -}}</a>
+          {%- else -%}
+            <p style="font-weight:700;margin:0;" class="{{ text_class }}">{{ _display_title }}</p>
+          {%- endif -%}
+        </div>
 
         {% comment %} {%- if _li_is_belt -%}
           <div class="bb-cart-belt-price">€ {{ _li_belt_price_display }}</div>
@@ -201,6 +194,39 @@
           {%- endfor -%}
         </ul>
       {%- endif -%}
+
     </div>
   </div>
+
+  <div class="bb-belt-actions">
+    {%- if _li_is_belt -%}
+      <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--minus bb-remove-belt"
+        data-item-key="{{ line_item.key }}"
+        data-belt-n="{{ _bn }}"
+        data-belt-total="{{ _bn_remove_total }}"
+        data-bundle-id="{{ line_item.properties._bundle_id | escape }}"
+        aria-label="Rimuovi cintura">−</button>
+      <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--plus bb-add-same-belt"
+        data-item-key="{{ line_item.key }}"
+        data-pelle="{{ line_item.properties[_bn_pelle_key] | escape }}"
+        data-lunghezza="{{ line_item.properties[_bn_lunghezza_key] | escape }}"
+        data-fibbia="{{ line_item.properties[_bn_fibbia_key] | escape }}"
+        data-img="{{ line_item.properties[_bn_img_key] | escape }}"
+        data-strap-vid="{{ line_item.properties[_bn_strap_vid_key] | escape }}"
+        data-buckle-vid="{{ line_item.properties[_bn_buckle_vid_key] | escape }}"
+        aria-label="Aggiungi stessa cintura">+</button>
+    {%- else -%}
+      <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--minus bb-std-qty-btn"
+        data-line-key="{{ line_item.key }}"
+        data-delta="-1"
+        data-qty="{{ line_item.quantity }}"
+        aria-label="Diminuisci quantità">−</button>
+      <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--plus bb-std-qty-btn"
+        data-line-key="{{ line_item.key }}"
+        data-delta="1"
+        data-qty="{{ line_item.quantity }}"
+        aria-label="Aumenta quantità">+</button>
+    {%- endif -%}
+  </div>
+
 </line-item>

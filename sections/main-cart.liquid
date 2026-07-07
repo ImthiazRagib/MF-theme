@@ -1,4 +1,45 @@
 <style>
+  .line-item { position: relative; }
+  .bb-belt-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border: 1.5px solid #000;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .bb-belt-qty-btn {
+    width: 27px;
+    height: 20px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #000;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .bb-belt-qty-btn--minus {
+    border-right: 1.5px solid #000;
+  }
+  .bb-belt-qty-btn:active { background: #000; color: #fff; }
+  .bb-belt-qty-btn:disabled { opacity: 0.35; cursor: default; }
+  @media screen and (min-width: 700px) {
+    .bb-belt-actions { top: 50px; }
+    .bb-belt-qty-btn:hover { background: #000; color: #fff; }
+  }
+
   @media screen and (min-width: 990px) {
     .cart-footer {
       display: flex;
@@ -750,20 +791,14 @@
 
 {%- if _cart_has_belts -%}
 <style>
+  @keyframes bb-chk-spin { to { transform: rotate(360deg); } }
   .bb-checkout-spinner {
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 2px solid currentColor;
-    border-top-color: transparent;
-    border-radius: 50%;
     flex-shrink: 0;
-    will-change: transform;
-    -webkit-animation: bb-chk-spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
     animation: bb-chk-spin 0.7s linear infinite;
   }
-  @-webkit-keyframes bb-chk-spin { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
-  @keyframes bb-chk-spin { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
   .bb-checkout-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 </style>
 
@@ -782,7 +817,7 @@
 
       var origHTML = checkoutBtn.innerHTML;
       checkoutBtn.disabled = true;
-      checkoutBtn.innerHTML = '<span class="bb-checkout-spinner"></span>' + origHTML;
+      checkoutBtn.innerHTML = '<svg class="bb-checkout-spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>' + origHTML;
 
       Promise.all([
         fetch(CATALOG_URL).then(function (r) { return r.json(); }),
@@ -907,6 +942,86 @@
         window.location.href = '/checkout';
       });
     }, { capture: true });
+  })();
+</script>
+
+<script>
+  (function () {
+    var CATALOG_URL = {{ 'bundle-builder-catalog.json' | asset_url | json }};
+    var SET_KEYS = { 1: 'SET-CINTURA-SINGOLA', 2: 'SET-CINTURE-DOPPIO', 3: 'SET-CINTURE-TRIPLO', 4: 'SET-CINTURE-INFINITY' };
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bb-add-same-belt');
+      if (!btn) return;
+      e.preventDefault();
+      btn.disabled = true;
+
+      Promise.all([
+        fetch(CATALOG_URL).then(function (r) { return r.json(); }),
+        fetch('/cart.js').then(function (r) { return r.json(); })
+      ]).then(function (res) {
+        var catalog = res[0];
+        var cart    = res[1];
+
+        var beltCount = 0;
+        (cart.items || []).forEach(function (item) {
+          Object.keys(item.properties || {}).forEach(function (k) {
+            if (k.indexOf('Cintura ') === 0 && k.indexOf(' - Pelle') !== -1) beltCount++;
+          });
+        });
+
+        var newCount = beltCount + 1;
+        var setKey   = newCount <= 4 ? SET_KEYS[newCount] : 'SET-CINTURE-EXTRA';
+        var setVid   = Number(catalog[setKey]);
+        if (!setVid) throw new Error('no_set_vid');
+
+        var nfcVid   = catalog['NFC-CARD'] ? Number(catalog['NFC-CARD']) : 0;
+        var bundleId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+        var properties = {
+          _bundle_id:              bundleId,
+          'Cintura 1 - Pelle':     btn.dataset.pelle     || '',
+          'Cintura 1 - Lunghezza': btn.dataset.lunghezza || '',
+          'Cintura 1 - Fibbia':    btn.dataset.fibbia    || '',
+          _cintura_1_img:          btn.dataset.img       || '',
+          _cintura_1_strap_vid:    btn.dataset.strapVid  || '',
+          _cintura_1_buckle_vid:   btn.dataset.buckleVid || ''
+        };
+
+        var items = [{ id: setVid, quantity: 1, properties: properties }];
+        if (nfcVid) {
+          items.push({ id: nfcVid, quantity: 1, properties: { _bundle_nfc: '1', _bundle_id: bundleId } });
+        }
+
+        return fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ items: items })
+        });
+      }).then(function () {
+        window.location.reload();
+      }).catch(function () {
+        btn.disabled = false;
+      });
+    });
+
+    /* Standard (non-belt) quantity +/- */
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bb-std-qty-btn');
+      if (!btn) return;
+      e.preventDefault();
+      btn.disabled = true;
+      var key     = btn.dataset.lineKey;
+      var current = parseInt(btn.dataset.qty, 10) || 1;
+      var delta   = parseInt(btn.dataset.delta, 10);
+      var newQty  = Math.max(0, current + delta);
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: newQty })
+      }).then(function () { window.location.reload(); })
+        .catch(function () { btn.disabled = false; });
+    });
   })();
 </script>
 {%- endif -%}
