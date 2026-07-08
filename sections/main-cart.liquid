@@ -889,16 +889,24 @@
         var beltN       = 0;
         var updates     = {};
 
-        /* Scan cart — merge belt properties and mark stale items for removal */
+        /* Pass 1 — mark stale items for removal (forward order) */
         (cart.items || []).forEach(function (item) {
-          var p       = item.properties || {};
-          var isMain  = allSetVids.has(item.variant_id);
-          var isExtra = extraVid && item.variant_id === extraVid;
-          var isCard  = p._bundle_nfc === '1' || p._bundle_privileged === '1';
+          var p      = item.properties || {};
+          var isMain = allSetVids.has(item.variant_id);
+          var isExt  = extraVid && item.variant_id === extraVid;
+          var isCard = p._bundle_nfc === '1' || p._bundle_privileged === '1';
+          if (isMain || isExt || isCard) updates[item.key] = 0;
+        });
 
-          if (isMain || isExtra || isCard) updates[item.key] = 0;
+        /* Pass 2 — merge belt properties in REVERSE cart order so that the
+           display labels (assigned high→low as cart.items iterates forward)
+           stay consistent with the merged Cintura property numbers after rebuild. */
+        (cart.items || []).slice().reverse().forEach(function (item) {
+          var p      = item.properties || {};
+          var isMain = allSetVids.has(item.variant_id);
+          var isExt  = extraVid && item.variant_id === extraVid;
 
-          if (isMain) {
+          if (isMain || isExt) {
             var maxSlot = 0;
             Object.keys(p).forEach(function (k) {
               var m = k.match(/^Cintura (\d+) - Pelle$/);
