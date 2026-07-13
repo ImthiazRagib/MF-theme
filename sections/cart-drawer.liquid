@@ -1,3 +1,53 @@
+<style>
+  /* Shared with main-cart.liquid — the drawer renders the same line-item.liquid markup
+     but is not guaranteed to load on a page where main-cart.liquid's inline styles are present. */
+  .line-item { position: relative; }
+  .bb-belt-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border: 1.5px solid #000;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .bb-belt-qty-btn {
+    width: 30px;
+    height: 22px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #000;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .bb-belt-qty-btn--minus { border-right: 1.5px solid #000; }
+  .bb-belt-qty-btn:active { background: #000; color: #fff; }
+  .bb-belt-qty-btn:disabled { opacity: 0.35; cursor: default; }
+  .bb-belt-qty-btn--pressed { background: #000 !important; color: #fff !important; opacity: 1 !important; }
+  .bb-belt-actions.is-loading { pointer-events: none; justify-content: center; align-items: center; border-color: transparent; }
+  body.bb-cart-busy .bb-belt-actions:not(.is-loading) { pointer-events: none; opacity: 0.4; }
+  .bb-belt-actions.is-loading .bb-belt-qty-btn { display: none; }
+  .bb-cap-spinner { display: none; flex-shrink: 0; line-height: 0; }
+  .bb-cap-spinner .bb-checkout-spinner { margin-right: 0; }
+  .bb-belt-actions.is-loading .bb-cap-spinner { display: block; }
+  @media screen and (min-width: 700px) {
+    .bb-belt-actions { top: 50px; }
+    .bb-belt-qty-btn:hover { background: #000; color: #fff; }
+  }
+</style>
+
 <cart-drawer
   id="cart-drawer"
   aria-label="{{ 'cart.general.title' | t | escape_once }}"
@@ -194,6 +244,31 @@
     </div>
   {%- endif -%}
 </cart-drawer>
+
+<script>
+  /* Privilege Card (Silver/Gold): standalone gifted product, qty capped at 1 — remove-only control.
+     Registered unconditionally (not gated on bundle presence) so it works in a cart with no belts too. */
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bb-privilege-remove-btn');
+      if (!btn) return;
+      e.preventDefault();
+      btn.disabled = true;
+      var cap = btn.closest('.bb-belt-actions');
+      if (cap) cap.classList.add('is-loading');
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: btn.dataset.lineKey, quantity: 0 })
+      }).then(function () { window.location.reload(); })
+        .catch(function () {
+          btn.disabled = false;
+          if (cap) cap.classList.remove('is-loading');
+        });
+    });
+  })();
+</script>
 
 <script>
 (function () {

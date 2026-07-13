@@ -2874,6 +2874,19 @@ onSubmit_fn = async function(event) {
     __privateGet(this, _ProductForm_instances, form_get2).reportValidity();
     return;
   }
+  const _privilegeCardVariantId = parseInt(__privateGet(this, _ProductForm_instances, form_get2).id.value, 10);
+  if (_privilegeCardVariantId === 56920917147974 || _privilegeCardVariantId === 56920945066310) {
+    const _existingCart = await (await fetch(`${Shopify.routes.root}cart.js`)).json();
+    if (_existingCart.items.some((item) => item.variant_id === _privilegeCardVariantId)) {
+      __privateGet(this, _ProductForm_instances, form_get2).dispatchEvent(
+        new CustomEvent("cart:error", {
+          bubbles: true,
+          detail: { error: "Hai gi\xE0 questa Privilege Card nel carrello: solo una per cliente." }
+        })
+      );
+      return;
+    }
+  }
   const submitButtons = Array.from(__privateGet(this, _ProductForm_instances, form_get2).elements).filter((button) => button.type === "submit");
   submitButtons.forEach((submitButton) => {
     submitButton.setAttribute("aria-busy", "true");

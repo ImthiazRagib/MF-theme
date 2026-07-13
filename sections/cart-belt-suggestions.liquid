@@ -386,6 +386,52 @@
   {%- endif -%}
   {%- assign bsc_full_price_cents = 4999 -%}
 
+  {%- comment -%} Build the set of strap+buckle combos already in the cart, so we don't suggest a belt the customer already added {%- endcomment -%}
+  {%- assign bsc_owned_combos = '' -%}
+  {%- for bsc_ci in cart.items -%}
+    {%- for bsc_p in bsc_ci.properties -%}
+      {%- assign bsc_pkey = bsc_p.first -%}
+      {%- if bsc_pkey contains 'Cintura ' and bsc_pkey contains ' - Pelle' -%}
+        {%- assign bsc_clabel = bsc_pkey | split: ' - ' | first -%}
+        {%- assign bsc_fibbia_key = bsc_clabel | append: ' - Fibbia' -%}
+        {%- assign bsc_pelle_val = bsc_p.last | strip -%}
+        {%- assign bsc_fibbia_val = bsc_ci.properties[bsc_fibbia_key] | strip -%}
+        {%- if bsc_pelle_val != blank and bsc_fibbia_val != blank -%}
+          {%- assign bsc_owned_combos = bsc_owned_combos | append: bsc_pelle_val | append: '||' | append: bsc_fibbia_val | append: ';;' -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+
+  {%- comment -%} Count how many blocks survive the already-owned filter, so we can hide the whole section if none do {%- endcomment -%}
+  {%- assign bsc_visible_count = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- assign bsc_b = block.settings.buckle_slot | default: 'classica' -%}
+    {%- assign bsc_s = block.settings.strap_slot  | default: 'nera' -%}
+    {%- case bsc_b -%}
+      {%- when 'classica' -%}{%- assign bsc_buckle_name = 'Classic Matt' -%}
+      {%- when 'silver' -%}{%- assign bsc_buckle_name = 'Elegant Chrome Silver' -%}
+      {%- when 'gold' -%}{%- assign bsc_buckle_name = 'Elegant Chrome Gold' -%}
+      {%- when 'luxury' -%}{%- assign bsc_buckle_name = 'Mirror Chrome' -%}
+    {%- endcase -%}
+    {%- case bsc_s -%}
+      {%- when 'nera' -%}{%- assign bsc_strap_name = 'Black' -%}
+      {%- when 'marrone' -%}{%- assign bsc_strap_name = 'Brown' -%}
+      {%- when 'cammello' -%}{%- assign bsc_strap_name = 'Cognac' -%}
+      {%- when 'bianca' -%}{%- assign bsc_strap_name = 'White' -%}
+      {%- when 'beige' -%}{%- assign bsc_strap_name = 'Sand' -%}
+      {%- when 'marronecoccodrillo' -%}{%- assign bsc_strap_name = 'Brown Crocodile' -%}
+      {%- when 'neracoccodrillo' -%}{%- assign bsc_strap_name = 'Black Crocodile' -%}
+      {%- when 'blu' -%}{%- assign bsc_strap_name = 'Blue' -%}
+      {%- when 'grigia' -%}{%- assign bsc_strap_name = 'Gray' -%}
+    {%- endcase -%}
+    {%- assign bsc_combo_key = bsc_strap_name | append: '||' | append: bsc_buckle_name | append: ';;' -%}
+    {%- unless bsc_owned_combos contains bsc_combo_key -%}
+      {%- assign bsc_visible_count = bsc_visible_count | plus: 1 -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
+  {%- if bsc_visible_count > 0 -%}
   <div
     class="section-spacing{% if section.settings.separate_section_with_border %} bordered-section{% endif %} color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ bsc_scheme_hash }}"
   >
@@ -412,6 +458,28 @@
             {%- for block in section.blocks -%}
               {%- assign bsc_b = block.settings.buckle_slot | default: 'classica' -%}
               {%- assign bsc_s = block.settings.strap_slot  | default: 'nera' -%}
+
+              {%- case bsc_b -%}
+                {%- when 'classica' -%}{%- assign bsc_buckle_name = 'Classic Matt' -%}
+                {%- when 'silver' -%}{%- assign bsc_buckle_name = 'Elegant Chrome Silver' -%}
+                {%- when 'gold' -%}{%- assign bsc_buckle_name = 'Elegant Chrome Gold' -%}
+                {%- when 'luxury' -%}{%- assign bsc_buckle_name = 'Mirror Chrome' -%}
+              {%- endcase -%}
+              {%- case bsc_s -%}
+                {%- when 'nera' -%}{%- assign bsc_strap_name = 'Black' -%}
+                {%- when 'marrone' -%}{%- assign bsc_strap_name = 'Brown' -%}
+                {%- when 'cammello' -%}{%- assign bsc_strap_name = 'Cognac' -%}
+                {%- when 'bianca' -%}{%- assign bsc_strap_name = 'White' -%}
+                {%- when 'beige' -%}{%- assign bsc_strap_name = 'Sand' -%}
+                {%- when 'marronecoccodrillo' -%}{%- assign bsc_strap_name = 'Brown Crocodile' -%}
+                {%- when 'neracoccodrillo' -%}{%- assign bsc_strap_name = 'Black Crocodile' -%}
+                {%- when 'blu' -%}{%- assign bsc_strap_name = 'Blue' -%}
+                {%- when 'grigia' -%}{%- assign bsc_strap_name = 'Gray' -%}
+              {%- endcase -%}
+              {%- assign bsc_combo_key = bsc_strap_name | append: '||' | append: bsc_buckle_name | append: ';;' -%}
+              {%- if bsc_owned_combos contains bsc_combo_key -%}
+                {%- continue -%}
+              {%- endif -%}
 
               {%- assign bsc_lbl1 = section.settings.size_1_label | default: '130cm' -%}
               {%- assign bsc_lbl2 = section.settings.size_2_label | default: '150cm' -%}
@@ -469,6 +537,7 @@
       </div>
     </div>
   </div>
+  {%- endif -%}
 {%- endif -%}
 
 <div class="bsc-modal" id="bsc-modal-{{ section.id }}" role="dialog" aria-modal="true" hidden>

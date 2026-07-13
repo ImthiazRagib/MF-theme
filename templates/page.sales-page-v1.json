@@ -133,7 +133,7 @@
             "content": "",
             "content_shadow": 0,
             "link_text": "ACQUISTALA ORA",
-            "link_url": "#shopify-section-template--28233093513542__carosello_A4Ge8A",
+            "link_url": "#shopify-section-template--28351999672646__carosello_A4Ge8A",
             "link_style": "link",
             "button_shadow": 70,
             "text_position": "place-self-end-center text-center",
@@ -726,7 +726,7 @@
           "settings": {
             "style": "solid",
             "text": "Scopri i set disponibili",
-            "url": "#shopify-section-template--28233093513542__carosello_A4Ge8A",
+            "url": "#shopify-section-template--28322444640582__carosello_A4Ge8A",
             "background": "",
             "text_color": ""
           }
@@ -1414,7 +1414,7 @@
       "type": "apps",
       "blocks": {
         "reelup_shoppable_videos_reels_reelup_playlist_hdUdtq": {
-          "type": "shopify://apps/reelup-shoppable-videos/blocks/reelup_playlist/a8ec9e4d-d192-44f7-9c23-595f9ee7dd5b",
+          "type": "shopify://apps/reelup-shoppable-videos-reels/blocks/reelup_playlist/a8ec9e4d-d192-44f7-9c23-595f9ee7dd5b",
           "settings": {
             "playlist_id": "rl_pl_16368"
           }

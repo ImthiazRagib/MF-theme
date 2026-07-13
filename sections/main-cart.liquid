@@ -596,6 +596,30 @@
 </script>
 
 <script>
+  /* Privilege Card (Silver/Gold): standalone gifted product, qty capped at 1 — remove-only control.
+     Registered unconditionally (not gated on bundle presence) so it works in a cart with no belts too. */
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bb-privilege-remove-btn');
+      if (!btn) return;
+      e.preventDefault();
+      btn.disabled = true;
+      document.body.classList.add('bb-cart-busy');
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: btn.dataset.lineKey, quantity: 0 })
+      }).then(function () { window.location.reload(); })
+        .catch(function () {
+          btn.disabled = false;
+          document.body.classList.remove('bb-cart-busy');
+        });
+    });
+  })();
+</script>
+
+<script>
   (function () {
     var BB_ITEMS = [
       {%- for item in cart.items -%}

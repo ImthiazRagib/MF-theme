@@ -33,18 +33,105 @@
     "belt_suggestions": {
       "type": "cart-belt-suggestions",
       "blocks": {
-        "combo_1": { "type": "combination", "settings": { "buckle_slot": "classica", "strap_slot": "nera" } },
-        "combo_2": { "type": "combination", "settings": { "buckle_slot": "classica", "strap_slot": "marrone" } },
-        "combo_3": { "type": "combination", "settings": { "buckle_slot": "silver",   "strap_slot": "nera" } },
-        "combo_4": { "type": "combination", "settings": { "buckle_slot": "silver",   "strap_slot": "marrone" } }
+        "combo_3": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "luxury",
+            "strap_slot": "nera"
+          }
+        },
+        "combo_1": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "classica",
+            "strap_slot": "nera"
+          }
+        },
+        "combo_2": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "classica",
+            "strap_slot": "blu"
+          }
+        },
+        "combination_EKdktG": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "gold",
+            "strap_slot": "neracoccodrillo"
+          }
+        },
+        "combo_4": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "gold",
+            "strap_slot": "cammello"
+          }
+        },
+        "combination_4nQkqR": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "silver",
+            "strap_slot": "blu"
+          }
+        },
+        "combination_LBEHdm": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "classica",
+            "strap_slot": "marrone"
+          }
+        },
+        "combination_LfY9Xx": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "luxury",
+            "strap_slot": "bianca"
+          }
+        },
+        "combination_yw4pgH": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "silver",
+            "strap_slot": "marronecoccodrillo"
+          }
+        },
+        "combination_i8Uar4": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "luxury",
+            "strap_slot": "grigia"
+          }
+        },
+        "combination_QkXPQG": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "silver",
+            "strap_slot": "marrone"
+          }
+        }
       },
-      "block_order": ["combo_1", "combo_2", "combo_3", "combo_4"],
+      "block_order": [
+        "combo_3",
+        "combo_1",
+        "combo_2",
+        "combination_EKdktG",
+        "combo_4",
+        "combination_4nQkqR",
+        "combination_LBEHdm",
+        "combination_LfY9Xx",
+        "combination_yw4pgH",
+        "combination_i8Uar4",
+        "combination_QkXPQG"
+      ],
       "settings": {
         "color_scheme": "",
         "separate_section_with_border": false,
         "title": "Le più acquistate",
         "subheading": "Acquista altre cinture e risparmia",
         "atc_button_text": "Aggiungi al Carrello",
+        "size_1_label": "130cm",
+        "size_2_label": "150cm",
         "use_custom_section_spacing": false,
         "mobile_section_spacing_top": 40,
         "mobile_section_spacing_right": 20,

@@ -41,6 +41,12 @@
     {%- endif -%}
   {%- endif -%}
   {%- assign _bn_remove_total = belt_remove_total | default: 1 -%}
+
+  {%- comment -%} Privilege Card (Silver/Gold): standalone gifted product, capped at qty 1, never part of a belt bundle {%- endcomment -%}
+  {%- assign _is_privilege_card = false -%}
+  {%- if line_item.variant_id == 56920917147974 or line_item.variant_id == 56920945066310 -%}
+    {%- assign _is_privilege_card = true -%}
+  {%- endif -%}
   <div class="bb-line-item-img-wrap">
     {%- if photo != blank -%}
       <img src="{{ photo }}" alt="{{ line_item.product.title }}" loading="lazy"
@@ -200,7 +206,12 @@
 
   <div class="bb-belt-actions">
     <span class="bb-cap-spinner" aria-hidden="true"><svg class="bb-checkout-spinner" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></span>
-    {%- if _li_is_belt -%}
+    {%- if _is_privilege_card -%}
+      <button type="button" class="bb-belt-qty-btn bb-privilege-remove-btn"
+        data-line-key="{{ line_item.key }}"
+        aria-label="Rimuovi Privilege Card"
+      ><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    {%- elsif _li_is_belt -%}
       <button type="button" class="bb-belt-qty-btn bb-belt-qty-btn--minus bb-remove-belt"
         data-item-key="{{ line_item.key }}"
         data-belt-n="{{ _bn }}"
