@@ -431,7 +431,12 @@
     {%- endunless -%}
   {%- endfor -%}
 
-  {%- if bsc_visible_count > 0 -%}
+  {%- assign bsc_all_owned = false -%}
+  {%- if bsc_visible_count == 0 and section.blocks.size > 0 -%}
+    {%- assign bsc_all_owned = true -%}
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
   <div
     class="section-spacing{% if section.settings.separate_section_with_border %} bordered-section{% endif %} color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ bsc_scheme_hash }}"
   >
@@ -455,6 +460,7 @@
           </button>
 
           <div class="bsc-carousel" id="bsc-carousel-{{ section.id }}">
+            {%- assign bsc_shown_count = 0 -%}
             {%- for block in section.blocks -%}
               {%- assign bsc_b = block.settings.buckle_slot | default: 'classica' -%}
               {%- assign bsc_s = block.settings.strap_slot  | default: 'nera' -%}
@@ -477,9 +483,11 @@
                 {%- when 'grigia' -%}{%- assign bsc_strap_name = 'Gray' -%}
               {%- endcase -%}
               {%- assign bsc_combo_key = bsc_strap_name | append: '||' | append: bsc_buckle_name | append: ';;' -%}
-              {%- if bsc_owned_combos contains bsc_combo_key -%}
-                {%- continue -%}
-              {%- endif -%}
+              {%- unless bsc_all_owned -%}
+                {%- if bsc_owned_combos contains bsc_combo_key -%}{%- continue -%}{%- endif -%}
+                {%- if bsc_shown_count >= 7 -%}{%- break -%}{%- endif -%}
+              {%- endunless -%}
+              {%- assign bsc_shown_count = bsc_shown_count | plus: 1 -%}
 
               {%- assign bsc_lbl1 = section.settings.size_1_label | default: '130cm' -%}
               {%- assign bsc_lbl2 = section.settings.size_2_label | default: '150cm' -%}
