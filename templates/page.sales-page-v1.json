@@ -93,7 +93,7 @@
             "content": "<p>Privilege Card, nuove fibbie e colori ti stanno aspettando</p>",
             "content_shadow": 0,
             "link_text": "Acquistale ora",
-            "link_url": "#shopify-section-template--28233093513542__carosello_A4Ge8A",
+            "link_url": "#shopify-section-template--28381697179974__carosello_A4Ge8A",
             "link_style": "solid",
             "button_shadow": 0,
             "text_position": "place-self-end-start text-start",
@@ -133,7 +133,7 @@
             "content": "",
             "content_shadow": 0,
             "link_text": "ACQUISTALA ORA",
-            "link_url": "#shopify-section-template--28351999672646__carosello_A4Ge8A",
+            "link_url": "#shopify-section-template--28381697179974__carosello_A4Ge8A",
             "link_style": "link",
             "button_shadow": 70,
             "text_position": "place-self-end-center text-center",
@@ -173,7 +173,7 @@
             "content": "",
             "content_shadow": 0,
             "link_text": "SCOPRI I SET",
-            "link_url": "#shopify-section-template--28233093513542__carosello_A4Ge8A",
+            "link_url": "#shopify-section-template--28381697179974__carosello_A4Ge8A",
             "link_style": "link",
             "button_shadow": 70,
             "text_position": "place-self-end-start text-start",
@@ -726,7 +726,7 @@
           "settings": {
             "style": "solid",
             "text": "Scopri i set disponibili",
-            "url": "#shopify-section-template--28322444640582__carosello_A4Ge8A",
+            "url": "#shopify-section-template--28381697179974__carosello_A4Ge8A",
             "background": "",
             "text_color": ""
           }

@@ -109,6 +109,13 @@
             "buckle_slot": "silver",
             "strap_slot": "marrone"
           }
+        },
+        "combination_mp98By": {
+          "type": "combination",
+          "settings": {
+            "buckle_slot": "gold",
+            "strap_slot": "beige"
+          }
         }
       },
       "block_order": [
@@ -122,7 +129,8 @@
         "combination_LfY9Xx",
         "combination_yw4pgH",
         "combination_i8Uar4",
-        "combination_QkXPQG"
+        "combination_QkXPQG",
+        "combination_mp98By"
       ],
       "settings": {
         "color_scheme": "",
