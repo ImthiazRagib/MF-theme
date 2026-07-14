@@ -1,0 +1,612 @@
+/* ============================================================
+   SINGLE BUNDLE BUILDER — single-bundle-builder.css
+   Two-column product-page layout with combination gallery
+   ============================================================ */
+
+/* ── Tokens ─────────────────────────────────────────────── */
+.sbb-wrap {
+  --sbb-dark: #1a1a1a;
+  --sbb-mid: #666;
+  --sbb-light: #f5f5f5;
+  --sbb-accent: #c09a4e;
+  --sbb-accent-dark: #8b6a2a;
+  --sbb-border: #e0e0e0;
+  --sbb-radius: 8px;
+  --sbb-radius-sm: 4px;
+  font-family: inherit;
+  color: var(--sbb-dark);
+}
+
+/* ── Two-column product row ─────────────────────────────── */
+.sbb-product-row {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .sbb-product-row {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* ── Left column: image ─────────────────────────────────── */
+.sbb-col-image {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sbb-col-image {
+    width: 55%;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* ── Right column: info ─────────────────────────────────── */
+.sbb-col-info {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sbb-col-info {
+    flex: 1;
+  }
+}
+
+/* ── Hero image ─────────────────────────────────────────── */
+.sbb-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f2f0eb;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .sbb-hero {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+  }
+}
+
+#sbb-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+  display: block;
+}
+
+.sbb-hero__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #f5f5f5;
+  color: #aaa;
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+}
+
+/* ── Annotations ────────────────────────────────────────── */
+.sbb-annotation {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-style: italic;
+  color: #1a1a1a;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.sbb-annotation--1 {
+  top: 28%;
+  right: 6%;
+}
+
+.sbb-annotation--2 {
+  bottom: 30%;
+  left: 8%;
+}
+
+.sbb-annotation--3 {
+  bottom: 10%;
+  left: 5%;
+}
+
+.sbb-annotation__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c09a4e;
+  flex-shrink: 0;
+}
+
+.sbb-annotation__line {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: #c09a4e;
+}
+
+.sbb-annotation {
+  display: none;
+}
+
+/* ── Info ───────────────────────────────────────────────── */
+.sbb-info {
+  padding: 28px 20px;
+}
+
+@media (min-width: 768px) {
+  .sbb-info {
+    padding: 48px 40px 48px 48px;
+  }
+}
+
+/* ── Rating ─────────────────────────────────────────────── */
+.sbb-rating {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.sbb-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.sbb-star {
+  width: 15px;
+  height: 15px;
+  fill: var(--sbb-accent);
+}
+.sbb-star--half {
+  fill: url(#sbb-half-grad);
+}
+.sbb-rating__text {
+  font-size: 13px;
+  color: var(--sbb-mid);
+  line-height: 1;
+}
+.sbb-rating__link {
+  color: var(--sbb-mid);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Title ──────────────────────────────────────────────── */
+.sbb-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 12px;
+  color: var(--sbb-dark);
+}
+@media (min-width: 768px) {
+  .sbb-title { font-size: 26px; }
+}
+
+/* ── Price ──────────────────────────────────────────────── */
+.sbb-price-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.sbb-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.sbb-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--sbb-dark);
+}
+.sbb-compare-price {
+  font-size: 18px;
+  font-weight: 500;
+  color: #b94040;
+  text-decoration: line-through;
+  text-decoration-color: #b94040;
+}
+.sbb-price-note {
+  font-size: 12px;
+  color: var(--sbb-mid);
+}
+
+/* ── Description ────────────────────────────────────────── */
+.sbb-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #444;
+  margin-bottom: 22px;
+}
+.sbb-desc p { margin: 0 0 6px; }
+.sbb-desc p:last-child { margin-bottom: 0; }
+
+/* ── Delivery ───────────────────────────────────────────── */
+.sbb-delivery {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 14px;
+}
+
+/* ── Details link ───────────────────────────────────────── */
+.sbb-details-link {
+  display: inline-block;
+  font-size: 14px;
+  color: #1a1a1a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-bottom: 22px;
+}
+
+/* ── Selectors ──────────────────────────────────────────── */
+.sbb-selectors {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+/* Strap + buckle side by side once there's enough room */
+@media (min-width: 560px) {
+  .sbb-selectors {
+    grid-template-columns: 1fr 1fr;
+  }
+  /* Size pills span both columns */
+  .sbb-selector-group--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.sbb-selector-group {}
+
+.sbb-selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sbb-mid);
+  margin-bottom: 8px;
+}
+
+/* ── Custom Dropdown ────────────────────────────────────── */
+.sbb-dropdown {
+  position: relative;
+}
+
+.sbb-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1.5px solid var(--sbb-border);
+  border-radius: var(--sbb-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sbb-dark);
+  transition: border-color 0.18s;
+  text-align: left;
+  font-family: inherit;
+}
+.sbb-dropdown__trigger:hover,
+.sbb-dropdown.is-open .sbb-dropdown__trigger {
+  border-color: var(--sbb-dark);
+}
+
+.sbb-dropdown__trigger-img {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--sbb-radius-sm);
+  object-fit: contain;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
+
+.sbb-dropdown__trigger-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,.1);
+  flex-shrink: 0;
+}
+
+.sbb-dropdown__trigger-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sbb-dropdown__arrow {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: var(--sbb-mid);
+  margin-left: auto;
+}
+.sbb-dropdown.is-open .sbb-dropdown__arrow {
+  transform: rotate(180deg);
+}
+
+.sbb-dropdown__list {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid var(--sbb-dark);
+  border-radius: var(--sbb-radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.14);
+  z-index: 300;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.sbb-dropdown.is-open .sbb-dropdown__list {
+  display: block;
+}
+
+.sbb-dropdown__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+  font-size: 14px;
+  font-weight: 500;
+}
+.sbb-dropdown__option:hover { background: var(--sbb-light); }
+.sbb-dropdown__option.is-selected {
+  background: #f8f4eb;
+}
+
+.sbb-dropdown__opt-img {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--sbb-radius-sm);
+  object-fit: contain;
+  flex-shrink: 0;
+  background: #f5f5f5;
+  display: block;
+}
+
+.sbb-dropdown__opt-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,.1);
+  flex-shrink: 0;
+}
+
+.sbb-dropdown__opt-name {
+  flex: 1;
+  color: var(--sbb-dark);
+}
+
+/* ── Size Pills ─────────────────────────────────────────── */
+.sbb-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sbb-pill {
+  padding: 9px 22px;
+  border: 1.5px solid var(--sbb-border);
+  border-radius: 32px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--sbb-dark);
+  font-family: inherit;
+  line-height: 1;
+}
+.sbb-pill:hover { border-color: var(--sbb-dark); }
+.sbb-pill.is-selected {
+  background: var(--sbb-dark);
+  border-color: var(--sbb-dark);
+  color: #fff;
+}
+
+/* ── ATC Button ─────────────────────────────────────────── */
+.sbb-btn-atc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 17px 24px;
+  background: var(--sbb-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--sbb-radius);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.025em;
+  margin-bottom: 18px;
+  font-family: inherit;
+}
+.sbb-btn-atc:hover:not(:disabled) { background: var(--sbb-accent-dark); }
+.sbb-btn-atc:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* ── Trust Bar ──────────────────────────────────────────── */
+.sbb-trust {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-top: 1px solid var(--sbb-border);
+  border-bottom: 1px solid var(--sbb-border);
+  padding: 12px 0;
+  margin-bottom: 22px;
+}
+.sbb-trust__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: #555;
+  flex: 1;
+  text-align: center;
+  padding: 0 4px;
+}
+.sbb-trust__item + .sbb-trust__item {
+  border-left: 1px solid var(--sbb-border);
+}
+.sbb-trust__icon {
+  width: 20px;
+  height: 20px;
+  stroke: var(--sbb-accent);
+  flex-shrink: 0;
+}
+
+/* ── Accordion tabs ─────────────────────────────────────── */
+.sbb-tabs {
+  margin-top: 4px;
+}
+.sbb-tab {
+  border-bottom: 1px solid var(--sbb-border);
+}
+.sbb-tab__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sbb-dark);
+  text-align: left;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+.sbb-tab__arrow {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  color: var(--sbb-mid);
+}
+.sbb-tab.is-open .sbb-tab__arrow {
+  transform: rotate(180deg);
+}
+.sbb-tab__body {
+  display: none;
+  padding: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #444;
+}
+.sbb-tab.is-open .sbb-tab__body {
+  display: block;
+}
+
+/* ── Trustpilot badge ───────────────────────────────────── */
+.sbb-trustpilot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.sbb-trustpilot__star {
+  width: 28px;
+  height: 28px;
+  fill: #00b67a;
+}
+
+.sbb-trustpilot__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.sbb-trustpilot__squares {
+  display: flex;
+  gap: 3px;
+}
+
+.sbb-trustpilot__sq {
+  width: 22px;
+  height: 22px;
+  background: #00b67a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sbb-trustpilot__sq svg {
+  width: 14px;
+  height: 14px;
+  fill: #fff;
+}
+
+.sbb-trustpilot__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* ── Spinner animation ──────────────────────────────────── */
+@keyframes sbb-spin {
+  to { transform: rotate(360deg); }
+}
+.sbb-spinner {
+  animation: sbb-spin 0.75s linear infinite;
+  display: inline-block;
+}
+
+/* ── Toast ──────────────────────────────────────────────── */
+#sbb-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s;
+  max-width: 320px;
+  text-align: center;
+  pointer-events: none;
+}

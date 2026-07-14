@@ -1,0 +1,507 @@
+{% comment %}
+  ============================================================
+  SINGLE BUNDLE BUILDER — sections/single-bundle-builder.liquid
+
+  A product-page style single-belt configurator.
+  Gallery shows the combination photo. Title updates to the
+  selected combination. Dropdowns for strap/buckle. Size pills.
+  Add to cart uses the same cart logic as the bundle builder.
+
+  Setup:
+    1. Add this section to a Page template (page.single-bundle.liquid)
+    2. In the Theme Editor, enter the variant IDs and configure
+       the description / rating settings.
+  ============================================================
+{% endcomment %}
+
+{{ 'single-bundle-builder.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="sbb-wrap"
+  id="sbb-root"
+  data-media-url="{{ 'bundle-builder-media.json' | asset_url }}"
+  data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}"
+>
+
+  {%- comment -%} SVG half-gradient for half-star rating — invisible {%- endcomment -%}
+  <svg width="0" height="0" style="position:absolute;overflow:hidden">
+    <defs>
+      <linearGradient id="sbb-half-grad" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="50%" stop-color="#c09a4e"/>
+        <stop offset="50%" stop-color="#e0e0e0"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="sbb-product-row">
+
+    {%- comment -%} ══ LEFT: IMAGE ══════════════════════════════ {%- endcomment -%}
+    <div class="sbb-col-image">
+      <div class="sbb-hero">
+        <img
+          id="sbb-main-img"
+          src=""
+          alt="Anteprima combinazione"
+          style="opacity:0;display:none;"
+        >
+        <div id="sbb-gallery-placeholder" class="sbb-hero__placeholder">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Caricamento anteprima…</span>
+        </div>
+
+        {%- comment -%} Annotation 1 — top right {%- endcomment -%}
+        {%- if section.settings.annotation_1 != blank -%}
+        <div class="sbb-annotation sbb-annotation--1">
+          <span class="sbb-annotation__text">{{ section.settings.annotation_1 | default: 'Scegli la fibbia' }}</span>
+          <span class="sbb-annotation__line"></span>
+          <span class="sbb-annotation__dot"></span>
+        </div>
+        {%- endif -%}
+
+        {%- comment -%} Annotation 2 — middle left {%- endcomment -%}
+        {%- if section.settings.annotation_2 != blank -%}
+        <div class="sbb-annotation sbb-annotation--2">
+          <span class="sbb-annotation__dot"></span>
+          <span class="sbb-annotation__line"></span>
+          <span class="sbb-annotation__text">{{ section.settings.annotation_2 | default: 'Scegli il colore' }}</span>
+        </div>
+        {%- endif -%}
+
+        {%- comment -%} Annotation 3 — bottom left {%- endcomment -%}
+        {%- if section.settings.annotation_3 != blank -%}
+        <div class="sbb-annotation sbb-annotation--3">
+          <span class="sbb-annotation__dot"></span>
+          <span class="sbb-annotation__line"></span>
+          <span class="sbb-annotation__text">{{ section.settings.annotation_3 | default: 'NFC Card in omaggio' }}</span>
+        </div>
+        {%- endif -%}
+
+      </div>
+    </div>
+    {%- comment -%} /.sbb-col-image {%- endcomment -%}
+
+    {%- comment -%} ══ RIGHT: INFO ═════════════════════════════ {%- endcomment -%}
+    <div class="sbb-col-info">
+      <div class="sbb-info">
+
+        {%- comment -%} Rating {%- endcomment -%}
+        <div class="sbb-rating">
+          {%- assign rating_str = section.settings.rating_value | default: '4.8' -%}
+          {%- assign rating_val = rating_str | plus: 0 -%}
+          {%- assign rating_floor = rating_val | floor -%}
+          {%- assign rating_ceil  = rating_val | ceil -%}
+          {%- assign has_half = false -%}
+          {%- if rating_val != rating_floor -%}{%- assign has_half = true -%}{%- endif -%}
+          <div class="sbb-stars" aria-label="Valutazione {{ rating_str }} su 5">
+            {%- for i in (1..5) -%}
+              {%- if i <= rating_floor -%}
+                <svg class="sbb-star" viewBox="0 0 20 20"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+              {%- elsif i == rating_ceil and has_half -%}
+                <svg class="sbb-star sbb-star--half" viewBox="0 0 20 20"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+              {%- else -%}
+                <svg class="sbb-star" viewBox="0 0 20 20" style="fill:#e0e0e0"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <span class="sbb-rating__text">
+            {{- section.settings.rating_value | default: '4.8' -}}
+            &nbsp;·&nbsp;
+            <a href="#sbb-reviews" class="sbb-rating__link">
+              {{- section.settings.rating_count | default: '200' -}}+ recensioni
+            </a>
+          </span>
+        </div>
+
+        {%- comment -%} Title — JS updates this with combo name {%- endcomment -%}
+        <h1
+          class="sbb-title"
+          id="sbb-title"
+          data-base-title="{{ section.settings.product_title | default: 'Set Cintura Singola' | escape }}"
+        >
+          {{- section.settings.product_title | default: 'Set Cintura Singola' -}}
+        </h1>
+
+        {%- comment -%} Price — JS updates after fetching from Shopify {%- endcomment -%}
+        <div class="sbb-price-wrap">
+          <div class="sbb-price-row">
+            <span class="sbb-price" id="sbb-price">€ 49,99</span>
+            <span class="sbb-price-note">IVA inclusa</span>
+          </div>
+          <span class="sbb-compare-price" id="sbb-compare-price" style="display:none;"></span>
+        </div>
+
+        {%- comment -%} Description {%- endcomment -%}
+        {%- if section.settings.description != blank -%}
+          <div class="sbb-desc">{{ section.settings.description }}</div>
+        {%- else -%}
+          <div class="sbb-desc">
+            <p>Comodità, durata e regolazione estrema. <strong>Crea la tua cintura MOTIFINO</strong> componendo fibbia e cinturino a tuo gusto.</p>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Delivery estimate {%- endcomment -%}
+        {%- if section.settings.delivery_text != blank -%}
+        <p class="sbb-delivery">{{ section.settings.delivery_text }}</p>
+        {%- endif -%}
+
+        {%- comment -%} Vedi taglie e dettagli link {%- endcomment -%}
+        {%- if section.settings.details_link != blank -%}
+        <a href="{{ section.settings.details_link }}" class="sbb-details-link">Vedi taglie e dettagli…</a>
+        {%- endif -%}
+
+        {%- comment -%} ── Selectors ── {%- endcomment -%}
+        <div class="sbb-selectors">
+
+          {%- comment -%} Strap (Cinturino) dropdown {%- endcomment -%}
+          <div class="sbb-selector-group">
+            <div class="sbb-selector-label">Cinturino</div>
+            <div class="sbb-dropdown" id="sbb-strap-dropdown">
+              <button
+                class="sbb-dropdown__trigger"
+                type="button"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-controls="sbb-strap-list"
+              >
+                <img
+                  class="sbb-dropdown__trigger-img"
+                  src=""
+                  alt=""
+                  style="display:none;"
+                  width="38"
+                  height="38"
+                >
+                <div class="sbb-dropdown__trigger-swatch"></div>
+                <span class="sbb-dropdown__trigger-name">Seleziona cinturino…</span>
+                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list">
+                {%- comment -%} Populated by JS {%- endcomment -%}
+              </div>
+            </div>
+          </div>
+
+          {%- comment -%} Buckle (Fibbia) dropdown {%- endcomment -%}
+          <div class="sbb-selector-group">
+            <div class="sbb-selector-label">Fibbia</div>
+            <div class="sbb-dropdown" id="sbb-buckle-dropdown">
+              <button
+                class="sbb-dropdown__trigger"
+                type="button"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-controls="sbb-buckle-list"
+              >
+                <img
+                  class="sbb-dropdown__trigger-img"
+                  src=""
+                  alt=""
+                  style="display:none;"
+                  width="38"
+                  height="38"
+                >
+                <span class="sbb-dropdown__trigger-name">Seleziona fibbia…</span>
+                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <div class="sbb-dropdown__list" role="listbox" id="sbb-buckle-list">
+                {%- comment -%} Populated by JS {%- endcomment -%}
+              </div>
+            </div>
+          </div>
+
+          {%- comment -%} Size pills {%- endcomment -%}
+          <div class="sbb-selector-group sbb-selector-group--full">
+            <div class="sbb-selector-label">Taglia</div>
+            <div class="sbb-pills">
+              <button class="sbb-pill is-selected" type="button" data-length="130cm">130 cm</button>
+              <button class="sbb-pill" type="button" data-length="150cm">150 cm</button>
+            </div>
+          </div>
+
+        </div>
+        {%- comment -%} /.sbb-selectors {%- endcomment -%}
+
+        {%- comment -%} Add to Cart button {%- endcomment -%}
+        <button class="sbb-btn-atc" id="sbb-atc-btn" type="button">
+          Aggiungi al Carrello
+        </button>
+
+        {%- comment -%} Trust bar {%- endcomment -%}
+        <div class="sbb-trust">
+          <div class="sbb-trust__item">
+            <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M1 3h15v13H1z"/>
+              <path d="M16 8h4l3 3v5h-7V8z"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            Spedizione gratuita
+          </div>
+          <div class="sbb-trust__item">
+            <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 .49-4"/>
+            </svg>
+            Reso entro 30 giorni
+          </div>
+          <div class="sbb-trust__item">
+            <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Garanzia 2 anni
+          </div>
+        </div>
+
+        {%- comment -%} ── Accordion tabs ── {%- endcomment -%}
+        <div class="sbb-tabs">
+
+          <div class="sbb-tab">
+            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+              Taglie e Dettagli Tecnici
+              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sbb-tab__body">
+              <p><strong>TAGLIE</strong><br>
+              Tutte le cinture sono alte 3,5 cm.<br>
+              Disponibili in 2 taglie:<br>
+              — 130 cm (fino alla taglia 56 IT)<br>
+              — 150 cm (fino alla taglia 66 IT)<br><br>
+              Le cinture possono essere <strong>accorciate su misura</strong> con una forbice.
+              </p>
+              <p><strong>MATERIALI</strong><br>
+              Cintura: 70% pelle di vitello, 30% PU<br>
+              Fibbia: Lega di zinco (basso contenuto di nichel)</p>
+            </div>
+          </div>
+
+          <div class="sbb-tab">
+            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+              Spedizione Gratuita in 24/72h
+              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sbb-tab__body">
+              <p>Le spedizioni partono ogni giorno lavorativo entro le 15:00. I pacchi vengono consegnati in media in <strong>24/72h</strong>.<br><br>
+              Ogni ordine viene controllato dal nostro staff. Per qualsiasi problema verrai contattato direttamente.</p>
+            </div>
+          </div>
+
+          <div class="sbb-tab">
+            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+              Contrassegno, Klarna, PayPal
+              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sbb-tab__body">
+              <p>Al checkout troverai i seguenti metodi di pagamento:<br><br>
+              — PayPal &nbsp;— Klarna &nbsp;— Contrassegno<br>
+              — Bonifico bancario<br>
+              — Carta di credito (Mastercard, Visa, Amex…)</p>
+            </div>
+          </div>
+
+          <div class="sbb-tab">
+            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+              Reso Gratuito e Garanzia 2 Anni
+              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sbb-tab__body">
+              <p><strong>RESI GRATUITI</strong><br>
+              Se non sei soddisfatto, contattaci entro 30 giorni. Organizzeremo un reso gratuito per te.</p>
+              <p><strong>GARANZIA 2 ANNI</strong><br>
+              Con la cintura ricevi un certificato di autenticità e garanzia di 2 anni sul prodotto.</p>
+            </div>
+          </div>
+
+        </div>
+        {%- comment -%} /.sbb-tabs {%- endcomment -%}
+
+        {%- comment -%} Trustpilot badge {%- endcomment -%}
+        <div class="sbb-trustpilot">
+          <svg class="sbb-trustpilot__star" viewBox="0 0 126.07 119.9" xmlns="http://www.w3.org/2000/svg">
+            <path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#00b67a"/>
+          </svg>
+          <span class="sbb-trustpilot__name">Trustpilot</span>
+          <div class="sbb-trustpilot__squares">
+            <div class="sbb-trustpilot__sq">
+              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+            </div>
+            <div class="sbb-trustpilot__sq">
+              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+            </div>
+            <div class="sbb-trustpilot__sq">
+              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+            </div>
+            <div class="sbb-trustpilot__sq">
+              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+            </div>
+            <div class="sbb-trustpilot__sq">
+              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+            </div>
+          </div>
+          <span class="sbb-trustpilot__label">Eccellente</span>
+        </div>
+
+      </div>
+      {%- comment -%} /.sbb-info {%- endcomment -%}
+
+    </div>
+    {%- comment -%} /.sbb-col-info {%- endcomment -%}
+
+  </div>
+  {%- comment -%} /.sbb-product-row {%- endcomment -%}
+
+</div>
+{%- comment -%} /.sbb-wrap {%- endcomment -%}
+
+<script>
+  window.SBB_VARIANTS = {
+    bundle_single:   {{ section.settings.variant_bundle_single   | default: 0 }},
+    strap_130:       {{ section.settings.variant_strap_130       | default: 0 }},
+    strap_150:       {{ section.settings.variant_strap_150       | default: 0 }},
+    buckle_1:        {{ section.settings.variant_buckle_1        | default: 0 }},
+    buckle_2:        {{ section.settings.variant_buckle_2        | default: 0 }},
+    buckle_3:        {{ section.settings.variant_buckle_3        | default: 0 }},
+    buckle_4:        {{ section.settings.variant_buckle_4        | default: 0 }},
+    nfc:             {{ section.settings.variant_logistics_nfc   | default: 0 }},
+  };
+</script>
+
+{{ 'single-bundle-builder.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "Single Bundle Builder",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenuto prodotto"
+    },
+    {
+      "type": "text",
+      "id": "product_title",
+      "label": "Titolo prodotto",
+      "default": "Set Cintura Singola"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descrizione",
+      "info": "Lascia vuoto per usare il testo predefinito"
+    },
+    {
+      "type": "header",
+      "content": "Stelle e recensioni"
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "label": "Valutazione media (es. 4.8)",
+      "default": "4.8"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Numero di recensioni",
+      "default": "200"
+    },
+    {
+      "type": "header",
+      "content": "Annotazioni immagine"
+    },
+    {
+      "type": "text",
+      "id": "annotation_1",
+      "label": "Annotazione 1",
+      "default": "Scegli la fibbia"
+    },
+    {
+      "type": "text",
+      "id": "annotation_2",
+      "label": "Annotazione 2",
+      "default": "Scegli il colore"
+    },
+    {
+      "type": "text",
+      "id": "annotation_3",
+      "label": "Annotazione 3",
+      "default": "NFC Card in omaggio"
+    },
+    {
+      "type": "header",
+      "content": "Dettagli consegna e link"
+    },
+    {
+      "type": "text",
+      "id": "delivery_text",
+      "label": "Testo consegna (es. Consegna gratis tra: Gio 16 - Ven 17)"
+    },
+    {
+      "type": "url",
+      "id": "details_link",
+      "label": "Link 'Vedi taglie e dettagli'"
+    },
+    {
+      "type": "header",
+      "content": "Variant ID — Bundle prodotto"
+    },
+    {
+      "type": "number",
+      "id": "variant_bundle_single",
+      "label": "Set Cintura Singola — variant ID",
+      "info": "Prodotto Shopify prezzato a €49,99 (SET-CINTURA-SINGOLA)"
+    },
+    {
+      "type": "header",
+      "content": "Variant ID — Tracciamento inventario (facoltativi)"
+    },
+    {
+      "type": "text",
+      "id": "variant_strap_130",
+      "label": "Cinturino 130 cm — variant ID"
+    },
+    {
+      "type": "text",
+      "id": "variant_strap_150",
+      "label": "Cinturino 150 cm — variant ID"
+    },
+    {
+      "type": "number",
+      "id": "variant_buckle_1",
+      "label": "Fibbia Classic Matt — variant ID"
+    },
+    {
+      "type": "number",
+      "id": "variant_buckle_2",
+      "label": "Fibbia Elegant Chrome Silver — variant ID"
+    },
+    {
+      "type": "number",
+      "id": "variant_buckle_3",
+      "label": "Fibbia Elegant Chrome Gold — variant ID"
+    },
+    {
+      "type": "number",
+      "id": "variant_buckle_4",
+      "label": "Fibbia Mirror Chrome — variant ID"
+    },
+    {
+      "type": "number",
+      "id": "variant_logistics_nfc",
+      "label": "NFC Card — variant ID",
+      "info": "Prodotto Draft — solo uso logistico interno"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Single Bundle Builder"
+    }
+  ]
+}
+{% endschema %}

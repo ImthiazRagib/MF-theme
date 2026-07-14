@@ -1,0 +1,514 @@
+/* ============================================================
+   SINGLE BUNDLE BUILDER — single-bundle-builder.js
+   Product-page style single-belt configurator with dropdown
+   selectors and dynamic gallery. Reuses bundle-builder cart
+   logic (same catalog.json and media.json).
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  /* ── Data ───────────────────────────────────────────────── */
+  const BUCKLES = {
+    'buckle-1': { name: 'Classic Matt' },
+    'buckle-2': { name: 'Elegant Chrome Silver' },
+    'buckle-3': { name: 'Elegant Chrome Gold' },
+    'buckle-4': { name: 'Mirror Chrome' },
+  };
+
+  const STRAPS = {
+    'strap-nero':    { name: 'Black',            hex: '#1a1a1a' },
+    'strap-marrone': { name: 'Brown',            hex: '#6b3a2a' },
+    'strap-cognac':  { name: 'Cognac',           hex: '#c07840' },
+    'strap-cuoio':   { name: 'White',            hex: '#f0ede8' },
+    'strap-beige':   { name: 'Sand',             hex: '#d4bc94' },
+    'strap-rosso':   { name: 'Brown Crocodile',  hex: '#8b1a1a' },
+    'strap-verde':   { name: 'Black Crocodile',  hex: '#2d5a1b' },
+    'strap-blu':     { name: 'Blue',             hex: '#1a3a6b' },
+    'strap-grigio':  { name: 'Gray',             hex: '#888888' },
+  };
+
+  const BUCKLE_CATALOG_MAP = {
+    'buckle-1': 'FIBBIA-CLASSIC',
+    'buckle-2': 'FIBBIA-SILVER',
+    'buckle-3': 'FIBBIA-GOLD',
+    'buckle-4': 'FIBBIA-LUXURY',
+  };
+
+  /* Live tier prices — overwritten by fetchTierPrices() */
+  const TIER_PRICES = {
+    single:   49.99,
+    double:   89.98,
+    triple:   124.97,
+    infinity: 154.96,
+    extra:    29.99,
+  };
+
+  /* ── State ──────────────────────────────────────────────── */
+  const state = {
+    strap:        'strap-nero',
+    buckle:       'buckle-1',
+    length:       '130cm',
+    price:        49.99,
+    comparePrice: null,
+  };
+
+  let _media              = null;
+  let _catalog            = null;
+  let _singleComparePrice = null;
+
+  /* ── Fetch helpers ──────────────────────────────────────── */
+  async function fetchMedia() {
+    const root = document.getElementById('sbb-root');
+    const url  = root && root.dataset.mediaUrl;
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      if (res.ok) _media = await res.json();
+    } catch (e) {
+      console.warn('[SBB] Media not loaded:', e);
+    }
+  }
+
+  async function fetchCatalog() {
+    const root = document.getElementById('sbb-root');
+    const url  = root && root.dataset.catalogUrl;
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      if (res.ok) _catalog = await res.json();
+    } catch (e) {
+      console.warn('[SBB] Catalog not loaded:', e);
+    }
+  }
+
+  function getBundleVariantId() {
+    const fromSettings = window.SBB_VARIANTS && Number(window.SBB_VARIANTS.bundle_single);
+    if (fromSettings && fromSettings > 0) return fromSettings;
+    return (_catalog && Number(_catalog['SET-CINTURA-SINGOLA'])) || 0;
+  }
+
+  /* Fetch live prices for all tiers — mirrors bundle-builder fetchCatalogPrices() */
+  async function fetchTierPrices() {
+    if (!_catalog) return;
+    const map = [
+      { key: 'SET-CINTURA-SINGOLA',  tier: 'single' },
+      { key: 'SET-CINTURE-DOPPIO',   tier: 'double' },
+      { key: 'SET-CINTURE-TRIPLO',   tier: 'triple' },
+      { key: 'SET-CINTURE-INFINITY', tier: 'infinity' },
+      { key: 'SET-CINTURE-EXTRA',    tier: 'extra' },
+    ];
+    await Promise.all(map.map(async function (m) {
+      const vid = m.tier === 'single'
+        ? getBundleVariantId()
+        : Number(_catalog[m.key]);
+      if (!vid || vid <= 0) return;
+      try {
+        const res   = await fetch('/variants/' + vid + '.js');
+        if (!res.ok) return;
+        const data  = await res.json();
+        const cents = Number(data.price);
+        if (Number.isFinite(cents) && cents > 0) TIER_PRICES[m.tier] = cents / 100;
+        if (m.tier === 'single') {
+          const cc = Number(data.compare_at_price);
+          _singleComparePrice = (Number.isFinite(cc) && cc > cents) ? cc / 100 : null;
+        }
+      } catch (_) { /* silent */ }
+    }));
+  }
+
+  /* Count belts already in the Shopify cart */
+  async function fetchCartBeltCount() {
+    try {
+      const res = await fetch('/cart.js');
+      if (!res.ok) return 0;
+      const cart = await res.json();
+      let count = 0;
+      (cart.items || []).forEach(function (item) {
+        if (!item.properties) return;
+        Object.keys(item.properties).forEach(function (k) {
+          if (k.indexOf('Cintura ') === 0 && k.indexOf(' - Pelle') > -1) count++;
+        });
+      });
+      return count;
+    } catch (_) { return 0; }
+  }
+
+  /* Marginal price of adding one more belt given current cart count */
+  function getMarginalPrice(cartBeltCount) {
+    if (cartBeltCount === 0) return TIER_PRICES.single;
+    if (cartBeltCount === 1) return +((TIER_PRICES.double   - TIER_PRICES.single).toFixed(2));
+    if (cartBeltCount === 2) return +((TIER_PRICES.triple   - TIER_PRICES.double).toFixed(2));
+    if (cartBeltCount === 3) return +((TIER_PRICES.infinity - TIER_PRICES.triple).toFixed(2));
+    return TIER_PRICES.extra;
+  }
+
+  /* ── Combo helpers ──────────────────────────────────────── */
+  function comboKey() {
+    return state.strap + '__' + state.length.replace('cm', '') + '__' + state.buckle;
+  }
+
+  function getCombo() {
+    return (_media && _media.combinations && _media.combinations[comboKey()]) || null;
+  }
+
+  /* ── Gallery ────────────────────────────────────────────── */
+  function renderGallery() {
+    const combo       = getCombo();
+    const mainImg     = document.getElementById('sbb-main-img');
+    const placeholder = document.getElementById('sbb-gallery-placeholder');
+
+    const src = (combo && combo.photo) || '';
+
+    if (src && mainImg) {
+      mainImg.style.opacity = '0';
+      mainImg.src = src;
+      mainImg.onload  = function () { mainImg.style.opacity = '1'; };
+      mainImg.onerror = function () { mainImg.style.display = 'none'; if (placeholder) placeholder.style.display = ''; };
+      mainImg.style.display = '';
+      if (placeholder) placeholder.style.display = 'none';
+    } else {
+      if (mainImg) mainImg.style.display = 'none';
+      if (placeholder) placeholder.style.display = '';
+    }
+  }
+
+  /* ── Title ──────────────────────────────────────────────── */
+  function updateTitle() {
+    const titleEl = document.getElementById('sbb-title');
+    if (!titleEl) return;
+    const baseTitle = titleEl.dataset.baseTitle || 'Set Cintura Singola';
+    const strapName  = (STRAPS[state.strap]  || {}).name || '';
+    const buckleName = (BUCKLES[state.buckle] || {}).name || '';
+    if (strapName && buckleName) {
+      titleEl.textContent = buckleName + ' - ' + strapName;
+    } else {
+      titleEl.textContent = baseTitle;
+    }
+  }
+
+  /* ── Price ──────────────────────────────────────────────── */
+  function updatePrice() {
+    const el = document.getElementById('sbb-price');
+    if (el) el.textContent = '€ ' + state.price.toFixed(2).replace('.', ',');
+    const compEl = document.getElementById('sbb-compare-price');
+    if (!compEl) return;
+    if (state.comparePrice && state.comparePrice > state.price) {
+      compEl.textContent = '€ ' + state.comparePrice.toFixed(2).replace('.', ',');
+      compEl.style.display = '';
+    } else {
+      compEl.style.display = 'none';
+    }
+  }
+
+  /* ── Strap dropdown ─────────────────────────────────────── */
+  function renderStrapDropdown() {
+    const list = document.getElementById('sbb-strap-list');
+    if (!list) return;
+
+    const len = state.length.replace('cm', '');
+
+    list.innerHTML = Object.entries(STRAPS).map(function ([key, strap]) {
+      const imgSrc = _media && _media.straps && _media.straps[key] && _media.straps[key][len]
+        ? _media.straps[key][len] : '';
+      return '<div class="sbb-dropdown__option' + (key === state.strap ? ' is-selected' : '') + '" data-value="' + key + '">'
+        + (imgSrc
+          ? '<img class="sbb-dropdown__opt-img" src="' + imgSrc + '" alt="' + strap.name + '" loading="lazy">'
+          : '<div class="sbb-dropdown__opt-img"></div>')
+        + '<div class="sbb-dropdown__opt-swatch" style="background:' + strap.hex + '"></div>'
+        + '<span class="sbb-dropdown__opt-name">' + strap.name + '</span>'
+        + '</div>';
+    }).join('');
+
+    list.querySelectorAll('.sbb-dropdown__option').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        state.strap = opt.dataset.value;
+        closeDropdown('sbb-strap-dropdown');
+        updateStrapTrigger();
+        renderStrapDropdown();
+        renderGallery();
+        updateTitle();
+      });
+    });
+
+    updateStrapTrigger();
+  }
+
+  function updateStrapTrigger() {
+    const strap  = STRAPS[state.strap];
+    if (!strap) return;
+    const len    = state.length.replace('cm', '');
+    const imgSrc = _media && _media.straps && _media.straps[state.strap] && _media.straps[state.strap][len]
+      ? _media.straps[state.strap][len] : '';
+
+    const trigger = document.querySelector('#sbb-strap-dropdown .sbb-dropdown__trigger');
+    if (!trigger) return;
+    const imgEl    = trigger.querySelector('.sbb-dropdown__trigger-img');
+    const swatchEl = trigger.querySelector('.sbb-dropdown__trigger-swatch');
+    const nameEl   = trigger.querySelector('.sbb-dropdown__trigger-name');
+
+    if (imgEl)    { imgEl.src = imgSrc; imgEl.style.display = imgSrc ? '' : 'none'; }
+    if (swatchEl) { swatchEl.style.background = strap.hex; }
+    if (nameEl)   { nameEl.textContent = strap.name; }
+  }
+
+  /* ── Buckle dropdown ────────────────────────────────────── */
+  function renderBuckleDropdown() {
+    const list = document.getElementById('sbb-buckle-list');
+    if (!list) return;
+
+    list.innerHTML = Object.entries(BUCKLES).map(function ([key, buckle]) {
+      const imgSrc = _media && _media.buckles && _media.buckles[key] ? _media.buckles[key] : '';
+      return '<div class="sbb-dropdown__option' + (key === state.buckle ? ' is-selected' : '') + '" data-value="' + key + '">'
+        + (imgSrc
+          ? '<img class="sbb-dropdown__opt-img" src="' + imgSrc + '" alt="' + buckle.name + '" loading="lazy">'
+          : '<div class="sbb-dropdown__opt-img"></div>')
+        + '<span class="sbb-dropdown__opt-name">' + buckle.name + '</span>'
+        + '</div>';
+    }).join('');
+
+    list.querySelectorAll('.sbb-dropdown__option').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        state.buckle = opt.dataset.value;
+        closeDropdown('sbb-buckle-dropdown');
+        updateBuckleTrigger();
+        renderBuckleDropdown();
+        renderGallery();
+        updateTitle();
+      });
+    });
+
+    updateBuckleTrigger();
+  }
+
+  function updateBuckleTrigger() {
+    const buckle = BUCKLES[state.buckle];
+    if (!buckle) return;
+    const imgSrc = _media && _media.buckles && _media.buckles[state.buckle]
+      ? _media.buckles[state.buckle] : '';
+
+    const trigger = document.querySelector('#sbb-buckle-dropdown .sbb-dropdown__trigger');
+    if (!trigger) return;
+    const imgEl  = trigger.querySelector('.sbb-dropdown__trigger-img');
+    const nameEl = trigger.querySelector('.sbb-dropdown__trigger-name');
+
+    if (imgEl)  { imgEl.src = imgSrc; imgEl.style.display = imgSrc ? '' : 'none'; }
+    if (nameEl) { nameEl.textContent = buckle.name; }
+  }
+
+  /* ── Dropdown open/close ────────────────────────────────── */
+  function openDropdown(id) {
+    document.querySelectorAll('.sbb-dropdown.is-open').forEach(function (d) {
+      if (d.id !== id) {
+        d.classList.remove('is-open');
+        const t = d.querySelector('.sbb-dropdown__trigger');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      }
+    });
+    const dropdown = document.getElementById(id);
+    if (!dropdown) return;
+    const wasOpen = dropdown.classList.contains('is-open');
+    dropdown.classList.toggle('is-open', !wasOpen);
+    const trigger = dropdown.querySelector('.sbb-dropdown__trigger');
+    if (trigger) trigger.setAttribute('aria-expanded', String(!wasOpen));
+  }
+
+  function closeDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (!dropdown) return;
+    dropdown.classList.remove('is-open');
+    const trigger = dropdown.querySelector('.sbb-dropdown__trigger');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  /* ── ATC ────────────────────────────────────────────────── */
+  async function addToCart() {
+    const btn      = document.getElementById('sbb-atc-btn');
+    const origHTML = btn ? btn.innerHTML : '';
+    const spinSVG  = '<svg class="sbb-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
+
+    if (btn) { btn.disabled = true; btn.innerHTML = spinSVG + ' Aggiungendo al carrello...'; }
+
+    try {
+      const variantId = getBundleVariantId();
+      if (!variantId || variantId <= 0) {
+        showToast('Configurazione prodotto mancante. Contatta il supporto.');
+        throw new Error('no_variant');
+      }
+
+      const strapInfo  = STRAPS[state.strap]  || {};
+      const buckleInfo = BUCKLES[state.buckle] || {};
+      const bundleId   = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+      const combo     = getCombo();
+      const comboImgUrl = (combo && combo.photo) || (function () {
+        if (!_media || !_media.straps) return '';
+        const len = state.length.replace('cm', '');
+        const s   = _media.straps[state.strap];
+        return (s && s[len]) || '';
+      })();
+
+      const strapName       = state.strap.replace('strap-', '').toUpperCase();
+      const strapLen        = state.length.replace('cm', '');
+      const strapCatalogKey  = 'STRAP-' + strapName + '-' + strapLen;
+      const buckleCatalogKey = BUCKLE_CATALOG_MAP[state.buckle];
+
+      const properties = {
+        '_bundle_id':           bundleId,
+        'Cintura 1 - Pelle':    strapInfo.name  || '',
+        'Cintura 1 - Lunghezza': state.length   || '',
+        'Cintura 1 - Fibbia':   buckleInfo.name || '',
+      };
+
+      if (comboImgUrl) properties['_cintura_1_img'] = comboImgUrl;
+
+      if (_catalog && strapCatalogKey) {
+        const sv = Number(_catalog[strapCatalogKey]);
+        if (sv > 0) properties['_cintura_1_strap_vid'] = String(sv);
+      }
+      if (_catalog && buckleCatalogKey) {
+        const bv = Number(_catalog[buckleCatalogKey]);
+        if (bv > 0) properties['_cintura_1_buckle_vid'] = String(bv);
+      }
+
+      const items = [{ id: variantId, quantity: 1, properties }];
+      console.log('[SBB] Cart payload →', JSON.stringify(items, null, 2));
+
+      let resp;
+      try {
+        resp = await fetch('/cart/add.js', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ items }),
+        });
+      } catch {
+        window.location.href = '/cart';
+        return;
+      }
+
+      if (resp.ok) {
+        window.location.href = '/cart';
+        return;
+      }
+
+      if (resp.status === 422) {
+        const errBody = await resp.json().catch(function () { return {}; });
+        console.warn('[SBB] Cart 422 —', errBody.description || errBody.message);
+        showToast('Errore carrello: ' + (errBody.description || errBody.message || '422'));
+        throw new Error('cart_422');
+      }
+
+      const errData = await resp.json().catch(function () { return {}; });
+      console.error('[SBB] Cart error', resp.status, errData);
+      showToast('Errore: ' + (errData.description || errData.message || resp.status));
+      throw new Error('cart_error');
+
+    } catch (e) {
+      if (btn && origHTML) { btn.disabled = false; btn.innerHTML = origHTML; }
+    }
+  }
+
+  /* ── Toast ──────────────────────────────────────────────── */
+  function showToast(msg) {
+    let toast = document.getElementById('sbb-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'sbb-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(function () { toast.style.opacity = '0'; }, 3500);
+  }
+
+  /* ── Accordion tabs ─────────────────────────────────────── */
+  function initTabs() {
+    document.querySelectorAll('.sbb-tab__trigger').forEach(function (trigger) {
+      trigger.addEventListener('click', function () {
+        const tab = trigger.closest('.sbb-tab');
+        if (!tab) return;
+        const isOpen = tab.classList.contains('is-open');
+        document.querySelectorAll('.sbb-tab').forEach(function (t) {
+          t.classList.remove('is-open');
+        });
+        if (!isOpen) tab.classList.add('is-open');
+      });
+    });
+    /* Open first tab by default on mobile */
+    const first = document.querySelector('.sbb-tab');
+    if (first) first.classList.add('is-open');
+  }
+
+  /* ── Init ───────────────────────────────────────────────── */
+  async function init() {
+    const root = document.getElementById('sbb-root');
+    if (!root) return;
+
+    await Promise.all([fetchMedia(), fetchCatalog()]);
+    await fetchTierPrices();
+    const cartBeltCount  = await fetchCartBeltCount();
+    state.price          = getMarginalPrice(cartBeltCount);
+    /* 1st belt → use Shopify compare_at_price; 2nd+ → show single price as reference */
+    state.comparePrice   = cartBeltCount === 0
+      ? _singleComparePrice
+      : TIER_PRICES.single;
+
+    /* Render dynamic parts */
+    renderStrapDropdown();
+    renderBuckleDropdown();
+    renderGallery();
+    updateTitle();
+    updatePrice();
+
+    /* Dropdown triggers */
+    document.querySelectorAll('.sbb-dropdown__trigger').forEach(function (trigger) {
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const dropdown = trigger.closest('.sbb-dropdown');
+        if (dropdown) openDropdown(dropdown.id);
+      });
+    });
+
+    /* Close on outside click */
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.sbb-dropdown.is-open').forEach(function (d) {
+        d.classList.remove('is-open');
+        const t = d.querySelector('.sbb-dropdown__trigger');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      });
+    });
+    /* Prevent list click from bubbling to document */
+    document.querySelectorAll('.sbb-dropdown__list').forEach(function (list) {
+      list.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+
+    /* Size pills */
+    document.querySelectorAll('.sbb-pill').forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        const len = pill.dataset.length;
+        if (!len || len === state.length) return;
+        state.length = len;
+        document.querySelectorAll('.sbb-pill').forEach(function (p) {
+          p.classList.toggle('is-selected', p.dataset.length === len);
+        });
+        updateStrapTrigger();
+        renderStrapDropdown();
+        renderGallery();
+      });
+    });
+
+    /* ATC button */
+    const atcBtn = document.getElementById('sbb-atc-btn');
+    if (atcBtn) atcBtn.addEventListener('click', addToCart);
+
+    /* Accordion tabs */
+    initTabs();
+  }
+
+  /* ── Boot ───────────────────────────────────────────────── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
