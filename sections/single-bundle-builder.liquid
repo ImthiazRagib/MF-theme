@@ -2,15 +2,25 @@
   ============================================================
   SINGLE BUNDLE BUILDER — sections/single-bundle-builder.liquid
 
-  A product-page style single-belt configurator.
-  Gallery shows the combination photo. Title updates to the
-  selected combination. Dropdowns for strap/buckle. Size pills.
-  Add to cart uses the same cart logic as the bundle builder.
+  Blocks (sortable, editable in Online Store Editor):
+    gallery         — left column image + annotations
+    buckle_dropdown — fibbia selector
+    strap_dropdown  — cinturino selector
+    taglia          — size pills
+    rating          — star rating
+    title           — product title (JS-updated)
+    price           — price display (JS-updated)
+    description     — description text
+    delivery        — delivery estimate
+    details_link    — "Vedi taglie e dettagli" link
+    cta_button      — add to cart button (JS-wired)
+    trust_bar       — 3 trust items
+    accordion       — 4 accordion tabs
+    trustpilot      — trustpilot badge
 
-  Setup:
-    1. Add this section to a Page template (page.single-bundle.liquid)
-    2. In the Theme Editor, enter the variant IDs and configure
-       the description / rating settings.
+  Every block exposes margin_top/bottom and padding_top/bottom
+  range sliders under "Spaziatura" in the editor.
+  Section settings: variant IDs only.
   ============================================================
 {% endcomment %}
 
@@ -21,9 +31,10 @@
   id="sbb-root"
   data-media-url="{{ 'bundle-builder-media.json' | asset_url }}"
   data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}"
+  {% if section.settings.bg_color != blank %}style="background-color:{{ section.settings.bg_color }};"{% endif %}
 >
 
-  {%- comment -%} SVG half-gradient for half-star rating — invisible {%- endcomment -%}
+  {%- comment -%} Half-star SVG gradient — invisible {%- endcomment -%}
   <svg width="0" height="0" style="position:absolute;overflow:hidden">
     <defs>
       <linearGradient id="sbb-half-grad" x1="0" x2="1" y1="0" y2="0">
@@ -35,325 +46,557 @@
 
   <div class="sbb-product-row">
 
-    {%- comment -%} ══ LEFT: IMAGE ══════════════════════════════ {%- endcomment -%}
+    {%- comment -%} ══ LEFT: gallery block ══════════════════════ {%- endcomment -%}
     <div class="sbb-col-image">
-      <div class="sbb-hero">
-        <img
-          id="sbb-main-img"
-          src=""
-          alt="Anteprima combinazione"
-          style="opacity:0;display:none;"
-        >
-        <div id="sbb-gallery-placeholder" class="sbb-hero__placeholder">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          <span>Caricamento anteprima…</span>
-        </div>
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'gallery' -%}
+          <div
+            class="sbb-hero"
+            {{ block.shopify_attributes }}
+            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+          >
+            <img
+              id="sbb-main-img"
+              src=""
+              alt="Anteprima combinazione"
+              style="opacity:0;display:none;"
+            >
+            <div id="sbb-gallery-placeholder" class="sbb-hero__placeholder">
+              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>Caricamento anteprima…</span>
+            </div>
 
-        {%- comment -%} Annotation 1 — top right {%- endcomment -%}
-        {%- if section.settings.annotation_1 != blank -%}
-        <div class="sbb-annotation sbb-annotation--1">
-          <span class="sbb-annotation__text">{{ section.settings.annotation_1 | default: 'Scegli la fibbia' }}</span>
-          <span class="sbb-annotation__line"></span>
-          <span class="sbb-annotation__dot"></span>
-        </div>
+            {%- if block.settings.annotation_1 != blank -%}
+            <div class="sbb-annotation sbb-annotation--1">
+              <span class="sbb-annotation__text">{{ block.settings.annotation_1 }}</span>
+              <span class="sbb-annotation__line"></span>
+              <span class="sbb-annotation__dot"></span>
+            </div>
+            {%- endif -%}
+
+            {%- if block.settings.annotation_2 != blank -%}
+            <div class="sbb-annotation sbb-annotation--2">
+              <span class="sbb-annotation__dot"></span>
+              <span class="sbb-annotation__line"></span>
+              <span class="sbb-annotation__text">{{ block.settings.annotation_2 }}</span>
+            </div>
+            {%- endif -%}
+
+            {%- if block.settings.annotation_3 != blank -%}
+            <div class="sbb-annotation sbb-annotation--3">
+              <span class="sbb-annotation__dot"></span>
+              <span class="sbb-annotation__line"></span>
+              <span class="sbb-annotation__text">{{ block.settings.annotation_3 }}</span>
+            </div>
+            {%- endif -%}
+
+          </div>
         {%- endif -%}
-
-        {%- comment -%} Annotation 2 — middle left {%- endcomment -%}
-        {%- if section.settings.annotation_2 != blank -%}
-        <div class="sbb-annotation sbb-annotation--2">
-          <span class="sbb-annotation__dot"></span>
-          <span class="sbb-annotation__line"></span>
-          <span class="sbb-annotation__text">{{ section.settings.annotation_2 | default: 'Scegli il colore' }}</span>
-        </div>
-        {%- endif -%}
-
-        {%- comment -%} Annotation 3 — bottom left {%- endcomment -%}
-        {%- if section.settings.annotation_3 != blank -%}
-        <div class="sbb-annotation sbb-annotation--3">
-          <span class="sbb-annotation__dot"></span>
-          <span class="sbb-annotation__line"></span>
-          <span class="sbb-annotation__text">{{ section.settings.annotation_3 | default: 'NFC Card in omaggio' }}</span>
-        </div>
-        {%- endif -%}
-
-      </div>
+      {%- endfor -%}
     </div>
     {%- comment -%} /.sbb-col-image {%- endcomment -%}
 
-    {%- comment -%} ══ RIGHT: INFO ═════════════════════════════ {%- endcomment -%}
+    {%- comment -%} ══ RIGHT: info blocks ══════════════════════ {%- endcomment -%}
     <div class="sbb-col-info">
       <div class="sbb-info">
 
-        {%- comment -%} ── Dropdowns (above title) ── {%- endcomment -%}
-        <div class="sbb-dropdowns">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
 
-          {%- comment -%} Buckle (Fibbia) dropdown {%- endcomment -%}
-          <div class="sbb-selector-group">
-            <div class="sbb-selector-label">Fibbia</div>
-            <div class="sbb-dropdown" id="sbb-buckle-dropdown">
-              <button
-                class="sbb-dropdown__trigger"
-                type="button"
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-controls="sbb-buckle-list"
-              >
-                <img
-                  class="sbb-dropdown__trigger-img"
-                  src=""
-                  alt=""
-                  style="display:none;"
-                  width="38"
-                  height="38"
+            {%- when 'gallery' -%}
+            {%- comment -%} rendered in left col — skip {%- endcomment -%}
+
+            {%- comment -%} ── buckle_dropdown ─────────────────── {%- endcomment -%}
+            {%- when 'buckle_dropdown' -%}
+            <div
+              class="sbb-selector-group"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-selector-label">{{ block.settings.label | default: 'Fibbia' }}</div>
+              <div class="sbb-dropdown" id="sbb-buckle-dropdown">
+                <button
+                  class="sbb-dropdown__trigger"
+                  type="button"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-controls="sbb-buckle-list"
                 >
-                <span class="sbb-dropdown__trigger-name">Seleziona fibbia…</span>
-                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-              <div class="sbb-dropdown__list" role="listbox" id="sbb-buckle-list">
-                {%- comment -%} Populated by JS {%- endcomment -%}
+                  <img class="sbb-dropdown__trigger-img" src="" alt="" style="display:none;" width="38" height="38">
+                  <span class="sbb-dropdown__trigger-name">{{ block.settings.placeholder | default: 'Seleziona fibbia…' }}</span>
+                  <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                <div class="sbb-dropdown__list" role="listbox" id="sbb-buckle-list"></div>
               </div>
             </div>
-          </div>
 
-          {%- comment -%} Strap (Cinturino) dropdown {%- endcomment -%}
-          <div class="sbb-selector-group">
-            <div class="sbb-selector-label">Cinturino</div>
-            <div class="sbb-dropdown" id="sbb-strap-dropdown">
-              <button
-                class="sbb-dropdown__trigger"
-                type="button"
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-controls="sbb-strap-list"
-              >
-                <img
-                  class="sbb-dropdown__trigger-img"
-                  src=""
-                  alt=""
-                  style="display:none;"
-                  width="38"
-                  height="38"
+            {%- comment -%} ── strap_dropdown ──────────────────── {%- endcomment -%}
+            {%- when 'strap_dropdown' -%}
+            <div
+              class="sbb-selector-group"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-selector-label">{{ block.settings.label | default: 'Cinturino' }}</div>
+              <div class="sbb-dropdown" id="sbb-strap-dropdown">
+                <button
+                  class="sbb-dropdown__trigger"
+                  type="button"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-controls="sbb-strap-list"
                 >
-                <div class="sbb-dropdown__trigger-swatch"></div>
-                <span class="sbb-dropdown__trigger-name">Seleziona cinturino…</span>
-                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-              <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list">
-                {%- comment -%} Populated by JS {%- endcomment -%}
+                  <img class="sbb-dropdown__trigger-img" src="" alt="" style="display:none;" width="38" height="38">
+                  <div class="sbb-dropdown__trigger-swatch"></div>
+                  <span class="sbb-dropdown__trigger-name">{{ block.settings.placeholder | default: 'Seleziona cinturino…' }}</span>
+                  <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list"></div>
               </div>
             </div>
-          </div>
 
-        </div>
-        {%- comment -%} /.sbb-dropdowns {%- endcomment -%}
-
-        {%- comment -%} Size chips (below dropdowns) {%- endcomment -%}
-        <div class="sbb-selectors">
-          <div class="sbb-selector-group sbb-selector-group--full">
-            <div class="sbb-selector-label">Taglia</div>
-            <div class="sbb-pills">
-              <button class="sbb-pill is-selected" type="button" data-length="130cm">130 cm</button>
-              <button class="sbb-pill" type="button" data-length="150cm">150 cm</button>
+            {%- comment -%} ── taglia ──────────────────────────── {%- endcomment -%}
+            {%- when 'taglia' -%}
+            <div
+              class="sbb-selectors"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-selector-group sbb-selector-group--full">
+                <div class="sbb-selector-label">{{ block.settings.label | default: 'Taglia' }}</div>
+                <div class="sbb-pills">
+                  <button class="sbb-pill is-selected" type="button" data-length="{{ block.settings.size_1_value | default: '130cm' }}">
+                    {{- block.settings.size_1_label | default: '130 cm' -}}
+                  </button>
+                  <button class="sbb-pill" type="button" data-length="{{ block.settings.size_2_value | default: '150cm' }}">
+                    {{- block.settings.size_2_label | default: '150 cm' -}}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {%- comment -%} Rating {%- endcomment -%}
-        <div class="sbb-rating">
-          {%- assign rating_str = section.settings.rating_value | default: '4.8' -%}
-          {%- assign rating_val = rating_str | plus: 0 -%}
-          {%- assign rating_floor = rating_val | floor -%}
-          {%- assign rating_ceil  = rating_val | ceil -%}
-          {%- assign has_half = false -%}
-          {%- if rating_val != rating_floor -%}{%- assign has_half = true -%}{%- endif -%}
-          <div class="sbb-stars" aria-label="Valutazione {{ rating_str }} su 5">
-            {%- for i in (1..5) -%}
-              {%- if i <= rating_floor -%}
-                <svg class="sbb-star" viewBox="0 0 20 20"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
-              {%- elsif i == rating_ceil and has_half -%}
-                <svg class="sbb-star sbb-star--half" viewBox="0 0 20 20"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+            {%- comment -%} ── rating ──────────────────────────── {%- endcomment -%}
+            {%- when 'rating' -%}
+            {%- assign rating_str   = block.settings.rating_value | default: '4.8' -%}
+            {%- assign rating_val   = rating_str | plus: 0 -%}
+            {%- assign rating_floor = rating_val | floor -%}
+            {%- assign rating_ceil  = rating_val | ceil -%}
+            {%- assign has_half     = false -%}
+            {%- if rating_val != rating_floor -%}{%- assign has_half = true -%}{%- endif -%}
+            <div
+              class="sbb-rating"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-stars" aria-label="Valutazione {{ rating_str }} su 5">
+                {%- for i in (1..5) -%}
+                  {%- if i <= rating_floor -%}
+                    <svg class="sbb-star" viewBox="0 0 20 20"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+                  {%- elsif i == rating_ceil and has_half -%}
+                    <svg class="sbb-star sbb-star--half" viewBox="0 0 20 20"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+                  {%- else -%}
+                    <svg class="sbb-star" viewBox="0 0 20 20" style="fill:#e0e0e0"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              <span class="sbb-rating__text">
+                {{- rating_str -}}&nbsp;·&nbsp;<a href="#sbb-reviews" class="sbb-rating__link">{{- block.settings.rating_count | default: '200' -}}+ recensioni</a>
+              </span>
+            </div>
+
+            {%- comment -%} ── title ───────────────────────────── {%- endcomment -%}
+            {%- when 'title' -%}
+            <h1
+              class="sbb-title"
+              id="sbb-title"
+              data-base-title="{{ block.settings.product_title | default: 'Set Cintura Singola' | escape }}"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              {{- block.settings.product_title | default: 'Set Cintura Singola' -}}
+            </h1>
+
+            {%- comment -%} ── price ───────────────────────────── {%- endcomment -%}
+            {%- when 'price' -%}
+            <div
+              class="sbb-price-wrap"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-price-row">
+                <span class="sbb-price" id="sbb-price">€ 49,99</span>
+                <span class="sbb-price-note">{{ block.settings.price_note | default: 'IVA inclusa' }}</span>
+              </div>
+              <span class="sbb-compare-price" id="sbb-compare-price" style="display:none;"></span>
+            </div>
+
+            {%- comment -%} ── description ─────────────────────── {%- endcomment -%}
+            {%- when 'description' -%}
+            <div
+              class="sbb-desc"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              {%- if block.settings.description != blank -%}
+                {{ block.settings.description }}
               {%- else -%}
-                <svg class="sbb-star" viewBox="0 0 20 20" style="fill:#e0e0e0"><path d="M10 1l2.4 7.2H19l-5.8 4.2 2.2 7L10 15.5l-5.4 3.9 2.2-7L1 8.2h6.6z"/></svg>
+                <p>Comodità, durata e regolazione estrema. <strong>Crea la tua cintura MOTIFINO</strong> componendo fibbia e cinturino a tuo gusto.</p>
               {%- endif -%}
-            {%- endfor -%}
-          </div>
-          <span class="sbb-rating__text">
-            {{- section.settings.rating_value | default: '4.8' -}}
-            &nbsp;·&nbsp;
-            <a href="#sbb-reviews" class="sbb-rating__link">
-              {{- section.settings.rating_count | default: '200' -}}+ recensioni
-            </a>
-          </span>
-        </div>
+            </div>
 
-        {%- comment -%} Title — JS updates this with combo name {%- endcomment -%}
-        <h1
-          class="sbb-title"
-          id="sbb-title"
-          data-base-title="{{ section.settings.product_title | default: 'Set Cintura Singola' | escape }}"
-        >
-          {{- section.settings.product_title | default: 'Set Cintura Singola' -}}
-        </h1>
+            {%- comment -%} ── delivery ────────────────────────── {%- endcomment -%}
+            {%- when 'delivery' -%}
+            <p
+              class="sbb-delivery"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >{{ block.settings.delivery_text }}</p>
 
-        {%- comment -%} Price — JS updates after fetching from Shopify {%- endcomment -%}
-        <div class="sbb-price-wrap">
-          <div class="sbb-price-row">
-            <span class="sbb-price" id="sbb-price">€ 49,99</span>
-            <span class="sbb-price-note">IVA inclusa</span>
-          </div>
-          <span class="sbb-compare-price" id="sbb-compare-price" style="display:none;"></span>
-        </div>
+            {%- comment -%} ── details_link ─────────────────────── {%- endcomment -%}
+            {%- when 'details_link' -%}
+            {%- if block.settings.link_url != blank -%}
+            <a
+              href="{{ block.settings.link_url }}"
+              class="sbb-details-link"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >{{- block.settings.link_text | default: 'Vedi taglie e dettagli…' -}}</a>
+            {%- else -%}
+            <span
+              class="sbb-details-link"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >{{- block.settings.link_text | default: 'Vedi taglie e dettagli…' -}}</span>
+            {%- endif -%}
 
-        {%- comment -%} Description {%- endcomment -%}
-        {%- if section.settings.description != blank -%}
-          <div class="sbb-desc">{{ section.settings.description }}</div>
-        {%- else -%}
-          <div class="sbb-desc">
-            <p>Comodità, durata e regolazione estrema. <strong>Crea la tua cintura MOTIFINO</strong> componendo fibbia e cinturino a tuo gusto.</p>
-          </div>
-        {%- endif -%}
-
-        {%- comment -%} Delivery estimate {%- endcomment -%}
-        {%- if section.settings.delivery_text != blank -%}
-        <p class="sbb-delivery">{{ section.settings.delivery_text }}</p>
-        {%- endif -%}
-
-        {%- comment -%} Vedi taglie e dettagli link {%- endcomment -%}
-        {%- if section.settings.details_link != blank -%}
-        <a href="{{ section.settings.details_link }}" class="sbb-details-link">Vedi taglie e dettagli…</a>
-        {%- endif -%}
-
-
-        {%- comment -%} Add to Cart button {%- endcomment -%}
-        <button class="sbb-btn-atc" id="sbb-atc-btn" type="button">
-          Aggiungi al Carrello
-        </button>
-
-        {%- comment -%} Trust bar {%- endcomment -%}
-        <div class="sbb-trust">
-          <div class="sbb-trust__item">
-            <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M1 3h15v13H1z"/>
-              <path d="M16 8h4l3 3v5h-7V8z"/>
-              <circle cx="5.5" cy="18.5" r="2.5"/>
-              <circle cx="18.5" cy="18.5" r="2.5"/>
-            </svg>
-            Spedizione gratuita
-          </div>
-          <div class="sbb-trust__item">
-            <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <polyline points="1 4 1 10 7 10"/>
-              <path d="M3.51 15a9 9 0 1 0 .49-4"/>
-            </svg>
-            Reso entro 30 giorni
-          </div>
-          <div class="sbb-trust__item">
-            <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            Garanzia 2 anni
-          </div>
-        </div>
-
-        {%- comment -%} ── Accordion tabs ── {%- endcomment -%}
-        <div class="sbb-tabs">
-
-          <div class="sbb-tab">
-            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
-              Taglie e Dettagli Tecnici
-              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            {%- comment -%} ── cta_button ──────────────────────── {%- endcomment -%}
+            {%- when 'cta_button' -%}
+            <button
+              class="sbb-btn-atc"
+              id="sbb-atc-btn"
+              type="button"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}"
+            >
+              {{ block.settings.button_text | default: 'Aggiungi al Carrello' }}
             </button>
-            <div class="sbb-tab__body">
-              <p><strong>TAGLIE</strong><br>
-              Tutte le cinture sono alte 3,5 cm.<br>
-              Disponibili in 2 taglie:<br>
-              — 130 cm (fino alla taglia 56 IT)<br>
-              — 150 cm (fino alla taglia 66 IT)<br><br>
-              Le cinture possono essere <strong>accorciate su misura</strong> con una forbice.
-              </p>
-              <p><strong>MATERIALI</strong><br>
-              Cintura: 70% pelle di vitello, 30% PU<br>
-              Fibbia: Lega di zinco (basso contenuto di nichel)</p>
-            </div>
-          </div>
 
-          <div class="sbb-tab">
-            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
-              Spedizione Gratuita in 24/72h
-              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="sbb-tab__body">
-              <p>Le spedizioni partono ogni giorno lavorativo entro le 15:00. I pacchi vengono consegnati in media in <strong>24/72h</strong>.<br><br>
-              Ogni ordine viene controllato dal nostro staff. Per qualsiasi problema verrai contattato direttamente.</p>
+            {%- comment -%} ── trust_bar ───────────────────────── {%- endcomment -%}
+            {%- when 'trust_bar' -%}
+            <div
+              class="sbb-trust"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-trust__item">
+                <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M1 3h15v13H1z"/>
+                  <path d="M16 8h4l3 3v5h-7V8z"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                {{ block.settings.item_1 | default: 'Spedizione gratuita' }}
+              </div>
+              <div class="sbb-trust__item">
+                <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <path d="M3.51 15a9 9 0 1 0 .49-4"/>
+                </svg>
+                {{ block.settings.item_2 | default: 'Reso entro 30 giorni' }}
+              </div>
+              <div class="sbb-trust__item">
+                <svg class="sbb-trust__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                {{ block.settings.item_3 | default: 'Garanzia 2 anni' }}
+              </div>
             </div>
-          </div>
 
-          <div class="sbb-tab">
-            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
-              Contrassegno, Klarna, PayPal
-              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="sbb-tab__body">
-              <p>Al checkout troverai i seguenti metodi di pagamento:<br><br>
-              — PayPal &nbsp;— Klarna &nbsp;— Contrassegno<br>
-              — Bonifico bancario<br>
-              — Carta di credito (Mastercard, Visa, Amex…)</p>
-            </div>
-          </div>
+            {%- comment -%} ── accordion ───────────────────────── {%- endcomment -%}
+            {%- when 'accordion' -%}
+            <div
+              class="sbb-tabs"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              {%- if block.settings.tab_1_title != blank -%}
+              <div class="sbb-tab">
+                <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+                  {{ block.settings.tab_1_title }}
+                  <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="sbb-tab__body">{{ block.settings.tab_1_content }}</div>
+              </div>
+              {%- endif -%}
 
-          <div class="sbb-tab">
-            <button class="sbb-tab__trigger" type="button" aria-expanded="false">
-              Reso Gratuito e Garanzia 2 Anni
-              <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="sbb-tab__body">
-              <p><strong>RESI GRATUITI</strong><br>
-              Se non sei soddisfatto, contattaci entro 30 giorni. Organizzeremo un reso gratuito per te.</p>
-              <p><strong>GARANZIA 2 ANNI</strong><br>
-              Con la cintura ricevi un certificato di autenticità e garanzia di 2 anni sul prodotto.</p>
-            </div>
-          </div>
+              {%- if block.settings.tab_2_title != blank -%}
+              <div class="sbb-tab">
+                <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+                  {{ block.settings.tab_2_title }}
+                  <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="sbb-tab__body">{{ block.settings.tab_2_content }}</div>
+              </div>
+              {%- endif -%}
 
-        </div>
-        {%- comment -%} /.sbb-tabs {%- endcomment -%}
+              {%- if block.settings.tab_3_title != blank -%}
+              <div class="sbb-tab">
+                <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+                  {{ block.settings.tab_3_title }}
+                  <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="sbb-tab__body">{{ block.settings.tab_3_content }}</div>
+              </div>
+              {%- endif -%}
 
-        {%- comment -%} Trustpilot badge {%- endcomment -%}
-        <div class="sbb-trustpilot">
-          <svg class="sbb-trustpilot__star" viewBox="0 0 126.07 119.9" xmlns="http://www.w3.org/2000/svg">
-            <path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#00b67a"/>
-          </svg>
-          <span class="sbb-trustpilot__name">Trustpilot</span>
-          <div class="sbb-trustpilot__squares">
-            <div class="sbb-trustpilot__sq">
-              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+              {%- if block.settings.tab_4_title != blank -%}
+              <div class="sbb-tab">
+                <button class="sbb-tab__trigger" type="button" aria-expanded="false">
+                  {{ block.settings.tab_4_title }}
+                  <svg class="sbb-tab__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="sbb-tab__body">{{ block.settings.tab_4_content }}</div>
+              </div>
+              {%- endif -%}
             </div>
-            <div class="sbb-trustpilot__sq">
-              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+
+            {%- comment -%} ── trustpilot ───────────────────────── {%- endcomment -%}
+            {%- when 'trustpilot' -%}
+            <div
+              class="sbb-trustpilot"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <svg class="sbb-trustpilot__star" viewBox="0 0 126.07 119.9" xmlns="http://www.w3.org/2000/svg">
+                <path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#00b67a"/>
+              </svg>
+              <span class="sbb-trustpilot__name">Trustpilot</span>
+              <div class="sbb-trustpilot__squares">
+                {%- for i in (1..5) -%}
+                <div class="sbb-trustpilot__sq">
+                  <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+                </div>
+                {%- endfor -%}
+              </div>
+              <span class="sbb-trustpilot__label">{{ block.settings.label | default: 'Eccellente' }}</span>
             </div>
-            <div class="sbb-trustpilot__sq">
-              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+
+            {%- comment -%} ── image ────────────────────────────── {%- endcomment -%}
+            {%- when 'image' -%}
+            <div
+              class="sbb-block-image"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;text-align:{{ block.settings.alignment }};"
+            >
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'sbb-block-image__img' }}
+              {%- else -%}
+                <div class="sbb-block-image__placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+              {%- endif -%}
+              {%- if block.settings.caption != blank -%}
+                <p class="sbb-block-image__caption">{{ block.settings.caption }}</p>
+              {%- endif -%}
             </div>
-            <div class="sbb-trustpilot__sq">
-              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+
+            {%- comment -%} ── text ─────────────────────────────── {%- endcomment -%}
+            {%- when 'text' -%}
+            <div
+              class="sbb-block-text"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;text-align:{{ block.settings.alignment }};{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}"
+            >
+              {%- if block.settings.heading != blank -%}
+                <h3 class="sbb-block-text__heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.content != blank -%}
+                <div class="sbb-block-text__body">{{ block.settings.content }}</div>
+              {%- endif -%}
             </div>
-            <div class="sbb-trustpilot__sq">
-              <svg viewBox="0 0 126.07 119.9"><path d="M63 0l19.5 59.9H126L82.5 97l17 59.9L63 119.9l-36.5 37L43 97 0 59.9h43.5z" fill="#fff"/></svg>
+
+            {%- comment -%} ── banner ───────────────────────────── {%- endcomment -%}
+            {%- when 'banner' -%}
+            <div
+              class="sbb-block-banner"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.image != blank %}background-image:url('{{ block.settings.image | image_url: width: 1400 }}');{% endif %}{% if block.settings.bg_color != blank %}background-color:{{ block.settings.bg_color }};{% endif %}"
+            >
+              <div class="sbb-block-banner__overlay" style="background:rgba(0,0,0,{{ block.settings.overlay_opacity | divided_by: 100.0 }});"></div>
+              <div class="sbb-block-banner__content">
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="sbb-block-banner__heading" style="{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                {%- if block.settings.subtext != blank -%}
+                  <p class="sbb-block-banner__subtext" style="{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}">{{ block.settings.subtext }}</p>
+                {%- endif -%}
+                {%- if block.settings.button_label != blank and block.settings.button_url != blank -%}
+                  <a class="sbb-block-banner__btn" href="{{ block.settings.button_url }}">{{ block.settings.button_label }}</a>
+                {%- endif -%}
+              </div>
             </div>
-          </div>
-          <span class="sbb-trustpilot__label">Eccellente</span>
-        </div>
+
+            {%- comment -%} ── image_with_text ──────────────────── {%- endcomment -%}
+            {%- when 'image_with_text' -%}
+            <div
+              class="sbb-block-iwt{% if block.settings.image_position == 'right' %} sbb-block-iwt--img-right{% endif %}"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-block-iwt__img-wrap">
+                {%- if block.settings.image != blank -%}
+                  {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'sbb-block-iwt__img' }}
+                {%- else -%}
+                  <div class="sbb-block-image__placeholder">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                {%- endif -%}
+              </div>
+              <div class="sbb-block-iwt__text" style="{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}">
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="sbb-block-iwt__heading">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                {%- if block.settings.content != blank -%}
+                  <div class="sbb-block-iwt__body">{{ block.settings.content }}</div>
+                {%- endif -%}
+                {%- if block.settings.button_label != blank and block.settings.button_url != blank -%}
+                  <a class="sbb-block-iwt__btn" href="{{ block.settings.button_url }}">{{ block.settings.button_label }}</a>
+                {%- endif -%}
+              </div>
+            </div>
+
+            {%- comment -%} ── carousel ─────────────────────────── {%- endcomment -%}
+            {%- when 'carousel' -%}
+            {%- assign carousel_id = 'sbb-carousel-' | append: block.id -%}
+            <div
+              class="sbb-carousel"
+              id="{{ carousel_id }}"
+              {{ block.shopify_attributes }}
+              data-autoplay="{{ block.settings.autoplay }}"
+              data-speed="{{ block.settings.autoplay_speed }}"
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            >
+              <div class="sbb-carousel__track">
+                {%- assign slide_count = 0 -%}
+                {%- for i in (1..6) -%}
+                  {%- assign img_key = 'image_' | append: i -%}
+                  {%- assign cap_key = 'caption_' | append: i -%}
+                  {%- if block.settings[img_key] != blank -%}
+                    {%- assign slide_count = slide_count | plus: 1 -%}
+                    <div class="sbb-carousel__slide{% if slide_count == 1 %} is-active{% endif %}">
+                      {{ block.settings[img_key] | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'sbb-carousel__img' }}
+                      {%- if block.settings[cap_key] != blank -%}
+                        <div class="sbb-carousel__caption">{{ block.settings[cap_key] }}</div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              {%- if slide_count > 1 -%}
+              <button class="sbb-carousel__btn sbb-carousel__btn--prev" aria-label="Precedente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="sbb-carousel__btn sbb-carousel__btn--next" aria-label="Successivo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+              </button>
+              <div class="sbb-carousel__dots">
+                {%- for d in (1..slide_count) -%}
+                  <span class="sbb-carousel__dot{% if d == 1 %} is-active{% endif %}" data-index="{{ d | minus: 1 }}"></span>
+                {%- endfor -%}
+              </div>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} ── footer ───────────────────────────── {%- endcomment -%}
+            {%- when 'footer' -%}
+            <div
+              class="sbb-block-footer"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}"
+            >
+              {%- if block.settings.logo != blank -%}
+                <div class="sbb-block-footer__logo">
+                  {{ block.settings.logo | image_url: width: 200 | image_tag: loading: 'lazy' }}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.tagline != blank -%}
+                <p class="sbb-block-footer__tagline" style="{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}">{{ block.settings.tagline }}</p>
+              {%- endif -%}
+
+              {%- assign has_links = false -%}
+              {%- for i in (1..5) -%}
+                {%- assign lbl_key = 'link_' | append: i | append: '_label' -%}
+                {%- assign url_key = 'link_' | append: i | append: '_url' -%}
+                {%- if block.settings[lbl_key] != blank -%}{%- assign has_links = true -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if has_links -%}
+              <nav class="sbb-block-footer__links">
+                {%- for i in (1..5) -%}
+                  {%- assign lbl_key = 'link_' | append: i | append: '_label' -%}
+                  {%- assign url_key = 'link_' | append: i | append: '_url' -%}
+                  {%- if block.settings[lbl_key] != blank -%}
+                    <a class="sbb-block-footer__link" href="{{ block.settings[url_key] | default: '#' }}" style="{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}">{{ block.settings[lbl_key] }}</a>
+                  {%- endif -%}
+                {%- endfor -%}
+              </nav>
+              {%- endif -%}
+
+              {%- assign has_socials = false -%}
+              {%- if block.settings.instagram_url != blank or block.settings.facebook_url != blank or block.settings.tiktok_url != blank or block.settings.youtube_url != blank or block.settings.pinterest_url != blank -%}
+                {%- assign has_socials = true -%}
+              {%- endif -%}
+              {%- if has_socials -%}
+              <div class="sbb-block-footer__socials">
+                {%- if block.settings.instagram_url != blank -%}
+                <a class="sbb-block-footer__social" href="{{ block.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram" style="{% if block.settings.icon_color != blank %}color:{{ block.settings.icon_color }};{% endif %}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                </a>
+                {%- endif -%}
+                {%- if block.settings.facebook_url != blank -%}
+                <a class="sbb-block-footer__social" href="{{ block.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook" style="{% if block.settings.icon_color != blank %}color:{{ block.settings.icon_color }};{% endif %}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+                {%- endif -%}
+                {%- if block.settings.tiktok_url != blank -%}
+                <a class="sbb-block-footer__social" href="{{ block.settings.tiktok_url }}" target="_blank" rel="noopener" aria-label="TikTok" style="{% if block.settings.icon_color != blank %}color:{{ block.settings.icon_color }};{% endif %}">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.16 8.16 0 0 0 4.77 1.52V6.73a4.85 4.85 0 0 1-1-.04z"/></svg>
+                </a>
+                {%- endif -%}
+                {%- if block.settings.youtube_url != blank -%}
+                <a class="sbb-block-footer__social" href="{{ block.settings.youtube_url }}" target="_blank" rel="noopener" aria-label="YouTube" style="{% if block.settings.icon_color != blank %}color:{{ block.settings.icon_color }};{% endif %}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 0 0 1.95-1.97A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" stroke="none" fill="currentColor"/></svg>
+                </a>
+                {%- endif -%}
+                {%- if block.settings.pinterest_url != blank -%}
+                <a class="sbb-block-footer__social" href="{{ block.settings.pinterest_url }}" target="_blank" rel="noopener" aria-label="Pinterest" style="{% if block.settings.icon_color != blank %}color:{{ block.settings.icon_color }};{% endif %}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.78-.17-1.98.04-2.83.18-.76 1.22-5.15 1.22-5.15s-.31-.62-.31-1.55c0-1.45.84-2.54 1.89-2.54.89 0 1.32.67 1.32 1.47 0 .9-.57 2.24-.87 3.49-.25 1.04.52 1.89 1.54 1.89 1.84 0 3.08-2.37 3.08-5.18 0-2.14-1.44-3.64-3.5-3.64-2.39 0-3.79 1.79-3.79 3.64 0 .72.27 1.49.62 1.91.07.08.08.15.06.23-.06.26-.2.82-.23.94-.04.15-.13.18-.3.11C7.58 13.46 7 11.9 7 10.54 7 7.64 9.14 5 12.85 5c3.01 0 5.35 2.14 5.35 5.01 0 2.99-1.88 5.39-4.49 5.39-.88 0-1.7-.46-1.98-1l-.54 2.02c-.2.74-.72 1.67-1.07 2.23.81.25 1.66.38 2.54.38 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+                </a>
+                {%- endif -%}
+              </div>
+              {%- endif -%}
+
+              {%- if block.settings.copyright != blank -%}
+                <p class="sbb-block-footer__copyright" style="{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}">{{ block.settings.copyright }}</p>
+              {%- endif -%}
+            </div>
+
+            {%- when '@app' -%}
+            {{ block | render_block }}
+
+          {%- endcase -%}
+        {%- endfor -%}
 
       </div>
       {%- comment -%} /.sbb-info {%- endcomment -%}
-
     </div>
     {%- comment -%} /.sbb-col-info {%- endcomment -%}
 
@@ -384,71 +627,12 @@
   "settings": [
     {
       "type": "header",
-      "content": "Contenuto prodotto"
+      "content": "Aspetto sezione"
     },
     {
-      "type": "text",
-      "id": "product_title",
-      "label": "Titolo prodotto",
-      "default": "Set Cintura Singola"
-    },
-    {
-      "type": "richtext",
-      "id": "description",
-      "label": "Descrizione",
-      "info": "Lascia vuoto per usare il testo predefinito"
-    },
-    {
-      "type": "header",
-      "content": "Stelle e recensioni"
-    },
-    {
-      "type": "text",
-      "id": "rating_value",
-      "label": "Valutazione media (es. 4.8)",
-      "default": "4.8"
-    },
-    {
-      "type": "text",
-      "id": "rating_count",
-      "label": "Numero di recensioni",
-      "default": "200"
-    },
-    {
-      "type": "header",
-      "content": "Annotazioni immagine"
-    },
-    {
-      "type": "text",
-      "id": "annotation_1",
-      "label": "Annotazione 1",
-      "default": "Scegli la fibbia"
-    },
-    {
-      "type": "text",
-      "id": "annotation_2",
-      "label": "Annotazione 2",
-      "default": "Scegli il colore"
-    },
-    {
-      "type": "text",
-      "id": "annotation_3",
-      "label": "Annotazione 3",
-      "default": "NFC Card in omaggio"
-    },
-    {
-      "type": "header",
-      "content": "Dettagli consegna e link"
-    },
-    {
-      "type": "text",
-      "id": "delivery_text",
-      "label": "Testo consegna (es. Consegna gratis tra: Gio 16 - Ven 17)"
-    },
-    {
-      "type": "url",
-      "id": "details_link",
-      "label": "Link 'Vedi taglie e dettagli'"
+      "type": "color",
+      "id": "bg_color",
+      "label": "Colore sfondo sezione"
     },
     {
       "type": "header",
@@ -501,9 +685,556 @@
       "info": "Prodotto Draft — solo uso logistico interno"
     }
   ],
+  "blocks": [
+    {
+      "type": "gallery",
+      "name": "Galleria",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "annotation_1",
+          "label": "Annotazione 1",
+          "default": "Scegli la fibbia"
+        },
+        {
+          "type": "text",
+          "id": "annotation_2",
+          "label": "Annotazione 2",
+          "default": "Scegli il colore"
+        },
+        {
+          "type": "text",
+          "id": "annotation_3",
+          "label": "Annotazione 3",
+          "default": "NFC Card in omaggio"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "buckle_dropdown",
+      "name": "Fibbia",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Etichetta",
+          "default": "Fibbia"
+        },
+        {
+          "type": "text",
+          "id": "placeholder",
+          "label": "Placeholder",
+          "default": "Seleziona fibbia…"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "strap_dropdown",
+      "name": "Cinturino",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Etichetta",
+          "default": "Cinturino"
+        },
+        {
+          "type": "text",
+          "id": "placeholder",
+          "label": "Placeholder",
+          "default": "Seleziona cinturino…"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "taglia",
+      "name": "Taglia",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Etichetta",
+          "default": "Taglia"
+        },
+        {
+          "type": "text",
+          "id": "size_1_label",
+          "label": "Etichetta taglia 1",
+          "default": "130 cm"
+        },
+        {
+          "type": "text",
+          "id": "size_1_value",
+          "label": "Valore taglia 1",
+          "default": "130cm"
+        },
+        {
+          "type": "text",
+          "id": "size_2_label",
+          "label": "Etichetta taglia 2",
+          "default": "150 cm"
+        },
+        {
+          "type": "text",
+          "id": "size_2_value",
+          "label": "Valore taglia 2",
+          "default": "150cm"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "rating",
+      "name": "Valutazione",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "rating_value",
+          "label": "Valutazione media (es. 4.8)",
+          "default": "4.8"
+        },
+        {
+          "type": "text",
+          "id": "rating_count",
+          "label": "Numero recensioni",
+          "default": "200"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "Titolo",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Titolo prodotto",
+          "default": "Set Cintura Singola"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Prezzo",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "price_note",
+          "label": "Nota prezzo",
+          "default": "IVA inclusa"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Descrizione",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Descrizione",
+          "info": "Lascia vuoto per il testo predefinito"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "delivery",
+      "name": "Consegna",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "delivery_text",
+          "label": "Testo consegna"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "details_link",
+      "name": "Link Dettagli",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Testo link",
+          "default": "Vedi taglie e dettagli…"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "URL link"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "cta_button",
+      "name": "CTA Button",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Testo pulsante",
+          "default": "Aggiungi al Carrello"
+        },
+        { "type": "header", "content": "Colori" },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Colore sfondo",
+          "default": "#1a1a1a"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Colore testo",
+          "default": "#ffffff"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "trust_bar",
+      "name": "Trust Bar",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "item_1",
+          "label": "Elemento 1",
+          "default": "Spedizione gratuita"
+        },
+        {
+          "type": "text",
+          "id": "item_2",
+          "label": "Elemento 2",
+          "default": "Reso entro 30 giorni"
+        },
+        {
+          "type": "text",
+          "id": "item_3",
+          "label": "Elemento 3",
+          "default": "Garanzia 2 anni"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_1_title",
+          "label": "Tab 1 — Titolo",
+          "default": "Taglie e Dettagli Tecnici"
+        },
+        {
+          "type": "richtext",
+          "id": "tab_1_content",
+          "label": "Tab 1 — Contenuto"
+        },
+        {
+          "type": "text",
+          "id": "tab_2_title",
+          "label": "Tab 2 — Titolo",
+          "default": "Spedizione Gratuita in 24\/72h"
+        },
+        {
+          "type": "richtext",
+          "id": "tab_2_content",
+          "label": "Tab 2 — Contenuto"
+        },
+        {
+          "type": "text",
+          "id": "tab_3_title",
+          "label": "Tab 3 — Titolo",
+          "default": "Contrassegno, Klarna, PayPal"
+        },
+        {
+          "type": "richtext",
+          "id": "tab_3_content",
+          "label": "Tab 3 — Contenuto"
+        },
+        {
+          "type": "text",
+          "id": "tab_4_title",
+          "label": "Tab 4 — Titolo",
+          "default": "Reso Gratuito e Garanzia 2 Anni"
+        },
+        {
+          "type": "richtext",
+          "id": "tab_4_content",
+          "label": "Tab 4 — Contenuto"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "trustpilot",
+      "name": "Trustpilot",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Etichetta",
+          "default": "Eccellente"
+        },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Immagine" },
+        { "type": "text", "id": "caption", "label": "Didascalia" },
+        { "type": "select", "id": "alignment", "label": "Allineamento", "options": [
+          { "value": "left",   "label": "Sinistra" },
+          { "value": "center", "label": "Centro" },
+          { "value": "right",  "label": "Destra" }
+        ], "default": "left" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text",     "id": "heading", "label": "Titolo" },
+        { "type": "richtext", "id": "content", "label": "Testo" },
+        { "type": "select",   "id": "alignment", "label": "Allineamento", "options": [
+          { "value": "left",   "label": "Sinistra" },
+          { "value": "center", "label": "Centro" },
+          { "value": "right",  "label": "Destra" }
+        ], "default": "left" },
+        { "type": "color", "id": "text_color", "label": "Colore testo" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        { "type": "image_picker", "id": "image",   "label": "Immagine di sfondo" },
+        { "type": "color",        "id": "bg_color", "label": "Colore sfondo (senza immagine)", "default": "#1a1a1a" },
+        { "type": "range", "id": "overlay_opacity", "label": "Opacità overlay scuro", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30 },
+        { "type": "text",     "id": "heading",      "label": "Titolo" },
+        { "type": "text",     "id": "subtext",      "label": "Sottotitolo" },
+        { "type": "color",    "id": "text_color",   "label": "Colore testo", "default": "#ffffff" },
+        { "type": "text",     "id": "button_label", "label": "Testo bottone" },
+        { "type": "url",      "id": "button_url",   "label": "Link bottone" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "image_with_text",
+      "name": "Image with Text",
+      "settings": [
+        { "type": "image_picker", "id": "image",   "label": "Immagine" },
+        { "type": "select", "id": "image_position", "label": "Posizione immagine", "options": [
+          { "value": "left",  "label": "Sinistra" },
+          { "value": "right", "label": "Destra" }
+        ], "default": "left" },
+        { "type": "text",     "id": "heading",      "label": "Titolo" },
+        { "type": "richtext", "id": "content",      "label": "Testo" },
+        { "type": "color",    "id": "text_color",   "label": "Colore testo" },
+        { "type": "text",     "id": "button_label", "label": "Testo bottone" },
+        { "type": "url",      "id": "button_url",   "label": "Link bottone" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "carousel",
+      "name": "Carousel",
+      "settings": [
+        { "type": "header", "content": "Slides (max 6)" },
+        { "type": "image_picker", "id": "image_1", "label": "Slide 1 — Immagine" },
+        { "type": "text",         "id": "caption_1", "label": "Slide 1 — Didascalia" },
+        { "type": "image_picker", "id": "image_2", "label": "Slide 2 — Immagine" },
+        { "type": "text",         "id": "caption_2", "label": "Slide 2 — Didascalia" },
+        { "type": "image_picker", "id": "image_3", "label": "Slide 3 — Immagine" },
+        { "type": "text",         "id": "caption_3", "label": "Slide 3 — Didascalia" },
+        { "type": "image_picker", "id": "image_4", "label": "Slide 4 — Immagine" },
+        { "type": "text",         "id": "caption_4", "label": "Slide 4 — Didascalia" },
+        { "type": "image_picker", "id": "image_5", "label": "Slide 5 — Immagine" },
+        { "type": "text",         "id": "caption_5", "label": "Slide 5 — Didascalia" },
+        { "type": "image_picker", "id": "image_6", "label": "Slide 6 — Immagine" },
+        { "type": "text",         "id": "caption_6", "label": "Slide 6 — Didascalia" },
+        { "type": "header", "content": "Autoplay" },
+        { "type": "checkbox", "id": "autoplay", "label": "Autoplay abilitato", "default": false },
+        { "type": "range", "id": "autoplay_speed", "label": "Velocità autoplay (ms)", "min": 2000, "max": 8000, "step": 500, "default": 4000 },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "footer",
+      "name": "Footer",
+      "settings": [
+        { "type": "image_picker", "id": "logo",     "label": "Logo" },
+        { "type": "text",         "id": "tagline",  "label": "Tagline / Descrizione" },
+        { "type": "header", "content": "Link (max 5)" },
+        { "type": "text", "id": "link_1_label", "label": "Link 1 — Testo" },
+        { "type": "url",  "id": "link_1_url",   "label": "Link 1 — URL" },
+        { "type": "text", "id": "link_2_label", "label": "Link 2 — Testo" },
+        { "type": "url",  "id": "link_2_url",   "label": "Link 2 — URL" },
+        { "type": "text", "id": "link_3_label", "label": "Link 3 — Testo" },
+        { "type": "url",  "id": "link_3_url",   "label": "Link 3 — URL" },
+        { "type": "text", "id": "link_4_label", "label": "Link 4 — Testo" },
+        { "type": "url",  "id": "link_4_url",   "label": "Link 4 — URL" },
+        { "type": "text", "id": "link_5_label", "label": "Link 5 — Testo" },
+        { "type": "url",  "id": "link_5_url",   "label": "Link 5 — URL" },
+        { "type": "header", "content": "Social" },
+        { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
+        { "type": "url", "id": "facebook_url",  "label": "Facebook URL" },
+        { "type": "url", "id": "tiktok_url",    "label": "TikTok URL" },
+        { "type": "url", "id": "youtube_url",   "label": "YouTube URL" },
+        { "type": "url", "id": "pinterest_url", "label": "Pinterest URL" },
+        { "type": "header", "content": "Colori" },
+        { "type": "color", "id": "bg_color",    "label": "Colore sfondo" },
+        { "type": "color", "id": "text_color",  "label": "Colore testo e link" },
+        { "type": "color", "id": "icon_color",  "label": "Colore icone social" },
+        { "type": "header", "content": "Copyright" },
+        { "type": "text", "id": "copyright", "label": "Testo copyright", "default": "© 2025 Motifino. All rights reserved." },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 16 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 16 }
+      ]
+    },
+    { "type": "@app" }
+  ],
   "presets": [
     {
-      "name": "Single Bundle Builder"
+      "name": "Single Bundle Builder",
+      "blocks": [
+        {
+          "type": "gallery",
+          "settings": {
+            "annotation_1": "Scegli la fibbia",
+            "annotation_2": "Scegli il colore",
+            "annotation_3": "NFC Card in omaggio"
+          }
+        },
+        { "type": "buckle_dropdown" },
+        { "type": "strap_dropdown" },
+        { "type": "taglia" },
+        { "type": "rating" },
+        { "type": "title" },
+        { "type": "price" },
+        { "type": "description" },
+        { "type": "delivery" },
+        { "type": "details_link" },
+        { "type": "cta_button" },
+        { "type": "trust_bar" },
+        {
+          "type": "accordion",
+          "settings": {
+            "tab_1_title": "Taglie e Dettagli Tecnici",
+            "tab_2_title": "Spedizione Gratuita in 24\/72h",
+            "tab_3_title": "Contrassegno, Klarna, PayPal",
+            "tab_4_title": "Reso Gratuito e Garanzia 2 Anni"
+          }
+        },
+        { "type": "trustpilot" }
+      ]
     }
   ]
 }
