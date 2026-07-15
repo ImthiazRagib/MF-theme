@@ -127,6 +127,7 @@
                   aria-controls="sbb-buckle-list"
                 >
                   <img class="sbb-dropdown__trigger-img" src="" alt="" style="display:none;" width="38" height="38">
+                  <span class="sbb-dropdown__trigger-label">{{ block.settings.label | default: 'Fibbia' }}</span>
                   <span class="sbb-dropdown__trigger-name">{{ block.settings.placeholder | default: 'Seleziona fibbia…' }}</span>
                   <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"/>
@@ -154,6 +155,7 @@
                 >
                   <img class="sbb-dropdown__trigger-img" src="" alt="" style="display:none;" width="38" height="38">
                   <div class="sbb-dropdown__trigger-swatch"></div>
+                  <span class="sbb-dropdown__trigger-label">{{ block.settings.label | default: 'Pelle' }}</span>
                   <span class="sbb-dropdown__trigger-name">{{ block.settings.placeholder | default: 'Seleziona cinturino…' }}</span>
                   <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"/>

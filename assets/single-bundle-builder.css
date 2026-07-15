@@ -342,6 +342,17 @@
   display: none;
 }
 
+.sbb-dropdown__trigger-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sbb-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .sbb-dropdown__trigger-name {
   display: none;
 }
