@@ -88,6 +88,84 @@
     <div class="sbb-col-info">
       <div class="sbb-info">
 
+        {%- comment -%} ── Dropdowns (above title) ── {%- endcomment -%}
+        <div class="sbb-dropdowns">
+
+          {%- comment -%} Buckle (Fibbia) dropdown {%- endcomment -%}
+          <div class="sbb-selector-group">
+            <div class="sbb-selector-label">Fibbia</div>
+            <div class="sbb-dropdown" id="sbb-buckle-dropdown">
+              <button
+                class="sbb-dropdown__trigger"
+                type="button"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-controls="sbb-buckle-list"
+              >
+                <img
+                  class="sbb-dropdown__trigger-img"
+                  src=""
+                  alt=""
+                  style="display:none;"
+                  width="38"
+                  height="38"
+                >
+                <span class="sbb-dropdown__trigger-name">Seleziona fibbia…</span>
+                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <div class="sbb-dropdown__list" role="listbox" id="sbb-buckle-list">
+                {%- comment -%} Populated by JS {%- endcomment -%}
+              </div>
+            </div>
+          </div>
+
+          {%- comment -%} Strap (Cinturino) dropdown {%- endcomment -%}
+          <div class="sbb-selector-group">
+            <div class="sbb-selector-label">Cinturino</div>
+            <div class="sbb-dropdown" id="sbb-strap-dropdown">
+              <button
+                class="sbb-dropdown__trigger"
+                type="button"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-controls="sbb-strap-list"
+              >
+                <img
+                  class="sbb-dropdown__trigger-img"
+                  src=""
+                  alt=""
+                  style="display:none;"
+                  width="38"
+                  height="38"
+                >
+                <div class="sbb-dropdown__trigger-swatch"></div>
+                <span class="sbb-dropdown__trigger-name">Seleziona cinturino…</span>
+                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list">
+                {%- comment -%} Populated by JS {%- endcomment -%}
+              </div>
+            </div>
+          </div>
+
+        </div>
+        {%- comment -%} /.sbb-dropdowns {%- endcomment -%}
+
+        {%- comment -%} Size chips (below dropdowns) {%- endcomment -%}
+        <div class="sbb-selectors">
+          <div class="sbb-selector-group sbb-selector-group--full">
+            <div class="sbb-selector-label">Taglia</div>
+            <div class="sbb-pills">
+              <button class="sbb-pill is-selected" type="button" data-length="130cm">130 cm</button>
+              <button class="sbb-pill" type="button" data-length="150cm">150 cm</button>
+            </div>
+          </div>
+        </div>
+
         {%- comment -%} Rating {%- endcomment -%}
         <div class="sbb-rating">
           {%- assign rating_str = section.settings.rating_value | default: '4.8' -%}
@@ -153,81 +231,6 @@
         <a href="{{ section.settings.details_link }}" class="sbb-details-link">Vedi taglie e dettagli…</a>
         {%- endif -%}
 
-        {%- comment -%} ── Selectors ── {%- endcomment -%}
-        <div class="sbb-selectors">
-
-          {%- comment -%} Strap (Cinturino) dropdown {%- endcomment -%}
-          <div class="sbb-selector-group">
-            <div class="sbb-selector-label">Cinturino</div>
-            <div class="sbb-dropdown" id="sbb-strap-dropdown">
-              <button
-                class="sbb-dropdown__trigger"
-                type="button"
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-controls="sbb-strap-list"
-              >
-                <img
-                  class="sbb-dropdown__trigger-img"
-                  src=""
-                  alt=""
-                  style="display:none;"
-                  width="38"
-                  height="38"
-                >
-                <div class="sbb-dropdown__trigger-swatch"></div>
-                <span class="sbb-dropdown__trigger-name">Seleziona cinturino…</span>
-                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-              <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list">
-                {%- comment -%} Populated by JS {%- endcomment -%}
-              </div>
-            </div>
-          </div>
-
-          {%- comment -%} Buckle (Fibbia) dropdown {%- endcomment -%}
-          <div class="sbb-selector-group">
-            <div class="sbb-selector-label">Fibbia</div>
-            <div class="sbb-dropdown" id="sbb-buckle-dropdown">
-              <button
-                class="sbb-dropdown__trigger"
-                type="button"
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-controls="sbb-buckle-list"
-              >
-                <img
-                  class="sbb-dropdown__trigger-img"
-                  src=""
-                  alt=""
-                  style="display:none;"
-                  width="38"
-                  height="38"
-                >
-                <span class="sbb-dropdown__trigger-name">Seleziona fibbia…</span>
-                <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-              <div class="sbb-dropdown__list" role="listbox" id="sbb-buckle-list">
-                {%- comment -%} Populated by JS {%- endcomment -%}
-              </div>
-            </div>
-          </div>
-
-          {%- comment -%} Size pills {%- endcomment -%}
-          <div class="sbb-selector-group sbb-selector-group--full">
-            <div class="sbb-selector-label">Taglia</div>
-            <div class="sbb-pills">
-              <button class="sbb-pill is-selected" type="button" data-length="130cm">130 cm</button>
-              <button class="sbb-pill" type="button" data-length="150cm">150 cm</button>
-            </div>
-          </div>
-
-        </div>
-        {%- comment -%} /.sbb-selectors {%- endcomment -%}
 
         {%- comment -%} Add to Cart button {%- endcomment -%}
         <button class="sbb-btn-atc" id="sbb-atc-btn" type="button">

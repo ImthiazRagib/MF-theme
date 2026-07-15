@@ -255,23 +255,26 @@
   margin-bottom: 22px;
 }
 
-/* ── Selectors ──────────────────────────────────────────── */
+/* ── Dropdowns (above title) ────────────────────────────── */
+.sbb-dropdowns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+@media (min-width: 480px) {
+  .sbb-dropdowns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Selectors (size pills only) ────────────────────────── */
 .sbb-selectors {
   display: grid;
   grid-template-columns: 1fr;
   gap: 18px;
   margin-bottom: 22px;
-}
-
-/* Strap + buckle side by side once there's enough room */
-@media (min-width: 560px) {
-  .sbb-selectors {
-    grid-template-columns: 1fr 1fr;
-  }
-  /* Size pills span both columns */
-  .sbb-selector-group--full {
-    grid-column: 1 / -1;
-  }
 }
 
 .sbb-selector-group {}
@@ -323,11 +326,7 @@
 }
 
 .sbb-dropdown__trigger-swatch {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,0,0,.1);
-  flex-shrink: 0;
+  display: none;
 }
 
 .sbb-dropdown__trigger-name {
@@ -336,6 +335,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sbb-dark);
 }
 
 .sbb-dropdown__arrow {
@@ -361,50 +363,55 @@
   border-radius: var(--sbb-radius);
   box-shadow: 0 8px 32px rgba(0,0,0,.14);
   z-index: 300;
-  max-height: 320px;
+  padding: 10px;
+  max-height: 340px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 .sbb-dropdown.is-open .sbb-dropdown__list {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
 
 .sbb-dropdown__option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  display: block;
+  padding: 3px;
   cursor: pointer;
-  transition: background 0.12s;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: var(--sbb-radius-sm);
+  border: 2px solid transparent;
+  transition: border-color 0.12s;
 }
-.sbb-dropdown__option:hover { background: var(--sbb-light); }
+.sbb-dropdown__option:hover {
+  border-color: var(--sbb-border);
+}
 .sbb-dropdown__option.is-selected {
-  background: #f8f4eb;
+  border-color: var(--sbb-dark);
 }
 
 .sbb-dropdown__opt-img {
-  width: 42px;
-  height: 42px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: var(--sbb-radius-sm);
   object-fit: contain;
-  flex-shrink: 0;
   background: #f5f5f5;
   display: block;
 }
 
 .sbb-dropdown__opt-swatch {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,0,0,.1);
-  flex-shrink: 0;
+  display: none;
 }
 
 .sbb-dropdown__opt-name {
-  flex: 1;
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--sbb-dark);
+  text-align: center;
+  padding: 3px 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Size Pills ─────────────────────────────────────────── */
