@@ -13,6 +13,22 @@
     z-index: 200;
   }
 
+  {%- if section.settings.enable_transparent_header -%}
+  #shopify-section-{{ section.id }} .header:not(.is-solid, :hover, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) {
+    background: transparent;
+    border-color: transparent;
+    --text-color: var(--header-transparent-header-text-color);
+    --header-show-transparent-logo: 1;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  #shopify-section-{{ section.id }} .header:not(.is-solid, :hover, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) .link-faded {
+    --text-opacity: 0.65;
+  }
+  #shopify-section-{{ section.id }} .header {
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  {%- endif -%}
+
   @media screen and (min-width: 700px) {
     #shopify-section-{{ section.id }} {
       --header-padding-block: {% if section.settings.reduce_padding %}1.2rem{% else %}1.6rem{% endif %};
@@ -581,6 +597,12 @@
     {
       "type": "paragraph",
       "content": "t:sections.header.transparent_header_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent_header",
+      "label": "Transparent when at top",
+      "default": false
     },
     {
       "type": "color",

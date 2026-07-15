@@ -217,15 +217,10 @@
   color: var(--sbb-dark);
 }
 .sbb-compare-price {
-  font-size: 18px;
-  font-weight: 500;
-  color: #b94040;
-  text-decoration: line-through;
-  text-decoration-color: #b94040;
-}
-.sbb-price-note {
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 400;
   color: var(--sbb-mid);
+  text-decoration: line-through;
 }
 
 /* ── Description ────────────────────────────────────────── */
@@ -253,6 +248,24 @@
   text-decoration: underline;
   text-underline-offset: 3px;
   margin-bottom: 22px;
+}
+
+/* ── Dropdowns row (buckle + strap side-by-side) ─────────── */
+.sbb-dropdowns-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  position: relative;
+}
+.sbb-dropdowns-row .sbb-dropdown {
+  position: static;
+}
+.sbb-dropdowns-row .sbb-dropdown__list {
+  left: 0;
+  right: 0;
+}
+@media (max-width: 360px) {
+  .sbb-dropdowns-row { grid-template-columns: 1fr; }
 }
 
 /* ── Dropdowns (above title) ────────────────────────────── */
@@ -330,14 +343,7 @@
 }
 
 .sbb-dropdown__trigger-name {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--sbb-dark);
+  display: none;
 }
 
 .sbb-dropdown__arrow {

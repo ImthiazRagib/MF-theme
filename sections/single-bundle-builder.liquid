@@ -53,7 +53,7 @@
           <div
             class="sbb-hero"
             {{ block.shopify_attributes }}
-            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;width:{{ block.settings.img_width | default: 100 }}%;max-height:{{ block.settings.img_max_height | default: 500 }}px;overflow:hidden;"
           >
             <img
               id="sbb-main-img"
@@ -117,7 +117,7 @@
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
-              <div class="sbb-selector-label">{{ block.settings.label | default: 'Fibbia' }}</div>
+              {%- unless block.settings.show_label == false -%}<div class="sbb-selector-label">{{ block.settings.label | default: 'Fibbia' }}</div>{%- endunless -%}
               <div class="sbb-dropdown" id="sbb-buckle-dropdown">
                 <button
                   class="sbb-dropdown__trigger"
@@ -143,7 +143,7 @@
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
-              <div class="sbb-selector-label">{{ block.settings.label | default: 'Cinturino' }}</div>
+              {%- unless block.settings.show_label == false -%}<div class="sbb-selector-label">{{ block.settings.label | default: 'Cinturino' }}</div>{%- endunless -%}
               <div class="sbb-dropdown" id="sbb-strap-dropdown">
                 <button
                   class="sbb-dropdown__trigger"
@@ -233,9 +233,8 @@
             >
               <div class="sbb-price-row">
                 <span class="sbb-price" id="sbb-price">€ 49,99</span>
-                <span class="sbb-price-note">{{ block.settings.price_note | default: 'IVA inclusa' }}</span>
+                <span class="sbb-compare-price" id="sbb-compare-price" style="display:none;"></span>
               </div>
-              <span class="sbb-compare-price" id="sbb-compare-price" style="display:none;"></span>
             </div>
 
             {%- comment -%} ── description ─────────────────────── {%- endcomment -%}
@@ -709,6 +708,9 @@
           "label": "Annotazione 3",
           "default": "NFC Card in omaggio"
         },
+        { "type": "header", "content": "Dimensioni" },
+        { "type": "range", "id": "img_width",      "label": "Larghezza (%)",    "min": 20,  "max": 100, "step": 5,  "unit": "%",  "default": 100 },
+        { "type": "range", "id": "img_max_height",  "label": "Altezza massima",  "min": 100, "max": 800, "step": 20, "unit": "px", "default": 500 },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
@@ -726,6 +728,12 @@
           "id": "label",
           "label": "Etichetta",
           "default": "Fibbia"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_label",
+          "label": "Mostra etichetta",
+          "default": true
         },
         {
           "type": "text",
@@ -750,6 +758,12 @@
           "id": "label",
           "label": "Etichetta",
           "default": "Cinturino"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_label",
+          "label": "Mostra etichetta",
+          "default": true
         },
         {
           "type": "text",
@@ -853,12 +867,6 @@
       "name": "Prezzo",
       "limit": 1,
       "settings": [
-        {
-          "type": "text",
-          "id": "price_note",
-          "label": "Nota prezzo",
-          "default": "IVA inclusa"
-        },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },

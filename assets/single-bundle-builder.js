@@ -503,6 +503,19 @@
 
     /* Accordion tabs */
     initTabs();
+
+    /* Put buckle + strap dropdowns side-by-side */
+    var buckleGroup = document.querySelector('#sbb-buckle-dropdown') &&
+      document.querySelector('#sbb-buckle-dropdown').closest('.sbb-selector-group');
+    var strapGroup  = document.querySelector('#sbb-strap-dropdown') &&
+      document.querySelector('#sbb-strap-dropdown').closest('.sbb-selector-group');
+    if (buckleGroup && strapGroup && buckleGroup.parentNode === strapGroup.parentNode) {
+      var dropRow = document.createElement('div');
+      dropRow.className = 'sbb-dropdowns-row';
+      buckleGroup.parentNode.insertBefore(dropRow, buckleGroup);
+      dropRow.appendChild(buckleGroup);
+      dropRow.appendChild(strapGroup);
+    }
   }
 
   /* ── Boot ───────────────────────────────────────────────── */
