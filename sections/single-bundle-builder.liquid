@@ -26,6 +26,18 @@
 
 {{ 'single-bundle-builder.css' | asset_url | stylesheet_tag }}
 
+{%- if section.settings.allow_transparent_header -%}
+<style>
+  @media (min-width: 768px) {
+    :has(#sbb-root[allow-transparent-header]) .header {
+      margin-block-end: 0 !important;
+      background: revert !important;
+      border-color: revert !important;
+      --header-show-transparent-logo: 0 !important;
+    }
+  }
+</style>
+{%- endif -%}
 {%- if section.settings.allow_transparent_header and section.settings.transparent_header_use_primary_colors -%}
 <style>
   .header {
