@@ -26,11 +26,37 @@
 
 {{ 'single-bundle-builder.css' | asset_url | stylesheet_tag }}
 
+{%- if section.settings.allow_transparent_header and section.settings.transparent_header_use_primary_colors -%}
+<style>
+  .header {
+    --header-show-transparent-logo: 0 !important;
+    --header-transparent-header-text-color: initial;
+  }
+</style>
+{%- endif -%}
+
+{%- assign dd_bw = section.settings.dropdown_border_width | default: 1 -%}
+{%- assign dd_bc = section.settings.dropdown_border_color | default: '#e0e0e0' -%}
+<style>
+  #sbb-root .sbb-dropdowns-row {
+    border-width: {{ dd_bw }}px;
+    border-color: {{ dd_bc }};
+  }
+  #sbb-root .sbb-dropdowns-row .sbb-selector-group + .sbb-selector-group {
+    border-left-width: {{ dd_bw }}px;
+    border-left-color: {{ dd_bc }};
+  }
+  #sbb-root .sbb-dropdowns-row:has(.sbb-dropdown.is-open) {
+    border-color: {{ dd_bc }};
+  }
+</style>
+
 <div
   class="sbb-wrap"
   id="sbb-root"
   data-media-url="{{ 'bundle-builder-media.json' | asset_url }}"
   data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}"
+  {% if section.settings.allow_transparent_header %}allow-transparent-header{% endif %}
   {% if section.settings.bg_color != blank %}style="background-color:{{ section.settings.bg_color }};"{% endif %}
 >
 
@@ -234,7 +260,7 @@
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
               <div class="sbb-price-row">
-                <span class="sbb-price" id="sbb-price">€ 49,99</span>
+                <span class="sbb-price" id="sbb-price" style="{% if block.settings.price_size != blank %}font-size:{{ block.settings.price_size }}px;{% endif %}{% if block.settings.price_color != blank %}color:{{ block.settings.price_color }};{% endif %}">€ 49,99</span>
                 <span class="sbb-compare-price" id="sbb-compare-price" style="display:none;"></span>
               </div>
             </div>
@@ -637,6 +663,40 @@
     },
     {
       "type": "header",
+      "content": "Bordo Dropdown"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_border_width",
+      "label": "Spessore bordo",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "dropdown_border_color",
+      "label": "Colore bordo",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_transparent_header",
+      "label": "t:global.section.allow_transparent_header",
+      "info": "t:global.section.allow_transparent_header_info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header_use_primary_colors",
+      "label": "t:global.section.transparent_header_use_primary_colors",
+      "default": false,
+      "visible_if": "{{ section.settings.allow_transparent_header }}"
+    },
+    {
+      "type": "header",
       "content": "Variant ID — Bundle prodotto"
     },
     {
@@ -869,6 +929,9 @@
       "name": "Prezzo",
       "limit": 1,
       "settings": [
+        { "type": "header", "content": "Stile prezzo" },
+        { "type": "range", "id": "price_size", "label": "Dimensione font", "min": 14, "max": 48, "step": 1, "unit": "px", "default": 24 },
+        { "type": "color", "id": "price_color", "label": "Colore prezzo", "default": "#1a1a1a" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
