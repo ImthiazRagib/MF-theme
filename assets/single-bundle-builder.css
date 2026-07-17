@@ -250,6 +250,54 @@
   margin-bottom: 22px;
 }
 
+/* ── Buttons block ──────────────────────────────────────── */
+.sbb-buttons-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.sbb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 24px;
+  border-radius: var(--sbb-radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.18s, background 0.18s;
+  text-decoration: none;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.sbb-btn--solid {
+  background: rgb(var(--button-background, 26 26 26));
+  color: rgb(var(--button-text-color, 255 255 255));
+  border: none;
+}
+.sbb-btn--solid:hover { filter: brightness(0.88); }
+.sbb-btn--outline {
+  background: transparent;
+  color: var(--sbb-dark);
+  border: 1.5px solid var(--sbb-dark);
+}
+.sbb-btn--outline:hover { background: rgba(0,0,0,0.04); }
+.sbb-btn--link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--sbb-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+.sbb-btn--stretch {
+  width: 100%;
+}
+
 /* ── Dropdowns row (buckle + strap side-by-side) ─────────── */
 .sbb-dropdowns-row {
   display: grid;

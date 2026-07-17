@@ -326,6 +326,25 @@
             >{{- block.settings.link_text | default: 'Vedi taglie e dettagli…' -}}</span>
             {%- endif -%}
 
+            {%- comment -%} ── buttons ─────────────────────────── {%- endcomment -%}
+            {%- when 'buttons' -%}
+            {%- assign btn_style   = block.settings.style | default: 'outline' -%}
+            {%- assign btn_stretch = block.settings.stretch -%}
+            {%- assign btn_align   = block.settings.alignment | default: 'left' -%}
+            {%- if btn_align == 'center' -%}{%- assign justify = 'center' -%}
+            {%- elsif btn_align == 'right' -%}{%- assign justify = 'flex-end' -%}
+            {%- else -%}{%- assign justify = 'flex-start' -%}{%- endif -%}
+            <div
+              class="sbb-buttons-block"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% unless btn_stretch %}justify-content:{{ justify }};{% endunless %}"
+            >
+              {%- if block.settings.text != blank -%}
+                {%- capture btn_class -%}sbb-btn sbb-btn--{{ btn_style }}{% if btn_stretch %} sbb-btn--stretch{% endif %}{%- endcapture -%}
+                <a href="{{ block.settings.link }}" class="{{ btn_class }}">{{ block.settings.text }}</a>
+              {%- endif -%}
+            </div>
+
             {%- comment -%} ── cta_button ──────────────────────── {%- endcomment -%}
             {%- when 'cta_button' -%}
             <button
@@ -948,30 +967,6 @@
       ]
     },
     {
-      "type": "rating",
-      "name": "Valutazione",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "text",
-          "id": "rating_value",
-          "label": "Valutazione media (es. 4.8)",
-          "default": "4.8"
-        },
-        {
-          "type": "text",
-          "id": "rating_count",
-          "label": "Numero recensioni",
-          "default": "200"
-        },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
-      ]
-    },
-    {
       "type": "title",
       "name": "Titolo",
       "limit": 1,
@@ -1023,38 +1018,24 @@
       ]
     },
     {
-      "type": "delivery",
-      "name": "Consegna",
-      "limit": 1,
+      "type": "buttons",
+      "name": "Button",
       "settings": [
-        {
-          "type": "text",
-          "id": "delivery_text",
-          "label": "Testo consegna"
-        },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
-      ]
-    },
-    {
-      "type": "details_link",
-      "name": "Link Dettagli",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "text",
-          "id": "link_text",
-          "label": "Testo link",
-          "default": "Vedi taglie e dettagli…"
-        },
-        {
-          "type": "url",
-          "id": "link_url",
-          "label": "URL link"
-        },
+        { "type": "text", "id": "text", "label": "Button text" },
+        { "type": "url",  "id": "link", "label": "Button link", "info": "Defaults to the selected product URL when empty." },
+        { "type": "select", "id": "style", "label": "Button style", "options": [
+          { "value": "outline", "label": "Outline button" },
+          { "value": "solid",   "label": "Solid button"   },
+          { "value": "link",    "label": "Link"           }
+        ], "default": "outline" },
+        { "type": "checkbox", "id": "stretch", "label": "Stretch to full width", "default": false },
+        { "type": "select", "id": "alignment", "label": "Alignment", "options": [
+          { "value": "left",   "label": "Left"   },
+          { "value": "center", "label": "Center" },
+          { "value": "right",  "label": "Right"  }
+        ], "default": "left",
+          "info": "Active when not stretched.",
+          "visible_if": "{{ block.settings.stretch == false }}" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
@@ -1180,24 +1161,6 @@
       ]
     },
     {
-      "type": "trustpilot",
-      "name": "Trustpilot",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Etichetta",
-          "default": "Eccellente"
-        },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
-      ]
-    },
-    {
       "type": "image",
       "name": "Image",
       "settings": [
@@ -1235,46 +1198,6 @@
       ]
     },
     {
-      "type": "banner",
-      "name": "Banner",
-      "settings": [
-        { "type": "image_picker", "id": "image",   "label": "Immagine di sfondo" },
-        { "type": "color",        "id": "bg_color", "label": "Colore sfondo (senza immagine)", "default": "#1a1a1a" },
-        { "type": "range", "id": "overlay_opacity", "label": "Opacità overlay scuro", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 30 },
-        { "type": "text",     "id": "heading",      "label": "Titolo" },
-        { "type": "text",     "id": "subtext",      "label": "Sottotitolo" },
-        { "type": "color",    "id": "text_color",   "label": "Colore testo", "default": "#ffffff" },
-        { "type": "text",     "id": "button_label", "label": "Testo bottone" },
-        { "type": "url",      "id": "button_url",   "label": "Link bottone" },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
-      ]
-    },
-    {
-      "type": "image_with_text",
-      "name": "Image with Text",
-      "settings": [
-        { "type": "image_picker", "id": "image",   "label": "Immagine" },
-        { "type": "select", "id": "image_position", "label": "Posizione immagine", "options": [
-          { "value": "left",  "label": "Sinistra" },
-          { "value": "right", "label": "Destra" }
-        ], "default": "left" },
-        { "type": "text",     "id": "heading",      "label": "Titolo" },
-        { "type": "richtext", "id": "content",      "label": "Testo" },
-        { "type": "color",    "id": "text_color",   "label": "Colore testo" },
-        { "type": "text",     "id": "button_label", "label": "Testo bottone" },
-        { "type": "url",      "id": "button_url",   "label": "Link bottone" },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
-      ]
-    },
-    {
       "type": "carousel",
       "name": "Carousel",
       "settings": [
@@ -1294,84 +1217,6 @@
         { "type": "header", "content": "Autoplay" },
         { "type": "checkbox", "id": "autoplay", "label": "Autoplay abilitato", "default": false },
         { "type": "range", "id": "autoplay_speed", "label": "Velocità autoplay (ms)", "min": 2000, "max": 8000, "step": 500, "default": 4000 },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
-      ]
-    },
-    {
-      "type": "footer",
-      "name": "Footer",
-      "settings": [
-        { "type": "image_picker", "id": "logo",     "label": "Logo" },
-        { "type": "text",         "id": "tagline",  "label": "Tagline / Descrizione" },
-        { "type": "header", "content": "Link (max 5)" },
-        { "type": "text", "id": "link_1_label", "label": "Link 1 — Testo" },
-        { "type": "url",  "id": "link_1_url",   "label": "Link 1 — URL" },
-        { "type": "text", "id": "link_2_label", "label": "Link 2 — Testo" },
-        { "type": "url",  "id": "link_2_url",   "label": "Link 2 — URL" },
-        { "type": "text", "id": "link_3_label", "label": "Link 3 — Testo" },
-        { "type": "url",  "id": "link_3_url",   "label": "Link 3 — URL" },
-        { "type": "text", "id": "link_4_label", "label": "Link 4 — Testo" },
-        { "type": "url",  "id": "link_4_url",   "label": "Link 4 — URL" },
-        { "type": "text", "id": "link_5_label", "label": "Link 5 — Testo" },
-        { "type": "url",  "id": "link_5_url",   "label": "Link 5 — URL" },
-        { "type": "header", "content": "Social" },
-        { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
-        { "type": "url", "id": "facebook_url",  "label": "Facebook URL" },
-        { "type": "url", "id": "tiktok_url",    "label": "TikTok URL" },
-        { "type": "url", "id": "youtube_url",   "label": "YouTube URL" },
-        { "type": "url", "id": "pinterest_url", "label": "Pinterest URL" },
-        { "type": "header", "content": "Colori" },
-        { "type": "color", "id": "bg_color",    "label": "Colore sfondo" },
-        { "type": "color", "id": "text_color",  "label": "Colore testo e link" },
-        { "type": "color", "id": "icon_color",  "label": "Colore icone social" },
-        { "type": "header", "content": "Copyright" },
-        { "type": "text", "id": "copyright", "label": "Testo copyright", "default": "© 2025 Motifino. All rights reserved." },
-        { "type": "header", "content": "Spaziatura" },
-        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 16 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 16 }
-      ]
-    },
-    {
-      "type": "button",
-      "name": "Button",
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "Create link to your contact page, external marketplace..."
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link"
-        },
-        {
-          "type": "text",
-          "id": "text",
-          "label": "Text",
-          "default": "Call to action"
-        },
-        {
-          "type": "checkbox",
-          "id": "stretch",
-          "label": "Stretch",
-          "default": false
-        },
-        {
-          "type": "color",
-          "id": "background",
-          "label": "Background"
-        },
-        {
-          "type": "color",
-          "id": "text_color",
-          "label": "Text"
-        },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
@@ -1413,12 +1258,10 @@
         { "type": "buckle_dropdown" },
         { "type": "strap_dropdown" },
         { "type": "taglia" },
-        { "type": "rating" },
         { "type": "title" },
         { "type": "price" },
         { "type": "description" },
-        { "type": "delivery" },
-        { "type": "details_link" },
+        { "type": "buttons" },
         { "type": "cta_button" },
         { "type": "trust_bar" },
         {
@@ -1429,8 +1272,7 @@
             "tab_3_title": "Contrassegno, Klarna, PayPal",
             "tab_4_title": "Reso Gratuito e Garanzia 2 Anni"
           }
-        },
-        { "type": "trustpilot" }
+        }
       ]
     }
   ]
