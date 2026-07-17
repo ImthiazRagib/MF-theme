@@ -100,6 +100,27 @@
               alt="Anteprima combinazione"
               style="opacity:0;display:none;"
             >
+            <img
+              id="sbb-worn-img"
+              src=""
+              alt="Indossato"
+              style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+            >
+            {%- assign worn_style = block.settings.worn_btn_style | default: 'solid' -%}
+            {%- assign worn_fs    = block.settings.worn_btn_font_size | default: 13 -%}
+            <style>
+              #sbb-worn-toggle { font-size: {{ worn_fs }}px; }
+            </style>
+            <button
+              class="sbb-worn-btn sbb-worn-btn--{{ worn_style }}"
+              id="sbb-worn-toggle"
+              type="button"
+              data-label="{{ block.settings.worn_btn_label | default: 'Vedi indossato' | escape }}"
+              data-label-back="{{ block.settings.worn_btn_back_label | default: 'Vista prodotto' | escape }}"
+              style="display:none;"
+            >
+              <span class="sbb-worn-btn__label">{{ block.settings.worn_btn_label | default: 'Vedi indossato' }}</span>
+            </button>
             <div id="sbb-gallery-placeholder" class="sbb-hero__placeholder">
               <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -887,6 +908,19 @@
           "label": "Annotazione 3",
           "default": "NFC Card in omaggio"
         },
+        { "type": "header", "content": "Bottone indossato" },
+        { "type": "text",   "id": "worn_btn_label",      "label": "Testo (prodotto → indossato)", "default": "Vedi indossato" },
+        { "type": "text",   "id": "worn_btn_back_label", "label": "Testo (indossato → prodotto)",  "default": "Vista prodotto" },
+        {
+          "type": "select", "id": "worn_btn_style", "label": "Stile bottone",
+          "options": [
+            { "value": "solid",   "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "link",    "label": "Link" }
+          ],
+          "default": "solid"
+        },
+        { "type": "range", "id": "worn_btn_font_size", "label": "Dimensione font", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
         { "type": "header", "content": "Dimensioni" },
         { "type": "range", "id": "img_width",      "label": "Larghezza (%)",    "min": 20,  "max": 100, "step": 5,  "unit": "%",  "default": 100 },
         { "type": "range", "id": "img_max_height",  "label": "Altezza massima",  "min": 100, "max": 800, "step": 20, "unit": "px", "default": 500 },

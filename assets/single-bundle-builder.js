@@ -157,8 +157,11 @@
     const combo       = getCombo();
     const mainImg     = document.getElementById('sbb-main-img');
     const placeholder = document.getElementById('sbb-gallery-placeholder');
+    const wornImg     = document.getElementById('sbb-worn-img');
+    const wornBtn     = document.getElementById('sbb-worn-toggle');
 
-    const src = (combo && combo.photo) || '';
+    const src     = (combo && combo.photo) || '';
+    const wornSrc = (combo && combo.worn)  || '';
 
     if (src && mainImg) {
       mainImg.style.opacity = '0';
@@ -171,6 +174,11 @@
       if (mainImg) mainImg.style.display = 'none';
       if (placeholder) placeholder.style.display = '';
     }
+
+    if (wornImg) wornImg.src = wornSrc;
+    if (wornBtn) wornBtn.style.display = wornSrc ? '' : 'none';
+
+    document.dispatchEvent(new CustomEvent('sbb:gallery-update'));
   }
 
   /* ── Title ──────────────────────────────────────────────── */
@@ -576,5 +584,41 @@
     document.addEventListener('DOMContentLoaded', initAllCarousels);
   } else {
     initAllCarousels();
+  }
+})();
+
+/* ── Worn image toggle ───────────────────────────────────── */
+(function () {
+  function init() {
+    var btn     = document.getElementById('sbb-worn-toggle');
+    var mainImg = document.getElementById('sbb-main-img');
+    var wornImg = document.getElementById('sbb-worn-img');
+    if (!btn || !wornImg) return;
+
+    var isWorn = false;
+
+    function setWorn(worn) {
+      isWorn = worn;
+      if (worn) {
+        if (mainImg) mainImg.style.display = 'none';
+        wornImg.style.display = '';
+        btn.classList.add('is-worn');
+        btn.querySelector('.sbb-worn-btn__label').textContent = btn.dataset.labelBack;
+      } else {
+        wornImg.style.display = 'none';
+        if (mainImg) mainImg.style.display = '';
+        btn.classList.remove('is-worn');
+        btn.querySelector('.sbb-worn-btn__label').textContent = btn.dataset.label;
+      }
+    }
+
+    btn.addEventListener('click', function () { setWorn(!isWorn); });
+    document.addEventListener('sbb:gallery-update', function () { if (isWorn) setWorn(false); });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 })();

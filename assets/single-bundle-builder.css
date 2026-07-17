@@ -82,6 +82,73 @@
   display: block;
 }
 
+/* ── Worn toggle button ──────────────────────────────────── */
+.sbb-worn-btn {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 32px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s, box-shadow 0.18s, color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+  z-index: 10;
+  text-decoration: none;
+}
+/* solid */
+.sbb-worn-btn--solid {
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(0,0,0,0.1);
+  color: var(--sbb-dark);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+}
+.sbb-worn-btn--solid:hover {
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+.sbb-worn-btn--solid.is-worn {
+  background: var(--sbb-dark);
+  color: #fff;
+  border-color: var(--sbb-dark);
+}
+/* outline */
+.sbb-worn-btn--outline {
+  background: transparent;
+  border: 1.5px solid currentColor;
+  color: var(--sbb-dark);
+}
+.sbb-worn-btn--outline:hover {
+  background: rgba(255,255,255,0.15);
+}
+.sbb-worn-btn--outline.is-worn {
+  background: var(--sbb-dark);
+  color: #fff;
+  border-color: var(--sbb-dark);
+}
+/* link */
+.sbb-worn-btn--link {
+  background: transparent;
+  border: none;
+  color: var(--sbb-dark);
+  padding-left: 4px;
+  padding-right: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sbb-worn-btn--link:hover {
+  opacity: 0.7;
+}
+.sbb-worn-btn--link.is-worn {
+  color: var(--sbb-dark);
+  font-weight: 700;
+}
+
 .sbb-hero__placeholder {
   position: absolute;
   inset: 0;
