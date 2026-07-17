@@ -905,6 +905,44 @@
   transform: scale(1.2);
 }
 
+/* ── Text Carousel block ─────────────────────────────────── */
+.sbb-text-carousel {
+  background: rgb(var(--background, 245 245 245));
+}
+.sbb-text-carousel__slide {
+  padding: 24px 20px 52px;
+  box-sizing: border-box;
+}
+.sbb-text-carousel__heading {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: rgb(var(--text-color, 26 26 26));
+}
+.sbb-text-carousel__body {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgb(var(--text-color, 26 26 26));
+}
+.sbb-text-carousel__body p { margin: 0 0 8px; }
+.sbb-text-carousel__body p:last-child { margin-bottom: 0; }
+.sbb-text-carousel .sbb-carousel__btn {
+  background: rgb(var(--text-color, 26 26 26) / 0.1);
+  color: rgb(var(--text-color, 26 26 26));
+  box-shadow: none;
+}
+.sbb-text-carousel .sbb-carousel__btn:hover {
+  background: rgb(var(--text-color, 26 26 26) / 0.2);
+}
+.sbb-text-carousel .sbb-carousel__btn svg { stroke: rgb(var(--text-color, 26 26 26)); }
+.sbb-text-carousel .sbb-carousel__dots { bottom: 14px; }
+.sbb-text-carousel .sbb-carousel__dot {
+  background: rgb(var(--text-color, 26 26 26) / 0.25);
+}
+.sbb-text-carousel .sbb-carousel__dot.is-active {
+  background: rgb(var(--text-color, 26 26 26));
+}
+
 /* ── Footer block ────────────────────────────────────────── */
 .sbb-block-footer {
   border-radius: 10px;

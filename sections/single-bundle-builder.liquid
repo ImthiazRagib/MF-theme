@@ -601,6 +601,49 @@
               {%- endif -%}
             </div>
 
+            {%- comment -%} ── text_carousel ────────────────────── {%- endcomment -%}
+            {%- when 'text_carousel' -%}
+            {%- assign tc_id      = 'sbb-tc-' | append: block.id -%}
+            {%- assign tc_cs_hash = block.settings.color_scheme.settings.background_gradient | default: block.settings.color_scheme.settings.background | md5 -%}
+            <div
+              class="sbb-carousel sbb-text-carousel color-scheme color-scheme--{{ block.settings.color_scheme.id }} color-scheme--bg-{{ tc_cs_hash }}"
+              id="{{ tc_id }}"
+              {{ block.shopify_attributes }}
+              data-autoplay="{{ block.settings.autoplay }}"
+              data-speed="{{ block.settings.autoplay_speed | default: 4000 }}"
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;text-align:{{ block.settings.text_align | default: 'left' }};"
+            >
+              <div class="sbb-carousel__track">
+                {%- assign tc_slide_count = 0 -%}
+                {%- for i in (1..5) -%}
+                  {%- assign tc_content_key = 'slide_' | append: i | append: '_content' -%}
+                  {%- assign tc_heading_key = 'slide_' | append: i | append: '_heading' -%}
+                  {%- if block.settings[tc_content_key] != blank -%}
+                    {%- assign tc_slide_count = tc_slide_count | plus: 1 -%}
+                    <div class="sbb-carousel__slide sbb-text-carousel__slide{% if tc_slide_count == 1 %} is-active{% endif %}">
+                      {%- if block.settings[tc_heading_key] != blank -%}
+                        <p class="sbb-text-carousel__heading">{{ block.settings[tc_heading_key] }}</p>
+                      {%- endif -%}
+                      <div class="sbb-text-carousel__body">{{ block.settings[tc_content_key] }}</div>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              {%- if tc_slide_count > 1 -%}
+              <button class="sbb-carousel__btn sbb-carousel__btn--prev" aria-label="Precedente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="sbb-carousel__btn sbb-carousel__btn--next" aria-label="Successivo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+              </button>
+              <div class="sbb-carousel__dots">
+                {%- for d in (1..tc_slide_count) -%}
+                  <span class="sbb-carousel__dot{% if d == 1 %} is-active{% endif %}" data-index="{{ d | minus: 1 }}"></span>
+                {%- endfor -%}
+              </div>
+              {%- endif -%}
+            </div>
+
             {%- comment -%} ── footer ───────────────────────────── {%- endcomment -%}
             {%- when 'footer' -%}
             <div
@@ -1190,6 +1233,42 @@
           { "value": "right",  "label": "Destra" }
         ], "default": "left" },
         { "type": "color", "id": "text_color", "label": "Colore testo" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "text_carousel",
+      "name": "Text Carousel",
+      "settings": [
+        { "type": "color_scheme", "id": "color_scheme", "label": "t:global.colors.scheme", "default": "scheme-1" },
+        { "type": "select", "id": "text_align", "label": "Allineamento testo", "options": [
+          { "value": "left",   "label": "Sinistra" },
+          { "value": "center", "label": "Centro"   },
+          { "value": "right",  "label": "Destra"   }
+        ], "default": "left" },
+        { "type": "header", "content": "Slide 1" },
+        { "type": "text",     "id": "slide_1_heading", "label": "Titolo" },
+        { "type": "richtext", "id": "slide_1_content", "label": "Testo" },
+        { "type": "header", "content": "Slide 2" },
+        { "type": "text",     "id": "slide_2_heading", "label": "Titolo" },
+        { "type": "richtext", "id": "slide_2_content", "label": "Testo" },
+        { "type": "header", "content": "Slide 3" },
+        { "type": "text",     "id": "slide_3_heading", "label": "Titolo" },
+        { "type": "richtext", "id": "slide_3_content", "label": "Testo" },
+        { "type": "header", "content": "Slide 4" },
+        { "type": "text",     "id": "slide_4_heading", "label": "Titolo" },
+        { "type": "richtext", "id": "slide_4_content", "label": "Testo" },
+        { "type": "header", "content": "Slide 5" },
+        { "type": "text",     "id": "slide_5_heading", "label": "Titolo" },
+        { "type": "richtext", "id": "slide_5_content", "label": "Testo" },
+        { "type": "header", "content": "Autoplay" },
+        { "type": "checkbox", "id": "autoplay",       "label": "Autoplay abilitato", "default": false },
+        { "type": "range",    "id": "autoplay_speed", "label": "Velocità autoplay (ms)", "min": 2000, "max": 8000, "step": 500, "default": 4000,
+          "visible_if": "{{ block.settings.autoplay }}" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
