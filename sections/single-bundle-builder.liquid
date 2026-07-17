@@ -205,14 +205,23 @@
 
             {%- comment -%} ── taglia ──────────────────────────── {%- endcomment -%}
             {%- when 'taglia' -%}
+            {%- assign pill_pv = block.settings.pill_padding_v | default: 9 -%}
+            {%- assign pill_ph = block.settings.pill_padding_h | default: 22 -%}
+            {%- assign pill_fs = block.settings.pill_font_size | default: 14 -%}
+            <style>
+              #sbb-root .sbb-pills--{{ block.id }} .sbb-pill {
+                padding: {{ pill_pv }}px {{ pill_ph }}px;
+                font-size: {{ pill_fs }}px;
+              }
+            </style>
             <div
               class="sbb-selectors"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
               <div class="sbb-selector-group sbb-selector-group--full">
-                <div class="sbb-selector-label">{{ block.settings.label | default: 'Taglia' }}</div>
-                <div class="sbb-pills">
+                {%- unless block.settings.show_label == false -%}<div class="sbb-selector-label">{{ block.settings.label | default: 'Taglia' }}</div>{%- endunless -%}
+                <div class="sbb-pills sbb-pills--{{ block.id }}">
                   <button class="sbb-pill is-selected" type="button" data-length="{{ block.settings.size_1_value | default: '130cm' }}">
                     {{- block.settings.size_1_label | default: '130 cm' -}}
                   </button>
@@ -876,6 +885,12 @@
       "limit": 1,
       "settings": [
         {
+          "type": "checkbox",
+          "id": "show_label",
+          "label": "Mostra etichetta",
+          "default": true
+        },
+        {
           "type": "text",
           "id": "label",
           "label": "Etichetta",
@@ -905,6 +920,10 @@
           "label": "Valore taglia 2",
           "default": "150cm"
         },
+        { "type": "header", "content": "Stile capsule" },
+        { "type": "range", "id": "pill_padding_v", "label": "Padding verticale",    "min": 4,  "max": 24, "step": 1, "unit": "px", "default": 9  },
+        { "type": "range", "id": "pill_padding_h", "label": "Padding orizzontale",  "min": 8,  "max": 60, "step": 2, "unit": "px", "default": 22 },
+        { "type": "range", "id": "pill_font_size", "label": "Dimensione font",      "min": 10, "max": 24, "step": 1, "unit": "px", "default": 14 },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },

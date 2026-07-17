@@ -147,11 +147,7 @@
           moving it inside the main allows to have all the sections (including sections inside the footer group) to be
           consecutive, and hence having a cleaner margin collapsing management.
       {%- endcomment -%}
-      {%- assign _is_bundle_page = false -%}
-      {%- if request.page_type == 'page' and page.template_suffix == 'bundle' -%}
-        {%- assign _is_bundle_page = true -%}
-      {%- endif -%}
-      {%- if request.page_type != 'password' and _is_bundle_page == false -%}
+      {%- if request.page_type != 'password' -%}
         {%- sections 'footer-group' -%}
       {%- endif -%}
     </main>

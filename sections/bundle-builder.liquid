@@ -17,6 +17,10 @@
 
 {{ 'bundle-builder.css' | asset_url | stylesheet_tag }}
 
+<style>
+  .shopify-section-group-footer-group { display: none; }
+</style>
+
 <div class="bb-wrap-outer">
   <div class="bb-wrap" id="bb-root" data-media-url="{{ 'bundle-builder-media.json' | asset_url }}" data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}" data-success-logo-url="{{ 'MotifinoIcon-1.svg' | asset_url }}">
     {%- comment -%} ══ SCREEN 1: BELT COMPOSER ════════════════════== {%- endcomment -%}
