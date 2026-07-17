@@ -269,7 +269,7 @@
               id="sbb-title"
               data-base-title="{{ block.settings.product_title | default: 'Set Cintura Singola' | escape }}"
               {{ block.shopify_attributes }}
-              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.font_size != blank %}font-size:{{ block.settings.font_size }}px;{% endif %}"
             >
               {{- block.settings.product_title | default: 'Set Cintura Singola' -}}
             </h1>
@@ -352,7 +352,7 @@
               id="sbb-atc-btn"
               type="button"
               {{ block.shopify_attributes }}
-              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}"
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}{% if block.settings.font_size != blank %}font-size:{{ block.settings.font_size }}px;{% endif %}"
             >
               {{ block.settings.button_text | default: 'Aggiungi al Carrello' }}
             </button>
@@ -1020,6 +1020,8 @@
           "label": "Titolo prodotto",
           "default": "Set Cintura Singola"
         },
+        { "type": "header", "content": "Stile" },
+        { "type": "range", "id": "font_size", "label": "Dimensione font", "min": 16, "max": 60, "step": 1, "unit": "px", "default": 28 },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
@@ -1097,6 +1099,8 @@
           "label": "Testo pulsante",
           "default": "Aggiungi al Carrello"
         },
+        { "type": "header", "content": "Stile" },
+        { "type": "range", "id": "font_size", "label": "Dimensione font", "min": 12, "max": 28, "step": 1, "unit": "px", "default": 16 },
         { "type": "header", "content": "Colori" },
         {
           "type": "color",
