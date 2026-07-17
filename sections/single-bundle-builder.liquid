@@ -47,6 +47,7 @@
 </style>
 {%- endif -%}
 
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
 {%- assign dd_bw = section.settings.dropdown_border_width | default: 1 -%}
 {%- assign dd_bc = section.settings.dropdown_border_color | default: '#e0e0e0' -%}
 <style>
@@ -64,7 +65,7 @@
 </style>
 
 <div
-  class="sbb-wrap"
+  class="sbb-wrap color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }}"
   id="sbb-root"
   data-media-url="{{ 'bundle-builder-media.json' | asset_url }}"
   data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}"
@@ -696,9 +697,15 @@
       "content": "Aspetto sezione"
     },
     {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
       "type": "color",
       "id": "bg_color",
-      "label": "Colore sfondo sezione"
+      "label": "Colore sfondo sezione (override)"
     },
     {
       "type": "header",
