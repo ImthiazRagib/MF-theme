@@ -476,17 +476,41 @@
 
             {%- comment -%} ── image ────────────────────────────── {%- endcomment -%}
             {%- when 'image' -%}
-            {%- assign img_ar  = block.settings.aspect_ratio | default: 'auto' -%}
-            {%- assign img_pos = block.settings.img_position | default: 'center center' -%}
-            {%- assign img_style = 'width:100%;height:100%;object-fit:cover;object-position:' | append: img_pos -%}
+            {%- assign img_ar     = block.settings.aspect_ratio | default: 'auto' -%}
+            {%- assign img_pos    = block.settings.img_position | default: 'center center' -%}
+            {%- assign img_align  = block.settings.alignment | default: 'left' -%}
+            {%- assign img_wtype  = block.settings.img_width_type | default: 'full' -%}
+            {%- assign img_blk_id = 'sbb-img-' | append: block.id -%}
+            {%- if img_ar == 'auto' -%}
+              {%- assign img_tag_style = 'width:100%;height:auto;display:block;' -%}
+            {%- else -%}
+              {%- assign img_tag_style = 'width:100%;height:100%;object-fit:cover;object-position:' | append: img_pos -%}
+            {%- endif -%}
+            {%- if img_wtype == 'custom' -%}
+            <style>
+              #{{ img_blk_id }} .sbb-block-image__wrap { max-width: {{ block.settings.img_max_width | default: 300 }}px; }
+              @media (max-width: 749px) {
+                #{{ img_blk_id }} .sbb-block-image__wrap { max-width: {{ block.settings.img_max_width_mobile | default: 200 }}px; }
+              }
+            </style>
+            {%- endif -%}
             <div
+              id="{{ img_blk_id }}"
               class="sbb-block-image"
               {{ block.shopify_attributes }}
-              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;text-align:{{ img_align }};"
             >
               {%- if block.settings.image != blank -%}
-                <div style="{% unless img_ar == 'auto' %}aspect-ratio:{{ img_ar }};{% endunless %}overflow:hidden;width:100%;">
-                  {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'sbb-block-image__img', style: img_style }}
+                <div
+                  class="sbb-block-image__wrap"
+                  style="display:{% if img_wtype == 'custom' %}inline-block{% else %}block{% endif %};width:100%;{% unless img_ar == 'auto' %}aspect-ratio:{{ img_ar }};overflow:hidden;{% endunless %}"
+                >
+                  {%- assign img_tag = block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'sbb-block-image__img', style: img_tag_style -%}
+                  {%- if block.settings.link != blank -%}
+                    <a href="{{ block.settings.link }}" target="_blank" rel="noopener">{{ img_tag }}</a>
+                  {%- else -%}
+                    {{ img_tag }}
+                  {%- endif -%}
                 </div>
               {%- else -%}
                 <div class="sbb-block-image__placeholder">
@@ -1243,7 +1267,27 @@
       "name": "Image",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Immagine" },
+        { "type": "url",  "id": "link",    "label": "Link" },
         { "type": "text", "id": "caption", "label": "Didascalia" },
+        { "type": "select", "id": "alignment", "label": "Allineamento",
+          "options": [
+            { "value": "left",   "label": "Sinistra" },
+            { "value": "center", "label": "Centro" },
+            { "value": "right",  "label": "Destra" }
+          ],
+          "default": "left"
+        },
+        { "type": "radio", "id": "img_width_type", "label": "Larghezza immagine",
+          "options": [
+            { "value": "full",   "label": "Larghezza piena" },
+            { "value": "custom", "label": "Personalizzata" }
+          ],
+          "default": "full"
+        },
+        { "type": "range", "id": "img_max_width",        "label": "Larghezza massima",         "min": 40, "max": 800, "step": 10, "unit": "px", "default": 300,
+          "visible_if": "{{ block.settings.img_width_type == 'custom' }}" },
+        { "type": "range", "id": "img_max_width_mobile", "label": "Larghezza massima (mobile)", "min": 40, "max": 600, "step": 10, "unit": "px", "default": 200,
+          "visible_if": "{{ block.settings.img_width_type == 'custom' }}" },
         { "type": "header", "content": "Dimensioni" },
         {
           "type": "select", "id": "aspect_ratio", "label": "Proporzioni immagine",
@@ -1275,7 +1319,8 @@
             { "value": "bottom left",   "label": "In basso a sinistra" },
             { "value": "bottom right",  "label": "In basso a destra" }
           ],
-          "default": "center center"
+          "default": "center center",
+          "visible_if": "{{ block.settings.aspect_ratio != 'auto' }}"
         },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
