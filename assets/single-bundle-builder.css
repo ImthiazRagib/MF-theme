@@ -405,8 +405,11 @@
 }
 @media (min-width: 768px) {
   .sbb-dropdowns-row {
-    margin-left: -48px;
-    margin-right: -40px;
+    margin-left: 0;
+    margin-right: 0;
+    border-left: 1px solid var(--sbb-border);
+    border-right: 1px solid var(--sbb-border);
+    border-radius: 4px;
   }
 }
 @media (max-width: 360px) {
