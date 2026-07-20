@@ -89,23 +89,38 @@
     <div class="sbb-col-image">
       {%- for block in section.blocks -%}
         {%- if block.type == 'gallery' -%}
+          {%- assign gallery_id = 'sbb-gallery-' | append: block.id -%}
+          {%- assign mob_ar   = block.settings.aspect_ratio | default: '4/5' -%}
+          {%- assign desk_ar  = block.settings.aspect_ratio_desktop | default: mob_ar -%}
+          {%- assign mob_pos  = block.settings.img_position | default: 'center center' -%}
+          {%- assign desk_pos = block.settings.img_position_desktop | default: mob_pos -%}
+          <style>
+            #{{ gallery_id }} { aspect-ratio: {{ mob_ar }}; }
+            #{{ gallery_id }} #sbb-main-img,
+            #{{ gallery_id }} #sbb-worn-img { object-position: {{ mob_pos }}; }
+            @media (min-width: 768px) {
+              #{{ gallery_id }} { aspect-ratio: {{ desk_ar }}; height: auto; }
+              #{{ gallery_id }} #sbb-main-img,
+              #{{ gallery_id }} #sbb-worn-img { object-position: {{ desk_pos }}; }
+            }
+          </style>
           <div
+            id="{{ gallery_id }}"
             class="sbb-hero"
             {{ block.shopify_attributes }}
-            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;aspect-ratio:{{ block.settings.aspect_ratio | default: '4/5' }};width:100%;overflow:hidden;"
+            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;width:100%;overflow:hidden;"
           >
-            {%- assign img_pos = block.settings.img_position | default: 'center center' -%}
             <img
               id="sbb-main-img"
               src=""
               alt="Anteprima combinazione"
-              style="opacity:0;display:none;width:100%;height:100%;object-fit:cover;object-position:{{ img_pos }};"
+              style="opacity:0;display:none;width:100%;height:100%;object-fit:cover;"
             >
             <img
               id="sbb-worn-img"
               src=""
               alt="Indossato"
-              style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ img_pos }};"
+              style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
             >
             {%- assign worn_style = block.settings.worn_btn_style | default: 'solid' -%}
             {%- assign worn_fs    = block.settings.worn_btn_font_size | default: 13 -%}
@@ -913,7 +928,39 @@
           "default": "solid"
         },
         { "type": "range", "id": "worn_btn_font_size", "label": "Dimensione font", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
-        { "type": "header", "content": "Dimensioni" },
+        { "type": "header", "content": "Dimensioni — Desktop" },
+        {
+          "type": "select", "id": "aspect_ratio_desktop", "label": "Proporzioni immagine",
+          "options": [
+            { "value": "1/1",   "label": "1:1 — Quadrato" },
+            { "value": "4/5",   "label": "4:5 — Ritratto" },
+            { "value": "5/4",   "label": "5:4 — Paesaggio" },
+            { "value": "3/4",   "label": "3:4 — Ritratto" },
+            { "value": "4/3",   "label": "4:3 — Paesaggio" },
+            { "value": "2/3",   "label": "2:3 — Ritratto" },
+            { "value": "3/2",   "label": "3:2 — Paesaggio" },
+            { "value": "9/16",  "label": "9:16 — Verticale" },
+            { "value": "16/9",  "label": "16:9 — Widescreen" },
+            { "value": "21/9",  "label": "21:9 — Ultra-wide" }
+          ],
+          "default": "4/5"
+        },
+        {
+          "type": "select", "id": "img_position_desktop", "label": "Posizione immagine",
+          "options": [
+            { "value": "center center", "label": "Centro" },
+            { "value": "top center",    "label": "In alto" },
+            { "value": "bottom center", "label": "In basso" },
+            { "value": "center left",   "label": "Sinistra" },
+            { "value": "center right",  "label": "Destra" },
+            { "value": "top left",      "label": "In alto a sinistra" },
+            { "value": "top right",     "label": "In alto a destra" },
+            { "value": "bottom left",   "label": "In basso a sinistra" },
+            { "value": "bottom right",  "label": "In basso a destra" }
+          ],
+          "default": "center center"
+        },
+        { "type": "header", "content": "Dimensioni — Mobile" },
         {
           "type": "select", "id": "aspect_ratio", "label": "Proporzioni immagine",
           "options": [
