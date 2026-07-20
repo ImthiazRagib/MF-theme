@@ -92,7 +92,7 @@
           <div
             class="sbb-hero"
             {{ block.shopify_attributes }}
-            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;width:{{ block.settings.img_width | default: 100 }}%;max-height:{{ block.settings.img_max_height | default: 500 }}px;overflow:hidden;"
+            style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;aspect-ratio:{{ block.settings.aspect_ratio | default: '4/5' }};width:100%;overflow:hidden;"
           >
             <img
               id="sbb-main-img"
@@ -881,8 +881,22 @@
         },
         { "type": "range", "id": "worn_btn_font_size", "label": "Dimensione font", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
         { "type": "header", "content": "Dimensioni" },
-        { "type": "range", "id": "img_width",      "label": "Larghezza (%)",    "min": 20,  "max": 100, "step": 5,  "unit": "%",  "default": 100 },
-        { "type": "range", "id": "img_max_height",  "label": "Altezza massima",  "min": 100, "max": 800, "step": 20, "unit": "px", "default": 500 },
+        {
+          "type": "select", "id": "aspect_ratio", "label": "Proporzioni immagine",
+          "options": [
+            { "value": "1/1",   "label": "1:1 — Quadrato" },
+            { "value": "4/5",   "label": "4:5 — Ritratto" },
+            { "value": "5/4",   "label": "5:4 — Paesaggio" },
+            { "value": "3/4",   "label": "3:4 — Ritratto" },
+            { "value": "4/3",   "label": "4:3 — Paesaggio" },
+            { "value": "2/3",   "label": "2:3 — Ritratto" },
+            { "value": "3/2",   "label": "3:2 — Paesaggio" },
+            { "value": "9/16",  "label": "9:16 — Verticale" },
+            { "value": "16/9",  "label": "16:9 — Widescreen" },
+            { "value": "21/9",  "label": "21:9 — Ultra-wide" }
+          ],
+          "default": "4/5"
+        },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
