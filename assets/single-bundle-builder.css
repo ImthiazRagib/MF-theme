@@ -430,6 +430,9 @@
   display: none;
 }
 @media (min-width: 768px) {
+  .sbb-selector-group--desktop-only {
+    display: block;
+  }
   .sbb-dropdowns-row--desktop {
     display: grid;
   }
