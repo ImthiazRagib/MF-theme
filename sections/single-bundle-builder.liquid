@@ -26,27 +26,6 @@
 
 {{ 'single-bundle-builder.css' | asset_url | stylesheet_tag }}
 
-{%- if section.settings.allow_transparent_header -%}
-<style>
-  @media (min-width: 768px) {
-    :has(#sbb-root[allow-transparent-header]) .header {
-      margin-block-end: 0 !important;
-      background: revert !important;
-      border-color: revert !important;
-      --header-show-transparent-logo: 0 !important;
-    }
-  }
-</style>
-{%- endif -%}
-{%- if section.settings.allow_transparent_header and section.settings.transparent_header_use_primary_colors -%}
-<style>
-  .header {
-    --header-show-transparent-logo: 0 !important;
-    --header-transparent-header-text-color: initial;
-  }
-</style>
-{%- endif -%}
-
 {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
 {%- assign dd_bw = section.settings.dropdown_border_width | default: 1 -%}
 {%- assign dd_bc = section.settings.dropdown_border_color | default: '#e0e0e0' -%}
