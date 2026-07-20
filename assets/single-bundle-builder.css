@@ -422,6 +422,22 @@
   }
 }
 
+/* ── Desktop-only dropdown row ───────────────────────────── */
+.sbb-selector-group--desktop-only {
+  display: none;
+}
+.sbb-dropdowns-row--desktop {
+  display: none;
+}
+@media (min-width: 768px) {
+  .sbb-dropdowns-row--desktop {
+    display: grid;
+  }
+  .sbb-dropdowns-row:not(.sbb-dropdowns-row--desktop) {
+    display: none;
+  }
+}
+
 /* ── Dropdowns (above title) ────────────────────────────── */
 .sbb-dropdowns {
   display: grid;

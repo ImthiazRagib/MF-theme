@@ -211,31 +211,38 @@
 
   /* ── Strap dropdown ─────────────────────────────────────── */
   function renderStrapDropdown() {
-    const list = document.getElementById('sbb-strap-list');
-    if (!list) return;
-
+    var strapPairs = [
+      { listId: 'sbb-strap-list',   dropId: 'sbb-strap-dropdown'   },
+      { listId: 'sbb-strap-list-d', dropId: 'sbb-strap-dropdown-d' },
+    ];
     const len = state.length.replace('cm', '');
 
-    list.innerHTML = Object.entries(STRAPS).map(function ([key, strap]) {
-      const imgSrc = _media && _media.straps && _media.straps[key] && _media.straps[key][len]
-        ? _media.straps[key][len] : '';
-      return '<div class="sbb-dropdown__option' + (key === state.strap ? ' is-selected' : '') + '" data-value="' + key + '">'
-        + (imgSrc
-          ? '<img class="sbb-dropdown__opt-img" src="' + imgSrc + '" alt="' + strap.name + '" loading="lazy">'
-          : '<div class="sbb-dropdown__opt-img"></div>')
-        + '<div class="sbb-dropdown__opt-swatch" style="background:' + strap.hex + '"></div>'
-        + '<span class="sbb-dropdown__opt-name">' + strap.name + '</span>'
-        + '</div>';
-    }).join('');
+    strapPairs.forEach(function (ids) {
+      const list = document.getElementById(ids.listId);
+      if (!list) return;
 
-    list.querySelectorAll('.sbb-dropdown__option').forEach(function (opt) {
-      opt.addEventListener('click', function () {
-        state.strap = opt.dataset.value;
-        closeDropdown('sbb-strap-dropdown');
-        updateStrapTrigger();
-        renderStrapDropdown();
-        renderGallery();
-        updateTitle();
+      list.innerHTML = Object.entries(STRAPS).map(function ([key, strap]) {
+        const imgSrc = _media && _media.straps && _media.straps[key] && _media.straps[key][len]
+          ? _media.straps[key][len] : '';
+        return '<div class="sbb-dropdown__option' + (key === state.strap ? ' is-selected' : '') + '" data-value="' + key + '">'
+          + (imgSrc
+            ? '<img class="sbb-dropdown__opt-img" src="' + imgSrc + '" alt="' + strap.name + '" loading="lazy">'
+            : '<div class="sbb-dropdown__opt-img"></div>')
+          + '<div class="sbb-dropdown__opt-swatch" style="background:' + strap.hex + '"></div>'
+          + '<span class="sbb-dropdown__opt-name">' + strap.name + '</span>'
+          + '</div>';
+      }).join('');
+
+      list.querySelectorAll('.sbb-dropdown__option').forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          state.strap = opt.dataset.value;
+          closeDropdown('sbb-strap-dropdown');
+          closeDropdown('sbb-strap-dropdown-d');
+          updateStrapTrigger();
+          renderStrapDropdown();
+          renderGallery();
+          updateTitle();
+        });
       });
     });
 
@@ -249,40 +256,50 @@
     const imgSrc = _media && _media.straps && _media.straps[state.strap] && _media.straps[state.strap][len]
       ? _media.straps[state.strap][len] : '';
 
-    const trigger = document.querySelector('#sbb-strap-dropdown .sbb-dropdown__trigger');
-    if (!trigger) return;
-    const imgEl    = trigger.querySelector('.sbb-dropdown__trigger-img');
-    const swatchEl = trigger.querySelector('.sbb-dropdown__trigger-swatch');
-    const nameEl   = trigger.querySelector('.sbb-dropdown__trigger-name');
+    ['sbb-strap-dropdown', 'sbb-strap-dropdown-d'].forEach(function (dropId) {
+      const trigger = document.querySelector('#' + dropId + ' .sbb-dropdown__trigger');
+      if (!trigger) return;
+      const imgEl    = trigger.querySelector('.sbb-dropdown__trigger-img');
+      const swatchEl = trigger.querySelector('.sbb-dropdown__trigger-swatch');
+      const nameEl   = trigger.querySelector('.sbb-dropdown__trigger-name');
 
-    if (imgEl)    { imgEl.src = imgSrc; imgEl.style.display = imgSrc ? '' : 'none'; }
-    if (swatchEl) { swatchEl.style.background = strap.hex; }
-    if (nameEl)   { nameEl.textContent = strap.name; }
+      if (imgEl)    { imgEl.src = imgSrc; imgEl.style.display = imgSrc ? '' : 'none'; }
+      if (swatchEl) { swatchEl.style.background = strap.hex; }
+      if (nameEl)   { nameEl.textContent = strap.name; }
+    });
   }
 
   /* ── Buckle dropdown ────────────────────────────────────── */
   function renderBuckleDropdown() {
-    const list = document.getElementById('sbb-buckle-list');
-    if (!list) return;
+    var bucklePairs = [
+      { listId: 'sbb-buckle-list',   dropId: 'sbb-buckle-dropdown'   },
+      { listId: 'sbb-buckle-list-d', dropId: 'sbb-buckle-dropdown-d' },
+    ];
 
-    list.innerHTML = Object.entries(BUCKLES).map(function ([key, buckle]) {
-      const imgSrc = _media && _media.buckles && _media.buckles[key] ? _media.buckles[key] : '';
-      return '<div class="sbb-dropdown__option' + (key === state.buckle ? ' is-selected' : '') + '" data-value="' + key + '">'
-        + (imgSrc
-          ? '<img class="sbb-dropdown__opt-img" src="' + imgSrc + '" alt="' + buckle.name + '" loading="lazy">'
-          : '<div class="sbb-dropdown__opt-img"></div>')
-        + '<span class="sbb-dropdown__opt-name">' + buckle.name + '</span>'
-        + '</div>';
-    }).join('');
+    bucklePairs.forEach(function (ids) {
+      const list = document.getElementById(ids.listId);
+      if (!list) return;
 
-    list.querySelectorAll('.sbb-dropdown__option').forEach(function (opt) {
-      opt.addEventListener('click', function () {
-        state.buckle = opt.dataset.value;
-        closeDropdown('sbb-buckle-dropdown');
-        updateBuckleTrigger();
-        renderBuckleDropdown();
-        renderGallery();
-        updateTitle();
+      list.innerHTML = Object.entries(BUCKLES).map(function ([key, buckle]) {
+        const imgSrc = _media && _media.buckles && _media.buckles[key] ? _media.buckles[key] : '';
+        return '<div class="sbb-dropdown__option' + (key === state.buckle ? ' is-selected' : '') + '" data-value="' + key + '">'
+          + (imgSrc
+            ? '<img class="sbb-dropdown__opt-img" src="' + imgSrc + '" alt="' + buckle.name + '" loading="lazy">'
+            : '<div class="sbb-dropdown__opt-img"></div>')
+          + '<span class="sbb-dropdown__opt-name">' + buckle.name + '</span>'
+          + '</div>';
+      }).join('');
+
+      list.querySelectorAll('.sbb-dropdown__option').forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          state.buckle = opt.dataset.value;
+          closeDropdown('sbb-buckle-dropdown');
+          closeDropdown('sbb-buckle-dropdown-d');
+          updateBuckleTrigger();
+          renderBuckleDropdown();
+          renderGallery();
+          updateTitle();
+        });
       });
     });
 
@@ -295,13 +312,15 @@
     const imgSrc = _media && _media.buckles && _media.buckles[state.buckle]
       ? _media.buckles[state.buckle] : '';
 
-    const trigger = document.querySelector('#sbb-buckle-dropdown .sbb-dropdown__trigger');
-    if (!trigger) return;
-    const imgEl  = trigger.querySelector('.sbb-dropdown__trigger-img');
-    const nameEl = trigger.querySelector('.sbb-dropdown__trigger-name');
+    ['sbb-buckle-dropdown', 'sbb-buckle-dropdown-d'].forEach(function (dropId) {
+      const trigger = document.querySelector('#' + dropId + ' .sbb-dropdown__trigger');
+      if (!trigger) return;
+      const imgEl  = trigger.querySelector('.sbb-dropdown__trigger-img');
+      const nameEl = trigger.querySelector('.sbb-dropdown__trigger-name');
 
-    if (imgEl)  { imgEl.src = imgSrc; imgEl.style.display = imgSrc ? '' : 'none'; }
-    if (nameEl) { nameEl.textContent = buckle.name; }
+      if (imgEl)  { imgEl.src = imgSrc; imgEl.style.display = imgSrc ? '' : 'none'; }
+      if (nameEl) { nameEl.textContent = buckle.name; }
+    });
   }
 
   /* ── Dropdown open/close ────────────────────────────────── */
@@ -512,7 +531,7 @@
     /* Accordion tabs */
     initTabs();
 
-    /* Put buckle + strap dropdowns side-by-side */
+    /* Put buckle + strap dropdowns side-by-side (mobile row) */
     var buckleGroup = document.querySelector('#sbb-buckle-dropdown') &&
       document.querySelector('#sbb-buckle-dropdown').closest('.sbb-selector-group');
     var strapGroup  = document.querySelector('#sbb-strap-dropdown') &&
@@ -523,6 +542,21 @@
       buckleGroup.parentNode.insertBefore(dropRow, buckleGroup);
       dropRow.appendChild(buckleGroup);
       dropRow.appendChild(strapGroup);
+    }
+
+    /* Put desktop buckle + strap dropdowns side-by-side (desktop row) */
+    var buckleGroupD = document.querySelector('#sbb-buckle-dropdown-d') &&
+      document.querySelector('#sbb-buckle-dropdown-d').closest('.sbb-selector-group');
+    var strapGroupD  = document.querySelector('#sbb-strap-dropdown-d') &&
+      document.querySelector('#sbb-strap-dropdown-d').closest('.sbb-selector-group');
+    if (buckleGroupD && strapGroupD) {
+      var dropRowD = document.createElement('div');
+      dropRowD.className = 'sbb-dropdowns-row sbb-dropdowns-row--desktop';
+      buckleGroupD.parentNode.insertBefore(dropRowD, buckleGroupD);
+      dropRowD.appendChild(buckleGroupD);
+      dropRowD.appendChild(strapGroupD);
+      buckleGroupD.classList.remove('sbb-selector-group--desktop-only');
+      strapGroupD.classList.remove('sbb-selector-group--desktop-only');
     }
   }
 

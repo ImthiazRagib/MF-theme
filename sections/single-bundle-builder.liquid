@@ -218,6 +218,49 @@
               </div>
             </div>
 
+            {%- comment -%} ── buckle_dropdown_desktop ─────────── {%- endcomment -%}
+            {%- when 'buckle_dropdown_desktop' -%}
+            <div
+              class="sbb-selector-group sbb-selector-group--desktop-only"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;"
+            >
+              {%- unless block.settings.show_label == false -%}<div class="sbb-selector-label">{{ block.settings.label | default: 'Fibbia' }}</div>{%- endunless -%}
+              <div class="sbb-dropdown" id="sbb-buckle-dropdown-d">
+                <button class="sbb-dropdown__trigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="sbb-buckle-list-d">
+                  <img class="sbb-dropdown__trigger-img" src="" alt="" style="display:none;" width="38" height="38">
+                  <span class="sbb-dropdown__trigger-label">{{ block.settings.label | default: 'Fibbia' }}</span>
+                  <span class="sbb-dropdown__trigger-name">{{ block.settings.placeholder | default: 'Seleziona fibbia…' }}</span>
+                  <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                <div class="sbb-dropdown__list" role="listbox" id="sbb-buckle-list-d"></div>
+              </div>
+            </div>
+
+            {%- comment -%} ── strap_dropdown_desktop ──────────── {%- endcomment -%}
+            {%- when 'strap_dropdown_desktop' -%}
+            <div
+              class="sbb-selector-group sbb-selector-group--desktop-only"
+              {{ block.shopify_attributes }}
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;"
+            >
+              {%- unless block.settings.show_label == false -%}<div class="sbb-selector-label">{{ block.settings.label | default: 'Cinturino' }}</div>{%- endunless -%}
+              <div class="sbb-dropdown" id="sbb-strap-dropdown-d">
+                <button class="sbb-dropdown__trigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-controls="sbb-strap-list-d">
+                  <img class="sbb-dropdown__trigger-img" src="" alt="" style="display:none;" width="38" height="38">
+                  <div class="sbb-dropdown__trigger-swatch"></div>
+                  <span class="sbb-dropdown__trigger-label">{{ block.settings.label | default: 'Pelle' }}</span>
+                  <span class="sbb-dropdown__trigger-name">{{ block.settings.placeholder | default: 'Seleziona cinturino…' }}</span>
+                  <svg class="sbb-dropdown__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list-d"></div>
+              </div>
+            </div>
+
             {%- comment -%} ── taglia ──────────────────────────── {%- endcomment -%}
             {%- when 'taglia' -%}
             {%- assign pill_pv = block.settings.pill_padding_v | default: 9 -%}
@@ -1081,6 +1124,32 @@
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "buckle_dropdown_desktop",
+      "name": "Fibbia Desktop",
+      "limit": 1,
+      "settings": [
+        { "type": "text",     "id": "label",      "label": "Etichetta",        "default": "Fibbia" },
+        { "type": "checkbox", "id": "show_label", "label": "Mostra etichetta", "default": true },
+        { "type": "text",     "id": "placeholder","label": "Placeholder",      "default": "Seleziona fibbia…" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "strap_dropdown_desktop",
+      "name": "Cinturino Desktop",
+      "limit": 1,
+      "settings": [
+        { "type": "text",     "id": "label",      "label": "Etichetta",        "default": "Cinturino" },
+        { "type": "checkbox", "id": "show_label", "label": "Mostra etichetta", "default": true },
+        { "type": "text",     "id": "placeholder","label": "Placeholder",      "default": "Seleziona cinturino…" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
       ]
     },
     {
