@@ -30,6 +30,9 @@
 {%- assign dd_bw = section.settings.dropdown_border_width | default: 1 -%}
 {%- assign dd_bc = section.settings.dropdown_border_color | default: '#e0e0e0' -%}
 <style>
+  #sbb-root {
+    --sbb-info-col-max-width: {{ section.settings.info_col_max_width | default: 540 }}px;
+  }
   #sbb-root .sbb-dropdowns-row {
     border-width: {{ dd_bw }}px;
     border-color: {{ dd_bc }};
@@ -871,6 +874,16 @@
       "label": "Colore sfondo sezione (override)"
     },
     {
+      "type": "range",
+      "id": "info_col_max_width",
+      "label": "Larghezza massima colonna destra (desktop)",
+      "min": 300,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "default": 540
+    },
+    {
       "type": "header",
       "content": "Bordo Dropdown"
     },
@@ -1060,7 +1073,7 @@
           "type": "checkbox",
           "id": "show_label",
           "label": "Mostra etichetta",
-          "default": true
+          "default": false
         },
         {
           "type": "text",
@@ -1090,7 +1103,7 @@
           "type": "checkbox",
           "id": "show_label",
           "label": "Mostra etichetta",
-          "default": true
+          "default": false
         },
         {
           "type": "text",
@@ -1111,7 +1124,7 @@
       "limit": 1,
       "settings": [
         { "type": "text",     "id": "label",      "label": "Etichetta",        "default": "Fibbia" },
-        { "type": "checkbox", "id": "show_label", "label": "Mostra etichetta", "default": true },
+        { "type": "checkbox", "id": "show_label", "label": "Mostra etichetta", "default": false },
         { "type": "text",     "id": "placeholder","label": "Placeholder",      "default": "Seleziona fibbia…" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
@@ -1124,7 +1137,7 @@
       "limit": 1,
       "settings": [
         { "type": "text",     "id": "label",      "label": "Etichetta",        "default": "Cinturino" },
-        { "type": "checkbox", "id": "show_label", "label": "Mostra etichetta", "default": true },
+        { "type": "checkbox", "id": "show_label", "label": "Mostra etichetta", "default": false },
         { "type": "text",     "id": "placeholder","label": "Placeholder",      "default": "Seleziona cinturino…" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
@@ -1140,7 +1153,7 @@
           "type": "checkbox",
           "id": "show_label",
           "label": "Mostra etichetta",
-          "default": true
+          "default": false
         },
         {
           "type": "text",
