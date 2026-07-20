@@ -130,29 +130,6 @@
               <span>Caricamento anteprima…</span>
             </div>
 
-            {%- if block.settings.annotation_1 != blank -%}
-            <div class="sbb-annotation sbb-annotation--1">
-              <span class="sbb-annotation__text">{{ block.settings.annotation_1 }}</span>
-              <span class="sbb-annotation__line"></span>
-              <span class="sbb-annotation__dot"></span>
-            </div>
-            {%- endif -%}
-
-            {%- if block.settings.annotation_2 != blank -%}
-            <div class="sbb-annotation sbb-annotation--2">
-              <span class="sbb-annotation__dot"></span>
-              <span class="sbb-annotation__line"></span>
-              <span class="sbb-annotation__text">{{ block.settings.annotation_2 }}</span>
-            </div>
-            {%- endif -%}
-
-            {%- if block.settings.annotation_3 != blank -%}
-            <div class="sbb-annotation sbb-annotation--3">
-              <span class="sbb-annotation__dot"></span>
-              <span class="sbb-annotation__line"></span>
-              <span class="sbb-annotation__text">{{ block.settings.annotation_3 }}</span>
-            </div>
-            {%- endif -%}
 
           </div>
         {%- endif -%}
@@ -890,24 +867,6 @@
       "name": "Galleria",
       "limit": 1,
       "settings": [
-        {
-          "type": "text",
-          "id": "annotation_1",
-          "label": "Annotazione 1",
-          "default": "Scegli la fibbia"
-        },
-        {
-          "type": "text",
-          "id": "annotation_2",
-          "label": "Annotazione 2",
-          "default": "Scegli il colore"
-        },
-        {
-          "type": "text",
-          "id": "annotation_3",
-          "label": "Annotazione 3",
-          "default": "NFC Card in omaggio"
-        },
         { "type": "header", "content": "Bottone indossato" },
         { "type": "text",   "id": "worn_btn_label",      "label": "Testo (prodotto → indossato)", "default": "Vedi indossato" },
         { "type": "text",   "id": "worn_btn_back_label", "label": "Testo (indossato → prodotto)",  "default": "Vista prodotto" },
@@ -1366,11 +1325,7 @@
       "blocks": [
         {
           "type": "gallery",
-          "settings": {
-            "annotation_1": "Scegli la fibbia",
-            "annotation_2": "Scegli il colore",
-            "annotation_3": "NFC Card in omaggio"
-          }
+          "settings": {}
         },
         { "type": "buckle_dropdown" },
         { "type": "strap_dropdown" },
