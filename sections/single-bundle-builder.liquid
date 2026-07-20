@@ -361,15 +361,39 @@
 
             {%- comment -%} ── cta_button ──────────────────────── {%- endcomment -%}
             {%- when 'cta_button' -%}
-            <button
-              class="sbb-btn-atc"
-              id="sbb-atc-btn"
-              type="button"
+            {%- assign cta_align       = block.settings.alignment | default: 'left' -%}
+            {%- assign cta_wtype       = block.settings.btn_width_type | default: 'full' -%}
+            {%- assign cta_w           = block.settings.btn_custom_width | default: 300 -%}
+            {%- assign cta_align_d     = block.settings.alignment_desktop | default: cta_align -%}
+            {%- assign cta_wtype_d     = block.settings.btn_width_type_desktop | default: cta_wtype -%}
+            {%- assign cta_w_d         = block.settings.btn_custom_width_desktop | default: cta_w -%}
+            {%- assign cta_id          = 'sbb-cta-' | append: block.id -%}
+            <style>
+              #{{ cta_id }} { text-align: {{ cta_align }}; }
+              #{{ cta_id }} #sbb-atc-btn {
+                {% if cta_wtype == 'custom' %}width:{{ cta_w }}px;max-width:100%;display:inline-flex;{% else %}width:100%;display:flex;{% endif %}
+              }
+              @media (min-width: 768px) {
+                #{{ cta_id }} { text-align: {{ cta_align_d }}; }
+                #{{ cta_id }} #sbb-atc-btn {
+                  {% if cta_wtype_d == 'custom' %}width:{{ cta_w_d }}px;max-width:100%;display:inline-flex;{% else %}width:100%;display:flex;{% endif %}
+                }
+              }
+            </style>
+            <div
+              id="{{ cta_id }}"
               {{ block.shopify_attributes }}
-              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}{% if block.settings.font_size != blank %}font-size:{{ block.settings.font_size }}px;{% endif %}"
+              style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;"
             >
-              {{ block.settings.button_text | default: 'Aggiungi al Carrello' }}
-            </button>
+              <button
+                class="sbb-btn-atc"
+                id="sbb-atc-btn"
+                type="button"
+                style="padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}{% if block.settings.font_size != blank %}font-size:{{ block.settings.font_size }}px;{% endif %}"
+              >
+                {{ block.settings.button_text | default: 'Aggiungi al Carrello' }}
+              </button>
+            </div>
 
             {%- comment -%} ── trust_bar ───────────────────────── {%- endcomment -%}
             {%- when 'trust_bar' -%}
@@ -1200,6 +1224,52 @@
           "id": "button_text",
           "label": "Testo pulsante",
           "default": "Aggiungi al Carrello"
+        },
+        { "type": "header", "content": "Layout — Mobile" },
+        {
+          "type": "select", "id": "alignment", "label": "Allineamento",
+          "options": [
+            { "value": "left",   "label": "Sinistra" },
+            { "value": "center", "label": "Centro" },
+            { "value": "right",  "label": "Destra" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "radio", "id": "btn_width_type", "label": "Larghezza pulsante",
+          "options": [
+            { "value": "full",   "label": "Larghezza piena" },
+            { "value": "custom", "label": "Personalizzata" }
+          ],
+          "default": "full"
+        },
+        {
+          "type": "range", "id": "btn_custom_width", "label": "Larghezza (px)",
+          "min": 80, "max": 800, "step": 10, "unit": "px", "default": 300,
+          "visible_if": "{{ block.settings.btn_width_type == 'custom' }}"
+        },
+        { "type": "header", "content": "Layout — Desktop" },
+        {
+          "type": "select", "id": "alignment_desktop", "label": "Allineamento",
+          "options": [
+            { "value": "left",   "label": "Sinistra" },
+            { "value": "center", "label": "Centro" },
+            { "value": "right",  "label": "Destra" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "radio", "id": "btn_width_type_desktop", "label": "Larghezza pulsante",
+          "options": [
+            { "value": "full",   "label": "Larghezza piena" },
+            { "value": "custom", "label": "Personalizzata" }
+          ],
+          "default": "full"
+        },
+        {
+          "type": "range", "id": "btn_custom_width_desktop", "label": "Larghezza (px)",
+          "min": 80, "max": 800, "step": 10, "unit": "px", "default": 300,
+          "visible_if": "{{ block.settings.btn_width_type_desktop == 'custom' }}"
         },
         { "type": "header", "content": "Stile" },
         { "type": "range", "id": "font_size", "label": "Dimensione font", "min": 12, "max": 28, "step": 1, "unit": "px", "default": 16 },
