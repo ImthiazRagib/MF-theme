@@ -54,6 +54,7 @@
 @media (min-width: 768px) {
   .sbb-col-info {
     flex: 1;
+    padding-block-start: var(--header-height, 0px);
   }
 }
 
