@@ -49,8 +49,7 @@
   @media (max-width: 767px) { #sbb-root .sbb-vis--hide-mobile { display: none !important; } }
   {%- if section.settings.sticky_info_col -%}
   @media (min-width: 768px) {
-    #sbb-root .sbb-col-info { position: sticky; top: 0; height: 100vh; overflow-y: auto; scrollbar-width: none; }
-    #sbb-root .sbb-col-info::-webkit-scrollbar { display: none; }
+    #sbb-root .sbb-info { position: sticky; top: var(--header-height, 0px); }
   }
   {%- endif -%}
   /* viewport-critical: prevent flash before external CSS loads */

@@ -26,7 +26,7 @@
 @media (min-width: 768px) {
   .sbb-product-row {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
   }
 }
 
@@ -465,7 +465,6 @@
   margin-bottom: 22px;
 }
 
-.sbb-selector-group {}
 
 .sbb-selector-label {
   font-size: 11px;
