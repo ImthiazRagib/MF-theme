@@ -55,7 +55,6 @@
   .sbb-col-info {
     flex: 1;
     max-width: var(--sbb-info-col-max-width, 540px);
-    padding-block-start: var(--header-height, 0px);
   }
 }
 
@@ -218,16 +217,12 @@
   padding: 0 20px 28px;
 }
 
-@media (min-width: 768px) {
-  .sbb-info {
-    padding: 48px 40px 48px 48px;
-  }
-}
 
 /* ── Rating ─────────────────────────────────────────────── */
 .sbb-rating {
   display: flex;
   align-items: center;
+  justify-content: var(--sbb-align, flex-start);
   gap: 7px;
   margin-bottom: 10px;
 }
@@ -271,7 +266,7 @@
 .sbb-price-wrap {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: var(--sbb-align, flex-start);
   gap: 4px;
   margin-bottom: 14px;
 }
@@ -325,6 +320,7 @@
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+  justify-content: var(--sbb-align, flex-start);
   margin-bottom: 18px;
 }
 .sbb-btn {

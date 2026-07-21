@@ -47,6 +47,13 @@
   /* block visibility toggles */
   @media (min-width: 768px) { #sbb-root .sbb-vis--hide-desktop { display: none !important; } }
   @media (max-width: 767px) { #sbb-root .sbb-vis--hide-mobile { display: none !important; } }
+  @media (min-width: 768px) {
+    #sbb-root .sbb-info {
+      padding: {{ section.settings.info_pad_top | default: 48 }}px {{ section.settings.info_pad_right | default: 40 }}px {{ section.settings.info_pad_bottom | default: 48 }}px {{ section.settings.info_pad_left | default: 48 }}px;
+      text-align: {{ section.settings.info_align | default: 'left' }};
+      --sbb-align: {% if section.settings.info_align == 'center' %}center{% elsif section.settings.info_align == 'right' %}flex-end{% else %}flex-start{% endif %};
+    }
+  }
   {%- if section.settings.sticky_info_col -%}
   @media (min-width: 768px) {
     #sbb-root .sbb-info { position: sticky; top: var(--header-height, 0px); }
@@ -90,16 +97,24 @@
       {%- for block in section.blocks -%}
         {%- if block.type == 'gallery' -%}
           {%- assign gallery_id = 'sbb-gallery-' | append: block.id -%}
-          {%- assign mob_ar   = block.settings.aspect_ratio | default: '4/5' -%}
-          {%- assign desk_ar  = block.settings.aspect_ratio_desktop | default: mob_ar -%}
-          {%- assign mob_pos  = block.settings.img_position | default: 'center center' -%}
-          {%- assign desk_pos = block.settings.img_position_desktop | default: mob_pos -%}
+          {%- assign mob_ar        = block.settings.aspect_ratio | default: '4/5' -%}
+          {%- assign desk_ar       = block.settings.aspect_ratio_desktop | default: mob_ar -%}
+          {%- assign mob_pos       = block.settings.img_position | default: 'center center' -%}
+          {%- assign desk_pos      = block.settings.img_position_desktop | default: mob_pos -%}
+          {%- assign desk_mode     = block.settings.desk_size_mode | default: 'ratio' -%}
+          {%- assign desk_cust_w   = block.settings.desk_custom_width | default: 100 -%}
+          {%- assign desk_cust_h   = block.settings.desk_custom_height | default: 600 -%}
           <style>
             #{{ gallery_id }} { aspect-ratio: {{ mob_ar }}; }
             #{{ gallery_id }} #sbb-main-img,
             #{{ gallery_id }} #sbb-worn-img { object-position: {{ mob_pos }}; }
             @media (min-width: 768px) {
+              {%- if desk_mode == 'custom' -%}
+              #sbb-root .sbb-col-image { width: {{ desk_cust_w }}% !important; }
+              #{{ gallery_id }} { height: {{ desk_cust_h }}px; aspect-ratio: unset; }
+              {%- else -%}
               #{{ gallery_id }} { aspect-ratio: {{ desk_ar }}; height: auto; }
+              {%- endif -%}
               #{{ gallery_id }} #sbb-main-img,
               #{{ gallery_id }} #sbb-worn-img { object-position: {{ desk_pos }}; }
             }
@@ -880,18 +895,6 @@
 </div>
 {%- comment -%} /.sbb-wrap {%- endcomment -%}
 
-<script>
-  window.SBB_VARIANTS = {
-    bundle_single:   {{ section.settings.variant_bundle_single   | default: 0 }},
-    strap_130:       {{ section.settings.variant_strap_130       | default: 0 }},
-    strap_150:       {{ section.settings.variant_strap_150       | default: 0 }},
-    buckle_1:        {{ section.settings.variant_buckle_1        | default: 0 }},
-    buckle_2:        {{ section.settings.variant_buckle_2        | default: 0 }},
-    buckle_3:        {{ section.settings.variant_buckle_3        | default: 0 }},
-    buckle_4:        {{ section.settings.variant_buckle_4        | default: 0 }},
-    nfc:             {{ section.settings.variant_logistics_nfc   | default: 0 }},
-  };
-</script>
 
 {{ 'single-bundle-builder.js' | asset_url | script_tag }}
 
@@ -932,6 +935,61 @@
     },
     {
       "type": "header",
+      "content": "Padding desktop — Colonna destra"
+    },
+    {
+      "type": "range",
+      "id": "info_pad_top",
+      "label": "Padding superiore",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "info_pad_right",
+      "label": "Padding destro",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "info_pad_bottom",
+      "label": "Padding inferiore",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "info_pad_left",
+      "label": "Padding sinistro",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "select",
+      "id": "info_align",
+      "label": "Allineamento contenuti",
+      "options": [
+        { "value": "left", "label": "Sinistra" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Destra" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
       "content": "Bordo Dropdown"
     },
     {
@@ -964,56 +1022,6 @@
       "default": false,
       "visible_if": "{{ section.settings.allow_transparent_header }}"
     },
-    {
-      "type": "header",
-      "content": "Variant ID — Bundle prodotto"
-    },
-    {
-      "type": "number",
-      "id": "variant_bundle_single",
-      "label": "Set Cintura Singola — variant ID",
-      "info": "Prodotto Shopify prezzato a €49,99 (SET-CINTURA-SINGOLA)"
-    },
-    {
-      "type": "header",
-      "content": "Variant ID — Tracciamento inventario (facoltativi)"
-    },
-    {
-      "type": "text",
-      "id": "variant_strap_130",
-      "label": "Cinturino 130 cm — variant ID"
-    },
-    {
-      "type": "text",
-      "id": "variant_strap_150",
-      "label": "Cinturino 150 cm — variant ID"
-    },
-    {
-      "type": "number",
-      "id": "variant_buckle_1",
-      "label": "Fibbia Classic Matt — variant ID"
-    },
-    {
-      "type": "number",
-      "id": "variant_buckle_2",
-      "label": "Fibbia Elegant Chrome Silver — variant ID"
-    },
-    {
-      "type": "number",
-      "id": "variant_buckle_3",
-      "label": "Fibbia Elegant Chrome Gold — variant ID"
-    },
-    {
-      "type": "number",
-      "id": "variant_buckle_4",
-      "label": "Fibbia Mirror Chrome — variant ID"
-    },
-    {
-      "type": "number",
-      "id": "variant_logistics_nfc",
-      "label": "NFC Card — variant ID",
-      "info": "Prodotto Draft — solo uso logistico interno"
-    }
   ],
   "blocks": [
     {
@@ -1036,6 +1044,14 @@
         { "type": "range", "id": "worn_btn_font_size", "label": "Dimensione font", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
         { "type": "header", "content": "Dimensioni — Desktop" },
         {
+          "type": "select", "id": "desk_size_mode", "label": "Modalità dimensione",
+          "options": [
+            { "value": "ratio",  "label": "Proporzioni (ratio)" },
+            { "value": "custom", "label": "Personalizzato (px)" }
+          ],
+          "default": "ratio"
+        },
+        {
           "type": "select", "id": "aspect_ratio_desktop", "label": "Proporzioni immagine",
           "options": [
             { "value": "1/1",   "label": "1:1 — Quadrato" },
@@ -1049,7 +1065,20 @@
             { "value": "16/9",  "label": "16:9 — Widescreen" },
             { "value": "21/9",  "label": "21:9 — Ultra-wide" }
           ],
-          "default": "4/5"
+          "default": "4/5",
+          "visible_if": "{{ block.settings.desk_size_mode != 'custom' }}"
+        },
+        {
+          "type": "range", "id": "desk_custom_width",
+          "label": "Larghezza personalizzata",
+          "min": 10, "max": 100, "step": 5, "unit": "%", "default": 100,
+          "visible_if": "{{ block.settings.desk_size_mode == 'custom' }}"
+        },
+        {
+          "type": "range", "id": "desk_custom_height",
+          "label": "Altezza personalizzata",
+          "min": 200, "max": 1200, "step": 10, "unit": "px", "default": 600,
+          "visible_if": "{{ block.settings.desk_size_mode == 'custom' }}"
         },
         {
           "type": "select", "id": "img_position_desktop", "label": "Posizione immagine",
