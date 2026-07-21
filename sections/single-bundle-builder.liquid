@@ -110,7 +110,7 @@
             #{{ gallery_id }} #sbb-worn-img { object-position: {{ mob_pos }}; }
             @media (min-width: 768px) {
               {%- if desk_mode == 'custom' -%}
-              #sbb-root .sbb-col-image { width: {{ desk_cust_w }}% !important; }
+              #sbb-root .sbb-col-image { width: {{ desk_cust_w }}% !important; height: {{ desk_cust_h }}px !important; }
               #{{ gallery_id }} { height: {{ desk_cust_h }}px; aspect-ratio: unset; }
               {%- else -%}
               #{{ gallery_id }} { aspect-ratio: {{ desk_ar }}; height: auto; }
@@ -118,6 +118,11 @@
               #{{ gallery_id }} #sbb-main-img,
               #{{ gallery_id }} #sbb-worn-img { object-position: {{ desk_pos }}; }
             }
+          </style>
+          {%- assign worn_style = block.settings.worn_btn_style | default: 'solid' -%}
+          {%- assign worn_fs    = block.settings.worn_btn_font_size | default: 13 -%}
+          <style>
+            #sbb-worn-toggle { font-size: {{ worn_fs }}px; }
           </style>
           <div
             id="{{ gallery_id }}"
@@ -137,21 +142,6 @@
               alt="Indossato"
               style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
             >
-            {%- assign worn_style = block.settings.worn_btn_style | default: 'solid' -%}
-            {%- assign worn_fs    = block.settings.worn_btn_font_size | default: 13 -%}
-            <style>
-              #sbb-worn-toggle { font-size: {{ worn_fs }}px; }
-            </style>
-            <button
-              class="sbb-worn-btn sbb-worn-btn--{{ worn_style }}"
-              id="sbb-worn-toggle"
-              type="button"
-              data-label="{{ block.settings.worn_btn_label | default: 'Vedi indossato' | escape }}"
-              data-label-back="{{ block.settings.worn_btn_back_label | default: 'Vista prodotto' | escape }}"
-              style="display:none;"
-            >
-              <span class="sbb-worn-btn__label">{{ block.settings.worn_btn_label | default: 'Vedi indossato' }}</span>
-            </button>
             <div id="sbb-gallery-placeholder" class="sbb-hero__placeholder">
               <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -160,9 +150,17 @@
               </svg>
               <span>Caricamento anteprima…</span>
             </div>
-
-
           </div>
+          <button
+            class="sbb-worn-btn sbb-worn-btn--{{ worn_style }}"
+            id="sbb-worn-toggle"
+            type="button"
+            data-label="{{ block.settings.worn_btn_label | default: 'Vedi indossato' | escape }}"
+            data-label-back="{{ block.settings.worn_btn_back_label | default: 'Vista prodotto' | escape }}"
+            style="display:none;"
+          >
+            <span class="sbb-worn-btn__label">{{ block.settings.worn_btn_label | default: 'Vedi indossato' }}</span>
+          </button>
         {%- endif -%}
       {%- endfor -%}
     </div>
