@@ -44,6 +44,16 @@
   #sbb-root .sbb-dropdowns-row:has(.sbb-dropdown.is-open) {
     border-color: {{ dd_bc }};
   }
+  /* viewport-critical: prevent flash before external CSS loads */
+  #sbb-root .sbb-selector-group--desktop-only { display: none; }
+  #sbb-root .sbb-selector-group--mobile-only { display: block; }
+  #sbb-root .sbb-dropdowns-row--desktop { display: none; }
+  @media (min-width: 768px) {
+    #sbb-root .sbb-selector-group--desktop-only { display: block; }
+    #sbb-root .sbb-selector-group--mobile-only { display: none; }
+    #sbb-root .sbb-dropdowns-row--desktop { display: grid; }
+    #sbb-root .sbb-dropdowns-row:not(.sbb-dropdowns-row--desktop) { display: none; }
+  }
 </style>
 
 <div
@@ -148,7 +158,7 @@
             {%- comment -%} ── buckle_dropdown ─────────────────── {%- endcomment -%}
             {%- when 'buckle_dropdown' -%}
             <div
-              class="sbb-selector-group"
+              class="sbb-selector-group sbb-selector-group--mobile-only"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -175,7 +185,7 @@
             {%- comment -%} ── strap_dropdown ──────────────────── {%- endcomment -%}
             {%- when 'strap_dropdown' -%}
             <div
-              class="sbb-selector-group"
+              class="sbb-selector-group sbb-selector-group--mobile-only"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >

@@ -542,6 +542,8 @@
       buckleGroup.parentNode.insertBefore(dropRow, buckleGroup);
       dropRow.appendChild(buckleGroup);
       dropRow.appendChild(strapGroup);
+      buckleGroup.classList.remove('sbb-selector-group--mobile-only');
+      strapGroup.classList.remove('sbb-selector-group--mobile-only');
     }
 
     /* Put desktop buckle + strap dropdowns side-by-side (desktop row) */
