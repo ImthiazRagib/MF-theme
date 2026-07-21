@@ -44,6 +44,9 @@
   #sbb-root .sbb-dropdowns-row:has(.sbb-dropdown.is-open) {
     border-color: {{ dd_bc }};
   }
+  /* block visibility toggles */
+  @media (min-width: 768px) { #sbb-root .sbb-vis--hide-desktop { display: none !important; } }
+  @media (max-width: 767px) { #sbb-root .sbb-vis--hide-mobile { display: none !important; } }
   /* viewport-critical: prevent flash before external CSS loads */
   #sbb-root .sbb-selector-group--desktop-only { display: none; }
   #sbb-root .sbb-selector-group--mobile-only { display: block; }
@@ -150,6 +153,9 @@
       <div class="sbb-info">
 
         {%- for block in section.blocks -%}
+          {%- assign vis_class = '' -%}
+          {%- if block.settings.show_on_desktop == false -%}{%- assign vis_class = vis_class | append: ' sbb-vis--hide-desktop' -%}{%- endif -%}
+          {%- if block.settings.show_on_mobile == false -%}{%- assign vis_class = vis_class | append: ' sbb-vis--hide-mobile' -%}{%- endif -%}
           {%- case block.type -%}
 
             {%- when 'gallery' -%}
@@ -158,7 +164,7 @@
             {%- comment -%} ── buckle_dropdown ─────────────────── {%- endcomment -%}
             {%- when 'buckle_dropdown' -%}
             <div
-              class="sbb-selector-group sbb-selector-group--mobile-only"
+              class="sbb-selector-group sbb-selector-group--mobile-only{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -185,7 +191,7 @@
             {%- comment -%} ── strap_dropdown ──────────────────── {%- endcomment -%}
             {%- when 'strap_dropdown' -%}
             <div
-              class="sbb-selector-group sbb-selector-group--mobile-only"
+              class="sbb-selector-group sbb-selector-group--mobile-only{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -213,7 +219,7 @@
             {%- comment -%} ── buckle_dropdown_desktop ─────────── {%- endcomment -%}
             {%- when 'buckle_dropdown_desktop' -%}
             <div
-              class="sbb-selector-group sbb-selector-group--desktop-only"
+              class="sbb-selector-group sbb-selector-group--desktop-only{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;"
             >
@@ -234,7 +240,7 @@
             {%- comment -%} ── strap_dropdown_desktop ──────────── {%- endcomment -%}
             {%- when 'strap_dropdown_desktop' -%}
             <div
-              class="sbb-selector-group sbb-selector-group--desktop-only"
+              class="sbb-selector-group sbb-selector-group--desktop-only{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;"
             >
@@ -265,7 +271,7 @@
               }
             </style>
             <div
-              class="sbb-selectors"
+              class="sbb-selectors{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -291,7 +297,7 @@
             {%- assign has_half     = false -%}
             {%- if rating_val != rating_floor -%}{%- assign has_half = true -%}{%- endif -%}
             <div
-              class="sbb-rating"
+              class="sbb-rating{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -314,7 +320,7 @@
             {%- comment -%} ── title ───────────────────────────── {%- endcomment -%}
             {%- when 'title' -%}
             <h1
-              class="sbb-title"
+              class="sbb-title{{ vis_class }}"
               id="sbb-title"
               data-base-title="{{ block.settings.product_title | default: 'Set Cintura Singola' | escape }}"
               {{ block.shopify_attributes }}
@@ -326,7 +332,7 @@
             {%- comment -%} ── price ───────────────────────────── {%- endcomment -%}
             {%- when 'price' -%}
             <div
-              class="sbb-price-wrap"
+              class="sbb-price-wrap{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -339,7 +345,7 @@
             {%- comment -%} ── description ─────────────────────── {%- endcomment -%}
             {%- when 'description' -%}
             <div
-              class="sbb-desc"
+              class="sbb-desc{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -353,7 +359,7 @@
             {%- comment -%} ── delivery ────────────────────────── {%- endcomment -%}
             {%- when 'delivery' -%}
             <p
-              class="sbb-delivery"
+              class="sbb-delivery{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >{{ block.settings.delivery_text }}</p>
@@ -363,13 +369,13 @@
             {%- if block.settings.link_url != blank -%}
             <a
               href="{{ block.settings.link_url }}"
-              class="sbb-details-link"
+              class="sbb-details-link{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >{{- block.settings.link_text | default: 'Vedi taglie e dettagli…' -}}</a>
             {%- else -%}
             <span
-              class="sbb-details-link"
+              class="sbb-details-link{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >{{- block.settings.link_text | default: 'Vedi taglie e dettagli…' -}}</span>
@@ -384,7 +390,7 @@
             {%- elsif btn_align == 'right' -%}{%- assign justify = 'flex-end' -%}
             {%- else -%}{%- assign justify = 'flex-start' -%}{%- endif -%}
             <div
-              class="sbb-buttons-block"
+              class="sbb-buttons-block{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% unless btn_stretch %}justify-content:{{ justify }};{% endunless %}"
             >
@@ -417,6 +423,7 @@
             </style>
             <div
               id="{{ cta_id }}"
+              class="{{ vis_class | strip }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;"
             >
@@ -433,7 +440,7 @@
             {%- comment -%} ── trust_bar ───────────────────────── {%- endcomment -%}
             {%- when 'trust_bar' -%}
             <div
-              class="sbb-trust"
+              class="sbb-trust{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -464,7 +471,7 @@
             {%- comment -%} ── accordion ───────────────────────── {%- endcomment -%}
             {%- when 'accordion' -%}
             <div
-              class="sbb-tabs"
+              class="sbb-tabs{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -513,6 +520,7 @@
             {%- when 'button' -%}
             {%- if block.settings.text != blank -%}
             <div
+              class="{{ vis_class | strip }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -530,7 +538,7 @@
             {%- comment -%} ── trustpilot ───────────────────────── {%- endcomment -%}
             {%- when 'trustpilot' -%}
             <div
-              class="sbb-trustpilot"
+              class="sbb-trustpilot{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -570,7 +578,7 @@
             {%- endif -%}
             <div
               id="{{ img_blk_id }}"
-              class="sbb-block-image"
+              class="sbb-block-image{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;text-align:{{ img_align }};"
             >
@@ -599,7 +607,7 @@
             {%- comment -%} ── text ─────────────────────────────── {%- endcomment -%}
             {%- when 'text' -%}
             <div
-              class="sbb-block-text"
+              class="sbb-block-text{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;text-align:{{ block.settings.alignment }};{% if block.settings.text_color != blank %}color:{{ block.settings.text_color }};{% endif %}"
             >
@@ -614,7 +622,7 @@
             {%- comment -%} ── banner ───────────────────────────── {%- endcomment -%}
             {%- when 'banner' -%}
             <div
-              class="sbb-block-banner"
+              class="sbb-block-banner{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.image != blank %}background-image:url('{{ block.settings.image | image_url: width: 1400 }}');{% endif %}{% if block.settings.bg_color != blank %}background-color:{{ block.settings.bg_color }};{% endif %}"
             >
@@ -635,7 +643,7 @@
             {%- comment -%} ── image_with_text ──────────────────── {%- endcomment -%}
             {%- when 'image_with_text' -%}
             <div
-              class="sbb-block-iwt{% if block.settings.image_position == 'right' %} sbb-block-iwt--img-right{% endif %}"
+              class="sbb-block-iwt{% if block.settings.image_position == 'right' %} sbb-block-iwt--img-right{% endif %}{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -668,7 +676,7 @@
             {%- assign car_pos      = block.settings.img_position | default: 'center center' -%}
             {%- assign car_img_style = 'width:100%;height:100%;object-fit:cover;object-position:' | append: car_pos -%}
             <div
-              class="sbb-carousel"
+              class="sbb-carousel{{ vis_class }}"
               id="{{ carousel_id }}"
               {{ block.shopify_attributes }}
               data-autoplay="{{ block.settings.autoplay }}"
@@ -711,7 +719,7 @@
             {%- assign tc_id      = 'sbb-tc-' | append: block.id -%}
             {%- assign tc_cs_hash = block.settings.color_scheme.settings.background_gradient | default: block.settings.color_scheme.settings.background | md5 -%}
             <div
-              class="sbb-carousel sbb-text-carousel color-scheme color-scheme--{{ block.settings.color_scheme.id }} color-scheme--bg-{{ tc_cs_hash }}"
+              class="sbb-carousel sbb-text-carousel color-scheme color-scheme--{{ block.settings.color_scheme.id }} color-scheme--bg-{{ tc_cs_hash }}{{ vis_class }}"
               id="{{ tc_id }}"
               {{ block.shopify_attributes }}
               data-autoplay="{{ block.settings.autoplay }}"
@@ -752,7 +760,7 @@
             {%- comment -%} ── footer ───────────────────────────── {%- endcomment -%}
             {%- when 'footer' -%}
             <div
-              class="sbb-block-footer"
+              class="sbb-block-footer{{ vis_class }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;{% if block.settings.bg_color != blank %}background:{{ block.settings.bg_color }};{% endif %}"
             >
@@ -826,6 +834,7 @@
             {%- comment -%} ── custom_liquid ────────────────────── {%- endcomment -%}
             {%- when 'custom_liquid' -%}
             <div
+              class="{{ vis_class | strip }}"
               {{ block.shopify_attributes }}
               style="margin-top:{{ block.settings.margin_top }}px;margin-bottom:{{ block.settings.margin_bottom }}px;padding-top:{{ block.settings.padding_top }}px;padding-bottom:{{ block.settings.padding_bottom }}px;"
             >
@@ -1065,7 +1074,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1095,7 +1107,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1125,7 +1140,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1138,7 +1156,10 @@
         { "type": "text",     "id": "placeholder","label": "Placeholder",      "default": "Seleziona fibbia…" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1151,7 +1172,10 @@
         { "type": "text",     "id": "placeholder","label": "Placeholder",      "default": "Seleziona cinturino…" },
         { "type": "header", "content": "Spaziatura" },
         { "type": "range", "id": "margin_top",    "label": "Margine superiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1203,7 +1227,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1223,7 +1250,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1238,7 +1268,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1256,7 +1289,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1282,7 +1318,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1361,7 +1400,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1391,7 +1433,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1447,7 +1492,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1514,7 +1562,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1533,7 +1584,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1569,7 +1623,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1628,7 +1685,10 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     {
@@ -1645,7 +1705,179 @@
         { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
         { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
-        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "rating",
+      "name": "Valutazione",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "rating_value", "label": "Valore valutazione", "default": "4.8" },
+        { "type": "text", "id": "rating_count",  "label": "Numero recensioni",  "default": "200" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "delivery",
+      "name": "Consegna",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "delivery_text", "label": "Testo consegna" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "details_link",
+      "name": "Link Dettagli",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "link_text", "label": "Testo link", "default": "Vedi taglie e dettagli…" },
+        { "type": "url",  "id": "link_url",  "label": "URL link" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "trustpilot",
+      "name": "Trustpilot",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etichetta", "default": "Eccellente" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        { "type": "image_picker", "id": "image",       "label": "Immagine sfondo" },
+        { "type": "color",        "id": "bg_color",    "label": "Colore sfondo" },
+        { "type": "text",         "id": "heading",     "label": "Titolo" },
+        { "type": "text",         "id": "subtext",     "label": "Sottotitolo" },
+        { "type": "color",        "id": "text_color",  "label": "Colore testo" },
+        { "type": "range",        "id": "overlay_opacity", "label": "Opacità overlay", "min": 0, "max": 100, "step": 5, "default": 30 },
+        { "type": "text",         "id": "button_label","label": "Testo pulsante" },
+        { "type": "url",          "id": "button_url",  "label": "URL pulsante" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "image_with_text",
+      "name": "Image with Text",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Immagine" },
+        { "type": "select", "id": "image_position", "label": "Posizione immagine", "options": [
+          { "value": "left",  "label": "Sinistra" },
+          { "value": "right", "label": "Destra" }
+        ], "default": "left" },
+        { "type": "text",     "id": "heading",      "label": "Titolo" },
+        { "type": "richtext", "id": "content",      "label": "Testo" },
+        { "type": "color",    "id": "text_color",   "label": "Colore testo" },
+        { "type": "text",     "id": "button_label", "label": "Testo pulsante" },
+        { "type": "url",      "id": "button_url",   "label": "URL pulsante" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "footer",
+      "name": "Footer",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "logo",         "label": "Logo" },
+        { "type": "text",         "id": "tagline",      "label": "Tagline" },
+        { "type": "color",        "id": "text_color",   "label": "Colore testo" },
+        { "type": "color",        "id": "icon_color",   "label": "Colore icone social" },
+        { "type": "color",        "id": "bg_color",     "label": "Colore sfondo" },
+        { "type": "text",         "id": "copyright",    "label": "Copyright" },
+        { "type": "header", "content": "Link (max 5)" },
+        { "type": "text", "id": "link_1_label", "label": "Link 1 — Testo" },
+        { "type": "url",  "id": "link_1_url",   "label": "Link 1 — URL" },
+        { "type": "text", "id": "link_2_label", "label": "Link 2 — Testo" },
+        { "type": "url",  "id": "link_2_url",   "label": "Link 2 — URL" },
+        { "type": "text", "id": "link_3_label", "label": "Link 3 — Testo" },
+        { "type": "url",  "id": "link_3_url",   "label": "Link 3 — URL" },
+        { "type": "text", "id": "link_4_label", "label": "Link 4 — Testo" },
+        { "type": "url",  "id": "link_4_url",   "label": "Link 4 — URL" },
+        { "type": "text", "id": "link_5_label", "label": "Link 5 — Testo" },
+        { "type": "url",  "id": "link_5_url",   "label": "Link 5 — URL" },
+        { "type": "header", "content": "Social" },
+        { "type": "url", "id": "instagram_url",  "label": "Instagram URL" },
+        { "type": "url", "id": "facebook_url",   "label": "Facebook URL" },
+        { "type": "url", "id": "tiktok_url",     "label": "TikTok URL" },
+        { "type": "url", "id": "youtube_url",    "label": "YouTube URL" },
+        { "type": "url", "id": "pinterest_url",  "label": "Pinterest URL" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button (custom)",
+      "settings": [
+        { "type": "text",         "id": "text",       "label": "Testo" },
+        { "type": "url",          "id": "link",       "label": "Link" },
+        { "type": "checkbox",     "id": "stretch",    "label": "Larghezza piena", "default": false },
+        { "type": "color",        "id": "background", "label": "Colore sfondo" },
+        { "type": "color",        "id": "text_color", "label": "Colore testo" },
+        { "type": "header", "content": "Spaziatura" },
+        { "type": "range", "id": "margin_top",    "label": "Margine superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "margin_bottom", "label": "Margine inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_top",   "label": "Padding superiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "range", "id": "padding_bottom","label": "Padding inferiore",  "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+        { "type": "header", "content": "Visibilità" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Visibile su desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile",  "label": "Visibile su mobile",  "default": true }
       ]
     },
     { "type": "@app" }
