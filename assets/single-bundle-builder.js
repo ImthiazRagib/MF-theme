@@ -536,7 +536,8 @@
       document.querySelector('#sbb-buckle-dropdown').closest('.sbb-selector-group');
     var strapGroup  = document.querySelector('#sbb-strap-dropdown') &&
       document.querySelector('#sbb-strap-dropdown').closest('.sbb-selector-group');
-    if (buckleGroup && strapGroup && buckleGroup.parentNode === strapGroup.parentNode) {
+    if (buckleGroup && strapGroup && buckleGroup.parentNode === strapGroup.parentNode
+        && !buckleGroup.parentNode.classList.contains('sbb-dropdowns-row')) {
       var dropRow = document.createElement('div');
       dropRow.className = 'sbb-dropdowns-row';
       buckleGroup.parentNode.insertBefore(dropRow, buckleGroup);
@@ -551,7 +552,8 @@
       document.querySelector('#sbb-buckle-dropdown-d').closest('.sbb-selector-group');
     var strapGroupD  = document.querySelector('#sbb-strap-dropdown-d') &&
       document.querySelector('#sbb-strap-dropdown-d').closest('.sbb-selector-group');
-    if (buckleGroupD && strapGroupD) {
+    if (buckleGroupD && strapGroupD
+        && !buckleGroupD.parentNode.classList.contains('sbb-dropdowns-row')) {
       var dropRowD = document.createElement('div');
       dropRowD.className = 'sbb-dropdowns-row sbb-dropdowns-row--desktop';
       buckleGroupD.parentNode.insertBefore(dropRowD, buckleGroupD);

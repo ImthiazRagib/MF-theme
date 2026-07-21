@@ -47,6 +47,12 @@
   /* block visibility toggles */
   @media (min-width: 768px) { #sbb-root .sbb-vis--hide-desktop { display: none !important; } }
   @media (max-width: 767px) { #sbb-root .sbb-vis--hide-mobile { display: none !important; } }
+  {%- if section.settings.sticky_info_col -%}
+  @media (min-width: 768px) {
+    #sbb-root .sbb-col-info { position: sticky; top: 0; height: 100vh; overflow-y: auto; scrollbar-width: none; }
+    #sbb-root .sbb-col-info::-webkit-scrollbar { display: none; }
+  }
+  {%- endif -%}
   /* viewport-critical: prevent flash before external CSS loads */
   #sbb-root .sbb-selector-group--desktop-only { display: none; }
   #sbb-root .sbb-selector-group--mobile-only { display: block; }
@@ -149,6 +155,19 @@
     {%- comment -%} /.sbb-col-image {%- endcomment -%}
 
     {%- comment -%} ══ RIGHT: info blocks ══════════════════════ {%- endcomment -%}
+    {%- comment -%} Detect adjacent dropdown pairs so rows render in HTML (FOUC-free) {%- endcomment -%}
+    {%- assign sbb_mobile_row = false -%}
+    {%- assign sbb_desktop_row = false -%}
+    {%- for _b in section.blocks -%}
+      {%- if _b.type == 'buckle_dropdown' -%}
+        {%- assign _ni = forloop.index0 | plus: 1 -%}
+        {%- if section.blocks[_ni].type == 'strap_dropdown' -%}{%- assign sbb_mobile_row = true -%}{%- endif -%}
+      {%- endif -%}
+      {%- if _b.type == 'buckle_dropdown_desktop' -%}
+        {%- assign _ni = forloop.index0 | plus: 1 -%}
+        {%- if section.blocks[_ni].type == 'strap_dropdown_desktop' -%}{%- assign sbb_desktop_row = true -%}{%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
     <div class="sbb-col-info">
       <div class="sbb-info">
 
@@ -163,6 +182,7 @@
 
             {%- comment -%} ── buckle_dropdown ─────────────────── {%- endcomment -%}
             {%- when 'buckle_dropdown' -%}
+            {%- if sbb_mobile_row -%}<div class="sbb-dropdowns-row">{%- endif -%}
             <div
               class="sbb-selector-group sbb-selector-group--mobile-only{{ vis_class }}"
               {{ block.shopify_attributes }}
@@ -215,9 +235,11 @@
                 <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list"></div>
               </div>
             </div>
+            {%- if sbb_mobile_row -%}</div>{%- endif -%}
 
             {%- comment -%} ── buckle_dropdown_desktop ─────────── {%- endcomment -%}
             {%- when 'buckle_dropdown_desktop' -%}
+            {%- if sbb_desktop_row -%}<div class="sbb-dropdowns-row sbb-dropdowns-row--desktop">{%- endif -%}
             <div
               class="sbb-selector-group sbb-selector-group--desktop-only{{ vis_class }}"
               {{ block.shopify_attributes }}
@@ -258,6 +280,7 @@
                 <div class="sbb-dropdown__list" role="listbox" id="sbb-strap-list-d"></div>
               </div>
             </div>
+            {%- if sbb_desktop_row -%}</div>{%- endif -%}
 
             {%- comment -%} ── taglia ──────────────────────────── {%- endcomment -%}
             {%- when 'taglia' -%}
@@ -901,6 +924,12 @@
       "step": 20,
       "unit": "px",
       "default": 540
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_info_col",
+      "label": "Colonna destra fissa (sticky) su desktop",
+      "default": true
     },
     {
       "type": "header",
