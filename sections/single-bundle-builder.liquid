@@ -155,17 +155,17 @@
               </svg>
               <span>Caricamento anteprima…</span>
             </div>
+            <button
+              class="sbb-worn-btn sbb-worn-btn--{{ worn_style }}"
+              id="sbb-worn-toggle"
+              type="button"
+              data-label="{{ block.settings.worn_btn_label | default: 'Vedi indossato' | escape }}"
+              data-label-back="{{ block.settings.worn_btn_back_label | default: 'Vista prodotto' | escape }}"
+              style="display:none;"
+            >
+              <span class="sbb-worn-btn__label">{{ block.settings.worn_btn_label | default: 'Vedi indossato' }}</span>
+            </button>
           </div>
-          <button
-            class="sbb-worn-btn sbb-worn-btn--{{ worn_style }}"
-            id="sbb-worn-toggle"
-            type="button"
-            data-label="{{ block.settings.worn_btn_label | default: 'Vedi indossato' | escape }}"
-            data-label-back="{{ block.settings.worn_btn_back_label | default: 'Vista prodotto' | escape }}"
-            style="display:none;"
-          >
-            <span class="sbb-worn-btn__label">{{ block.settings.worn_btn_label | default: 'Vedi indossato' }}</span>
-          </button>
         {%- endif -%}
       {%- endfor -%}
     </div>

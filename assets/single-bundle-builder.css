@@ -27,6 +27,7 @@
   .sbb-product-row {
     flex-direction: row;
     align-items: stretch;
+    min-height: 590px;
   }
 }
 
@@ -39,8 +40,7 @@
   .sbb-col-image {
     width: 55%;
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
+    position: static;
     height: 100vh;
     overflow: hidden;
   }
