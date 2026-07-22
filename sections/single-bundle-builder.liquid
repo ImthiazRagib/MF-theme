@@ -115,10 +115,14 @@
               {%- if desk_mode == 'custom' -%}
               #sbb-root .sbb-col-image {
                 width: {{ desk_cust_w }}% !important;
-                {%- if desk_h_mode == 'minus_both' -%}
-                height: calc(100vh - var(--announcement-bar-height, 0px)) !important;
-                {%- else -%}
+                {%- if desk_h_mode == 'minus_header_bar' -%}
                 height: calc(100vh - var(--header-height, 0px) - var(--announcement-bar-height, 0px)) !important;
+                {%- elsif desk_h_mode == 'minus_both' -%}
+                height: calc(100vh - var(--announcement-bar-height, 0px)) !important;
+                {%- elsif desk_h_mode == 'transparent' -%}
+                height: 100vh !important;
+                {%- else -%}
+                height: calc(100vh - var(--header-height, 0px)) !important;
                 {%- endif -%}
               }
               #{{ gallery_id }} { aspect-ratio: unset; height: 100%; }
@@ -141,11 +145,15 @@
                 var header = document.querySelector('.shopify-section--header');
                 var bar    = document.querySelector('.shopify-section--announcement-bar');
                 var offset = 0;
-                if (mode === 'minus_both') {
-                  if (bar) offset += bar.clientHeight;
-                } else {
+                if (mode === 'minus_header_bar') {
                   if (header) offset += header.clientHeight;
                   if (bar)    offset += bar.clientHeight;
+                } else if (mode === 'minus_both') {
+                  if (bar) offset += bar.clientHeight;
+                } else if (mode === 'transparent') {
+                  offset = 0;
+                } else {
+                  if (header) offset += header.clientHeight;
                 }
                 col.style.setProperty('height', 'calc(100vh - ' + offset + 'px)', 'important');
               }
@@ -154,10 +162,32 @@
             })();
           </script>
           {%- endif -%}
-          {%- assign worn_style = block.settings.worn_btn_style | default: 'solid' -%}
-          {%- assign worn_fs    = block.settings.worn_btn_font_size | default: 13 -%}
+          {%- assign worn_style    = block.settings.worn_btn_style | default: 'solid' -%}
+          {%- assign worn_fs       = block.settings.worn_btn_font_size | default: 13 -%}
+          {%- assign worn_fs_desk  = block.settings.worn_btn_font_size_desk | default: worn_fs -%}
+          {%- assign worn_bottom   = block.settings.worn_btn_bottom | default: 22 -%}
+          {%- assign worn_btm_desk = block.settings.worn_btn_bottom_desk | default: 40 -%}
+          {%- assign worn_pad_v    = block.settings.worn_btn_pad_v | default: 8 -%}
+          {%- assign worn_pad_v_d  = block.settings.worn_btn_pad_v_desk | default: 8 -%}
+          {%- assign worn_pad_h    = block.settings.worn_btn_pad_h | default: 18 -%}
+          {%- assign worn_pad_h_d  = block.settings.worn_btn_pad_h_desk | default: 24 -%}
           <style>
-            #sbb-worn-toggle { font-size: {{ worn_fs }}px; }
+            #sbb-worn-toggle {
+              font-size: {{ worn_fs }}px;
+              bottom: {{ worn_bottom }}px;
+              padding: {{ worn_pad_v }}px {{ worn_pad_h }}px;
+              {%- unless block.settings.worn_btn_bg == blank %}background: {{ block.settings.worn_btn_bg }};{%- endunless %}
+              {%- unless block.settings.worn_btn_color == blank %}color: {{ block.settings.worn_btn_color }};{%- endunless %}
+            }
+            @media (min-width: 768px) {
+              #sbb-worn-toggle {
+                font-size: {{ worn_fs_desk }}px;
+                bottom: {{ worn_btm_desk }}px;
+                padding: {{ worn_pad_v_d }}px {{ worn_pad_h_d }}px;
+                {%- unless block.settings.worn_btn_bg_desk == blank %}background: {{ block.settings.worn_btn_bg_desk }};{%- endunless %}
+                {%- unless block.settings.worn_btn_color_desk == blank %}color: {{ block.settings.worn_btn_color_desk }};{%- endunless %}
+              }
+            }
           </style>
           <div
             id="{{ gallery_id }}"
@@ -1074,7 +1104,20 @@
           ],
           "default": "solid"
         },
-        { "type": "range", "id": "worn_btn_font_size", "label": "Dimensione font", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
+        { "type": "header", "content": "Mobile" },
+        { "type": "range", "id": "worn_btn_font_size",  "label": "Font size",             "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
+        { "type": "range", "id": "worn_btn_bottom",     "label": "Distanza dal basso",    "min": 8,  "max": 80, "step": 2, "unit": "px", "default": 22 },
+        { "type": "range", "id": "worn_btn_pad_v",      "label": "Padding verticale",     "min": 4,  "max": 24, "step": 2, "unit": "px", "default": 8 },
+        { "type": "range", "id": "worn_btn_pad_h",      "label": "Padding orizzontale",   "min": 8,  "max": 40, "step": 2, "unit": "px", "default": 18 },
+        { "type": "color",  "id": "worn_btn_bg",        "label": "Sfondo" },
+        { "type": "color",  "id": "worn_btn_color",     "label": "Colore testo" },
+        { "type": "header", "content": "Desktop" },
+        { "type": "range", "id": "worn_btn_font_size_desk", "label": "Font size",         "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
+        { "type": "range", "id": "worn_btn_bottom_desk",    "label": "Distanza dal basso","min": 8,  "max": 80, "step": 2, "unit": "px", "default": 40 },
+        { "type": "range", "id": "worn_btn_pad_v_desk",     "label": "Padding verticale", "min": 4,  "max": 24, "step": 2, "unit": "px", "default": 8 },
+        { "type": "range", "id": "worn_btn_pad_h_desk",     "label": "Padding orizzontale","min": 8, "max": 40, "step": 2, "unit": "px", "default": 24 },
+        { "type": "color",  "id": "worn_btn_bg_desk",   "label": "Sfondo" },
+        { "type": "color",  "id": "worn_btn_color_desk","label": "Colore testo" },
         { "type": "header", "content": "Dimensioni — Desktop" },
         {
           "type": "select", "id": "desk_size_mode", "label": "Modalità dimensione",
@@ -1110,8 +1153,10 @@
         {
           "type": "select", "id": "desk_height_mode", "label": "Altezza galleria",
           "options": [
-            { "value": "minus_header", "label": "100vh − Header" },
-            { "value": "minus_both",   "label": "100vh Header-transparent − Announcement bar" }
+            { "value": "minus_header",     "label": "100vh − Header" },
+            { "value": "minus_header_bar", "label": "100vh − Header − Announcement bar" },
+            { "value": "minus_both",       "label": "100vh Header-transparent − Announcement bar" },
+            { "value": "transparent",      "label": "100vh − Header transparent" }
           ],
           "default": "minus_header",
           "visible_if": "{{ block.settings.desk_size_mode == 'custom' }}"
