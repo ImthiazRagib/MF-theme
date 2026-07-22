@@ -104,34 +104,33 @@
           {%- assign desk_ar       = block.settings.aspect_ratio_desktop | default: mob_ar -%}
           {%- assign mob_pos       = block.settings.img_position | default: 'center center' -%}
           {%- assign desk_pos      = block.settings.img_position_desktop | default: mob_pos -%}
-          {%- assign desk_mode     = block.settings.desk_size_mode | default: 'ratio' -%}
-          {%- assign desk_cust_w   = block.settings.desk_custom_width | default: 100 -%}
-          {%- assign desk_cust_h   = block.settings.desk_custom_height | default: 600 -%}
-          {%- assign desk_h_mode   = block.settings.desk_height_mode | default: 'full' -%}
-          {%- if desk_h_mode == 'minus_header' -%}
-            {%- assign col_height = 'calc(100vh - var(--header-height, 0px))' -%}
-          {%- elsif desk_h_mode == 'minus_both' -%}
-            {%- assign col_height = 'calc(100vh - var(--header-height, 0px) - var(--announcement-bar-height, 0px))' -%}
-          {%- else -%}
-            {%- assign col_height = '100vh' -%}
-          {%- endif -%}
+          {%- assign desk_mode   = block.settings.desk_size_mode | default: 'ratio' -%}
+          {%- assign desk_cust_w = block.settings.desk_custom_width | default: 100 -%}
+          {%- assign desk_h_mode = block.settings.desk_height_mode | default: 'minus_header' -%}
           <style>
             #{{ gallery_id }} { aspect-ratio: {{ mob_ar }}; }
             #{{ gallery_id }} #sbb-main-img,
             #{{ gallery_id }} #sbb-worn-img { object-position: {{ mob_pos }}; }
             @media (min-width: 768px) {
               {%- if desk_mode == 'custom' -%}
-              #sbb-root .sbb-col-image { width: {{ desk_cust_w }}% !important; height: {{ desk_cust_h }}px !important; }
-              #{{ gallery_id }} { height: {{ desk_cust_h }}px; aspect-ratio: unset; }
+              #sbb-root .sbb-col-image {
+                width: {{ desk_cust_w }}% !important;
+                {%- if desk_h_mode == 'minus_both' -%}
+                height: calc(100vh - var(--announcement-bar-height, 0px)) !important;
+                {%- else -%}
+                height: calc(100vh - var(--header-height, 0px) - var(--announcement-bar-height, 0px)) !important;
+                {%- endif -%}
+              }
+              #{{ gallery_id }} { aspect-ratio: unset; height: 100%; }
               {%- else -%}
-              #sbb-root .sbb-col-image { height: {{ col_height }}; }
-              #{{ gallery_id }} { aspect-ratio: {{ desk_ar }}; height: 100%; }
+              #sbb-root .sbb-col-image { height: auto; align-self: flex-start; }
+              #{{ gallery_id }} { aspect-ratio: {{ desk_ar }}; height: auto; }
               {%- endif -%}
               #{{ gallery_id }} #sbb-main-img,
               #{{ gallery_id }} #sbb-worn-img { object-position: {{ desk_pos }}; }
             }
           </style>
-          {%- unless desk_mode == 'custom' or desk_h_mode == 'full' -%}
+          {%- if desk_mode == 'custom' -%}
           <script>
             (function() {
               var mode = '{{ desk_h_mode }}';
@@ -139,18 +138,22 @@
                 var col = document.querySelector('#sbb-root .sbb-col-image');
                 if (!col) return;
                 if (window.innerWidth < 768) { col.style.height = ''; return; }
-                var offset = 0;
                 var header = document.querySelector('.shopify-section--header');
                 var bar    = document.querySelector('.shopify-section--announcement-bar');
-                if (header) offset += header.clientHeight;
-                if (mode === 'minus_both' && bar) offset += bar.clientHeight;
-                col.style.height = offset > 0 ? 'calc(100vh - ' + offset + 'px)' : '100vh';
+                var offset = 0;
+                if (mode === 'minus_both') {
+                  if (bar) offset += bar.clientHeight;
+                } else {
+                  if (header) offset += header.clientHeight;
+                  if (bar)    offset += bar.clientHeight;
+                }
+                col.style.setProperty('height', 'calc(100vh - ' + offset + 'px)', 'important');
               }
               applyHeight();
               window.addEventListener('resize', applyHeight);
             })();
           </script>
-          {%- endunless -%}
+          {%- endif -%}
           {%- assign worn_style = block.settings.worn_btn_style | default: 'solid' -%}
           {%- assign worn_fs    = block.settings.worn_btn_font_size | default: 13 -%}
           <style>
@@ -1105,20 +1108,13 @@
           "visible_if": "{{ block.settings.desk_size_mode == 'custom' }}"
         },
         {
-          "type": "range", "id": "desk_custom_height",
-          "label": "Altezza personalizzata",
-          "min": 200, "max": 1200, "step": 10, "unit": "px", "default": 600,
-          "visible_if": "{{ block.settings.desk_size_mode == 'custom' }}"
-        },
-        {
           "type": "select", "id": "desk_height_mode", "label": "Altezza galleria",
           "options": [
-            { "value": "full",         "label": "100vh — Header trasparente" },
             { "value": "minus_header", "label": "100vh − Header" },
-            { "value": "minus_both",   "label": "100vh − Header − Announcement bar" }
+            { "value": "minus_both",   "label": "100vh Header-transparent − Announcement bar" }
           ],
-          "default": "full",
-          "visible_if": "{{ block.settings.desk_size_mode != 'custom' }}"
+          "default": "minus_header",
+          "visible_if": "{{ block.settings.desk_size_mode == 'custom' }}"
         },
         {
           "type": "select", "id": "img_position_desktop", "label": "Posizione immagine",

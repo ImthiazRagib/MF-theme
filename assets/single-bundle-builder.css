@@ -40,9 +40,8 @@
   .sbb-col-image {
     width: 55%;
     flex-shrink: 0;
-    position: static;
+    position: relative;
     height: 100vh;
-    overflow: hidden;
   }
 }
 
@@ -86,7 +85,7 @@
 /* ── Worn toggle button ──────────────────────────────────── */
 .sbb-worn-btn {
   position: absolute;
-  bottom: 14px;
+  bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
   display: inline-flex;
