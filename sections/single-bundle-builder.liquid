@@ -53,6 +53,11 @@
       text-align: {{ section.settings.info_align | default: 'left' }};
       --sbb-align: {% if section.settings.info_align == 'center' %}center{% elsif section.settings.info_align == 'right' %}flex-end{% else %}flex-start{% endif %};
     }
+    {%- assign col_pos = section.settings.info_col_position | default: 'left' -%}
+    #sbb-root .sbb-col-info {
+      margin-left: {% if col_pos == 'center' or col_pos == 'right' %}auto{% else %}0{% endif %};
+      margin-right: {% if col_pos == 'center' or col_pos == 'left' %}auto{% else %}0{% endif %};
+    }
   }
   {%- if section.settings.sticky_info_col -%}
   @media (min-width: 768px) {
@@ -924,6 +929,17 @@
       "step": 20,
       "unit": "px",
       "default": 540
+    },
+    {
+      "type": "select",
+      "id": "info_col_position",
+      "label": "Posizione colonna destra (desktop)",
+      "options": [
+        { "value": "left",   "label": "Sinistra" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right",  "label": "Destra" }
+      ],
+      "default": "left"
     },
     {
       "type": "checkbox",

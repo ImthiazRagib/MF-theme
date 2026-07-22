@@ -53,8 +53,8 @@
 
 @media (min-width: 768px) {
   .sbb-col-info {
-    flex: 1;
-    max-width: var(--sbb-info-col-max-width, 540px);
+    flex: 0 1 var(--sbb-info-col-max-width, 540px);
+    width: min(100%, var(--sbb-info-col-max-width, 540px));
   }
 }
 
