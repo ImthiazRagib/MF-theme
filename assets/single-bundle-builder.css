@@ -279,12 +279,6 @@
   font-weight: 700;
   color: var(--sbb-dark);
 }
-.sbb-compare-price {
-  font-size: 16px;
-  font-weight: 400;
-  color: var(--sbb-mid);
-  text-decoration: line-through;
-}
 
 /* ── Description ────────────────────────────────────────── */
 .sbb-desc {
@@ -374,7 +368,7 @@
   border-radius: 0;
   margin-left: -20px;
   margin-right: -20px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 .sbb-dropdowns-row:has(.sbb-dropdown.is-open) {
   border-color: var(--sbb-dark);
@@ -409,7 +403,7 @@
     border-radius: 4px;
   }
 }
-@media (max-width: 360px) {
+@media (max-width: 320px) {
   .sbb-dropdowns-row {
     grid-template-columns: 1fr;
   }
@@ -562,6 +556,11 @@
   gap: 8px;
 }
 
+@media (max-width: 767px) {
+  .sbb-dropdown__list {
+    max-height: 520px;
+  }
+}
 @media (min-width: 768px) {
   .sbb-dropdown.is-open .sbb-dropdown__list {
     grid-template-columns: repeat(3, 1fr);

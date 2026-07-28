@@ -50,7 +50,6 @@
     buckle:       'buckle-1',
     length:       '130cm',
     price:        49.99,
-    comparePrice: null,
   };
 
   let _media              = null;
@@ -199,14 +198,6 @@
   function updatePrice() {
     const el = document.getElementById('sbb-price');
     if (el) el.textContent = '€ ' + state.price.toFixed(2).replace('.', ',');
-    const compEl = document.getElementById('sbb-compare-price');
-    if (!compEl) return;
-    if (state.comparePrice && state.comparePrice > state.price) {
-      compEl.textContent = '€ ' + state.comparePrice.toFixed(2).replace('.', ',');
-      compEl.style.display = '';
-    } else {
-      compEl.style.display = 'none';
-    }
   }
 
   /* ── Strap dropdown ─────────────────────────────────────── */
@@ -472,13 +463,6 @@
     if (!root) return;
 
     await Promise.all([fetchMedia(), fetchCatalog()]);
-    await fetchTierPrices();
-    const cartBeltCount  = await fetchCartBeltCount();
-    state.price          = getMarginalPrice(cartBeltCount);
-    /* 1st belt → use Shopify compare_at_price; 2nd+ → show single price as reference */
-    state.comparePrice   = cartBeltCount === 0
-      ? _singleComparePrice
-      : TIER_PRICES.single;
 
     /* Render dynamic parts */
     renderStrapDropdown();

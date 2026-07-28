@@ -17,19 +17,19 @@
         "message_ikJwtV": {
           "type": "message",
           "settings": {
-            "text": "RESI GRATIS ENTRO 30 GIORNI"
+            "text": "RESI GRATIS"
           }
         },
         "message_ARkCkM": {
           "type": "message",
           "settings": {
-            "text": "SPEDIZIONE GRATIS IN 24/72h"
+            "text": "GARANZIA 2 ANNI SULL'USURA"
           }
         },
         "message_aRn4LC": {
           "type": "message",
           "settings": {
-            "text": "PAYPAL - CONTRASSEGNO - KLARNA"
+            "text": "PAGA ALLA CONSEGNA - PAYPAL"
           }
         }
       },
@@ -40,7 +40,7 @@
       ],
       "name": "t:sections.announcement_bar.name",
       "settings": {
-        "color_scheme": "scheme-42cd0d21-8619-4e40-9d8a-c2f85d99b1a8",
+        "color_scheme": "scheme-3",
         "enable_sticky": false,
         "autoplay": true,
         "cycle_speed": 5,
@@ -53,9 +53,9 @@
       "custom_css": [],
       "settings": {
         "color_scheme": "scheme-3",
-        "enable_sticky": true,
+        "enable_sticky": false,
         "hide_on_scroll": true,
-        "show_separation_border": false,
+        "show_separation_border": true,
         "reduce_padding": true,
         "logo": "shopify://shop_images/Logo_bianco_MOTIFINO_senza_scritta_sotto_f8bf6a34-5808-4a44-88c4-08bc8b2e27c1.png",
         "logo_max_width": 130,
@@ -76,6 +76,7 @@
         "show_country_name": false,
         "show_country_flag": true,
         "show_locale_selector": true,
+        "enable_transparent_header": false,
         "transparent_header_text_color": "#000000",
         "transparent_logo": "shopify://shop_images/Logo_Scritta_Nera_PNG.png"
       }
