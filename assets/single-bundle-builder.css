@@ -546,6 +546,7 @@
   box-shadow: 0 8px 32px rgba(0,0,0,.14);
   z-index: 300;
   padding: 10px;
+  padding-bottom: 25px !important;
   max-height: 340px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -556,16 +557,12 @@
   gap: 8px;
 }
 
-@media (max-width: 767px) {
-  .sbb-dropdown__list {
-    max-height: 520px;
-  }
-}
 @media (min-width: 768px) {
   .sbb-dropdown.is-open .sbb-dropdown__list {
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
     padding: 8px;
+    padding-bottom: 12px;
   }
   .sbb-dropdown__opt-img {
     border-radius: var(--sbb-radius-sm);
