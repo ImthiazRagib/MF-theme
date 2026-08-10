@@ -40,10 +40,10 @@
       ],
       "name": "t:sections.announcement_bar.name",
       "settings": {
-        "color_scheme": "scheme-3",
+        "color_scheme": "scheme-42cd0d21-8619-4e40-9d8a-c2f85d99b1a8",
         "enable_sticky": false,
         "autoplay": true,
-        "cycle_speed": 5,
+        "cycle_speed": 3,
         "desktop_font_size": 14,
         "mobile_font_size": 14
       }

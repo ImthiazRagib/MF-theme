@@ -40,42 +40,28 @@
             "text": "<h3>{{ product.metafields.custom.titolo_pagina_prodotto_set.value }}</h3>"
           }
         },
-        "title": {
-          "type": "title",
-          "disabled": true,
-          "settings": {
-            "heading_tag": "h3"
-          }
-        },
         "price": {
           "type": "price",
           "settings": {
             "show_taxes_notice": false
           }
         },
-        "text_tDEWkJ": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Comodità, durata e regolazione estrema. Di addio ai buchi rovinati e <strong>crea le tue cinture MOTIFINO </strong>componendo diverse fibbie e cinturini.</p>"
-          }
-        },
-        "text_hq8zGi": {
-          "type": "text",
-          "disabled": true,
-          "settings": {
-            "text": "<ul><li>Addio buchi che si rovinano</li><li>Accorciabile su misura</li><li>Regolabile senza slacciarla</li></ul>"
-          }
-        },
         "liquid_KHEgai": {
           "type": "liquid",
           "settings": {
-            "liquid": "<div class=\"delivery-widget__manual\"></div>"
+            "liquid": "<div class=\"delivery-widget__manual\" style=\"margin-bottom: -6px;\"></div>"
+          }
+        },
+        "text_tDEWkJ": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Comodità, durata e regolazione estrema. Crea<strong> le tue cinture MOTIFINO </strong>e di addio ai buchi rovinati</p>"
           }
         },
         "text_eKCKCi": {
           "type": "text",
           "settings": {
-            "text": "<p><a href=\"#shopify-section-template--28381697311046__tabs_FUAGrg\" title=\"#shopify-section-template--28381697311046__tabs_FUAGrg\">Vedi taglie e dettagli...</a></p>"
+            "text": "<p><a href=\"#shopify-section-template--28394322428230__tabs_FUAGrg\" title=\"#shopify-section-template--28394322428230__tabs_FUAGrg\">Vedi taglie e dettagli...</a></p>"
           }
         },
         "spacer_zVPWj7": {
@@ -106,7 +92,7 @@
           "type": "image",
           "settings": {
             "image": "shopify://shop_images/Trust_pilot_eccellente.webp",
-            "link": "#shopify-section-template--28381697311046__multi_column_yGDHbx",
+            "link": "#shopify-section-template--28394322428230__multi_column_yGDHbx",
             "alignment": "center",
             "width_mode": "custom",
             "max_width": 300,
@@ -170,11 +156,9 @@
         "loox_reviews_loox_rating_3QBn8V",
         "spacer_3UXfMf",
         "text_RdWU83",
-        "title",
         "price",
-        "text_tDEWkJ",
-        "text_hq8zGi",
         "liquid_KHEgai",
+        "text_tDEWkJ",
         "text_eKCKCi",
         "spacer_zVPWj7",
         "button_UPULxq",

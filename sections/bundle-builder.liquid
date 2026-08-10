@@ -19,10 +19,27 @@
 
 <style>
   .shopify-section-group-footer-group { display: none; }
+
+  {%- if section.settings.allow_transparent_header and section.settings.transparent_header_use_primary_colors -%}
+    {%- comment -%}
+    When this setting is enabled, we use the transparent header, but we force the header to use the primary colors and primary logo.
+    {%- endcomment -%}
+    .header {
+      --header-show-transparent-logo: 0 !important;
+      --header-transparent-header-text-color: initial;
+    }
+  {%- endif -%}
 </style>
 
 <div class="bb-wrap-outer">
-  <div class="bb-wrap" id="bb-root" data-media-url="{{ 'bundle-builder-media.json' | asset_url }}" data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}" data-success-logo-url="{{ 'MotifinoIcon-1.svg' | asset_url }}">
+  <div
+    class="bb-wrap"
+    id="bb-root"
+    data-media-url="{{ 'bundle-builder-media.json' | asset_url }}"
+    data-catalog-url="{{ 'bundle-builder-catalog.json' | asset_url }}"
+    data-success-logo-url="{{ 'MotifinoIcon-1.svg' | asset_url }}"
+    {% if section.settings.allow_transparent_header %}allow-transparent-header{% endif %}
+  >
     {%- comment -%} ══ SCREEN 1: BELT COMPOSER ════════════════════== {%- endcomment -%}
     {%- render 'bb-screen-composer' -%}
 
@@ -146,45 +163,6 @@
         <button class="bb-btn-primary" data-action="continue">← Continue Shopping</button>
       </div>
     </section>
-
-    {%- comment -%} ══ MODAL: Vedi indossata ══════════════════════== {%- endcomment -%}
-    <div class="bb-modal" id="bb-modal-indossata" role="dialog" aria-modal="true" aria-label="Vedi indossata">
-      <button class="bb-recap__close" data-close-modal="bb-modal-indossata" aria-label="Chiudi">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-      <div class="bb-modal__content">
-        <img
-          id="bb-worn-img"
-          class="bb-modal__img"
-          src="{{ section.settings.model_photo | img_url: '600x800' }}"
-          data-fallback="{{ section.settings.model_photo | img_url: '600x800' }}"
-          alt="Cintura indossata"
-          {% unless section.settings.model_photo %}
-            style="display:none"
-          {% endunless %}
-        >
-        <div
-          id="bb-worn-placeholder"
-          class="bb-modal__placeholder"
-          {% if section.settings.model_photo %}
-            style="display:none"
-          {% endif %}
-        >
-          <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#555" stroke-width="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          <span>Nessuna foto disponibile per questa combinazione</span>
-        </div>
-        <div class="bb-modal__caption">
-          <strong>COMBINAZIONE ATTUALE</strong>
-          <span id="bb-modal-caption-text">130cm · Fibbia Classica · Nero</span>
-        </div>
-      </div>
-    </div>
 
     {%- comment -%} ══ MODAL: Vedi 360° ═══════════════════════════== {%- endcomment -%}
     <div class="bb-modal bb-modal--360" id="bb-modal-360" role="dialog" aria-modal="true" aria-label="Vedi 360°">
@@ -349,6 +327,24 @@
   "name": "Bundle Builder",
   "tag": "div",
   "settings": [
+    {
+      "type": "header",
+      "content": "Header trasparente"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_transparent_header",
+      "label": "t:global.section.allow_transparent_header",
+      "info": "t:global.section.allow_transparent_header_info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header_use_primary_colors",
+      "label": "t:global.section.transparent_header_use_primary_colors",
+      "default": false,
+      "visible_if": "{{ section.settings.allow_transparent_header }}"
+    },
     {
       "type": "header",
       "content": "Prezzi bundle"

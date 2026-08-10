@@ -475,7 +475,7 @@
     }));
   }
 
-  function updateModalMedia(strapKey, buckleKey) {
+  function updateWornMedia(strapKey, buckleKey) {
     if (!_bbMedia) return;
     const belt = state.belts[state.currentBelt - 1];
     const length = (belt && belt.length) ? belt.length.replace('cm', '') : '130';
@@ -484,26 +484,44 @@
     const strap = STRAPS[strapKey] || {};
     const buckle = BUCKLES[buckleKey] || {};
 
-    /* Worn photo */
-    const wornImg = document.getElementById('bb-worn-img');
-    const wornHolder = document.getElementById('bb-worn-placeholder');
-    if (wornImg) {
-      const src = combo.worn || (wornImg.dataset.fallback !== 'undefined' ? wornImg.dataset.fallback : '') || '';
-      if (src) {
-        wornImg.src = src;
-        wornImg.style.display = '';
-        if (wornHolder) wornHolder.style.display = 'none';
-      } else {
-        wornImg.style.display = 'none';
-        if (wornHolder) wornHolder.style.display = '';
-      }
-    }
+    /* Worn photo — inline hero toggle (same pattern as single-bundle-builder) */
+    const wornImg = document.getElementById('bb-worn-preview-img');
+    const wornBtn = document.getElementById('bb-worn-toggle');
+    const wornSrc = combo.worn || '';
+    if (wornImg) wornImg.src = wornSrc;
+    if (wornBtn) wornBtn.style.display = wornSrc ? '' : 'none';
+    /* Selection changed — always fall back to the product photo */
+    setWornView(false);
 
-    /* Captions */
-    const cap = document.getElementById('bb-modal-caption-text');
-    if (cap) cap.textContent = length + 'cm · ' + (buckle.name || '—') + ' · ' + (strap.name || '—');
     const vcap = document.getElementById('bb-modal-video-caption');
     if (vcap) vcap.textContent = (buckle.name || '—') + ' — ' + (strap.name || '—');
+  }
+
+  /* ── Worn-photo toggle (rounded, centered button — mirrors single-bundle-builder) ── */
+  let _bbIsWorn = false;
+  function setWornView(worn) {
+    const btn = document.getElementById('bb-worn-toggle');
+    const mainImg = document.getElementById('bb-belt-preview-img');
+    const wornImg = document.getElementById('bb-worn-preview-img');
+    if (!btn || !wornImg) return;
+    _bbIsWorn = worn;
+    if (worn) {
+      if (mainImg) mainImg.style.display = 'none';
+      wornImg.style.display = '';
+      btn.classList.add('is-worn');
+      btn.querySelector('.bb-worn-btn__label').textContent = btn.dataset.labelBack;
+    } else {
+      wornImg.style.display = 'none';
+      if (mainImg) mainImg.style.display = '';
+      btn.classList.remove('is-worn');
+      btn.querySelector('.bb-worn-btn__label').textContent = btn.dataset.label;
+    }
+  }
+  function initWornToggle() {
+    const btn = document.getElementById('bb-worn-toggle');
+    if (!btn || btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => setWornView(!_bbIsWorn));
   }
 
   /* ── Render helpers ─────────────────────────────────────── */
@@ -656,7 +674,7 @@
       state.belts[state.currentBelt - 1].buckle = key;
       updateBeltPreview();
       const b2 = state.belts[state.currentBelt - 1];
-      if (b2.strap) updateModalMedia(b2.strap, key);
+      if (b2.strap) updateWornMedia(b2.strap, key);
       preloadComboPhotosForBuckle(key, b2.length);
       var nameEl = document.getElementById('bb-buckle-name-inline');
       if (nameEl) nameEl.textContent = BUCKLES[key] ? BUCKLES[key].name : '';
@@ -835,7 +853,7 @@
       updateNavButtons(selIdx);
       updateBeltPreview();
       const b2 = state.belts[state.currentBelt - 1];
-      if (b2.buckle) updateModalMedia(keys[selIdx], b2.buckle);
+      if (b2.buckle) updateWornMedia(keys[selIdx], b2.buckle);
       /* Preload buckle-combo photos for this strap in background */
       preloadComboPhotos(keys[selIdx], b2.length);
       updateComboBar();
@@ -956,7 +974,7 @@
       }
       if (variantImg) {
         showPreviewPhoto(variantImg);
-        if (belt.strap) updateModalMedia(belt.strap, belt.buckle);
+        if (belt.strap) updateWornMedia(belt.strap, belt.buckle);
         return;
       }
     }
@@ -968,7 +986,7 @@
       const combo = _bbMedia.combinations && _bbMedia.combinations[comboKey];
       if (combo && combo.photo) {
         showPreviewPhoto(combo.photo);
-        updateModalMedia(belt.strap, belt.buckle);
+        updateWornMedia(belt.strap, belt.buckle);
         return;
       }
     }
@@ -979,7 +997,7 @@
       const strapPhoto = _bbMedia.straps && _bbMedia.straps[belt.strap] && _bbMedia.straps[belt.strap][strapLen];
       if (strapPhoto) {
         showPreviewPhoto(strapPhoto);
-        if (belt.buckle) updateModalMedia(belt.strap, belt.buckle);
+        if (belt.buckle) updateWornMedia(belt.strap, belt.buckle);
         return;
       }
     }
@@ -2115,14 +2133,9 @@
       window.history.back();
     });
 
-    /* Vedi indossata */
-    wrap.querySelectorAll('[data-action="vedi-indossata"]').forEach(btn => {
-      btn.addEventListener('click', () => openModal('bb-modal-indossata'));
-    });
-    /* Vedi 360° */
-    wrap.querySelectorAll('[data-action="vedi-360"]').forEach(btn => {
-      btn.addEventListener('click', () => openModal('bb-modal-360'));
-    });
+    /* Vedi indossata — inline hero toggle (same pattern as single-bundle-builder) */
+    initWornToggle();
+
     /* Modal closes */
     wrap.querySelectorAll('[data-close-modal]').forEach(btn => {
       btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));

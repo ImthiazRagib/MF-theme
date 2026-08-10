@@ -8,6 +8,30 @@
       content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=5.0"
     >
 
+    <!-- Google Consent Mode V2 -->
+    <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+
+    gtag('set', 'url_passthrough', true);
+
+     if(localStorage.getItem('consentMode') === null) {
+     gtag('consent', 'default', {
+     'functionality_storage': 'granted',
+     'security_storage': 'granted',
+     'personalization_storage': 'denied',
+     'analytics_storage': 'denied',
+     'ad_storage': 'denied',
+     'ad_user_data': 'denied',
+     'ad_personalization': 'denied',
+     'wait_for_update': 1000,
+     });
+     } else {
+     gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
+    }
+    </script>
+
+
     <!-- Google Tag Manager -->
     <script>
       (function (w, d, s, l, i) {

@@ -351,7 +351,7 @@
                           {{- _display_price | money -}}
                           {%- if _li_belt_price_pos > 0 -%}
                             <br>
-                            <span class="bb-li-original-price">{{- line_item.original_line_price | money -}}</span>
+                            <span class="bb-li-original-price">{{- 4999 | times: line_item.quantity | money -}}</span>
                           {%- endif -%}
                         {%- else -%}
                           {%- if settings.currency_code_enabled -%}
@@ -476,8 +476,8 @@
                 {%- assign _bb_final_total = _bb_combined | minus: _bb_cart_disc -%}
 
                 {%- if _cart_belt_count > 0 -%}
-                  {%- assign _bb_importo = _bb_belt_full | plus: _nfc_total_value -%}
-                  {%- assign _bb_offerta_total = _bb_savings | plus: _nfc_total_value -%}
+                  {%- assign _bb_importo = _bb_belt_full -%}
+                  {%- assign _bb_offerta_total = _bb_savings -%}
                   {%- if _bb_offerta_total > 0 -%}
                     <div class="bb-recap-row">
                       <span>Importo:</span>

@@ -83,7 +83,7 @@ List all themes:
 
 shopify theme list --store 099701-dd.myshopify.com
 Pull theme:
-shopify theme pull --store 099701-dd.myshopify.com --theme 192910328134
+shopify theme pull --store 099701-dd.myshopify.com --theme 193785430342
 
 Push theme:
 shopify theme push --store 099701-dd.myshopify.com --theme 192669745478

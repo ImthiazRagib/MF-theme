@@ -252,10 +252,11 @@
 /* ── Title ──────────────────────────────────────────────── */
 .sbb-title {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: var(--heading-font-weight);
   line-height: 1.3;
   margin: 0 0 12px;
   color: var(--sbb-dark);
+  font-family: var(--heading-font-family);
 }
 @media (min-width: 768px) {
   .sbb-title { font-size: 26px; }
@@ -276,8 +277,9 @@
 }
 .sbb-price {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--heading-font-weight);
   color: var(--sbb-dark);
+  font-family: var(--heading-font-family);
 }
 
 /* ── Description ────────────────────────────────────────── */
@@ -323,11 +325,11 @@
   padding: 11px 24px;
   border-radius: var(--sbb-radius);
   font-size: 14px;
-  font-weight: 600;
+  font-weight:  var(--text-font-weight);
   cursor: pointer;
   transition: filter 0.18s, background 0.18s;
   text-decoration: none;
-  font-family: inherit;
+  font-family: var(--text-font-family);
   letter-spacing: 0.02em;
   line-height: 1;
 }
@@ -350,7 +352,7 @@
   color: var(--sbb-dark);
   text-decoration: underline;
   text-underline-offset: 3px;
-  font-weight: 500;
+  font-weight: var(--text-font-weight);
 }
 .sbb-btn--stretch {
   width: 100%;
@@ -654,11 +656,11 @@
   border: none;
   border-radius: var(--sbb-radius);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   transition: filter 0.2s;
   letter-spacing: 0.025em;
-  font-family: inherit;
+  font-family: var(--heading-font-family);;
 }
 .sbb-btn-atc:hover:not(:disabled) { filter: brightness(0.88); }
 .sbb-btn-atc:disabled {
