@@ -635,7 +635,9 @@
     }
 
     btn.addEventListener('click', function () { setWorn(!isWorn); });
-    document.addEventListener('sbb:gallery-update', function () { if (isWorn) setWorn(false); });
+    document.addEventListener('sbb:gallery-update', function () {
+      // Keep worn view active when selection changes — image src is already updated by renderGallery
+    });
   }
 
   if (document.readyState === 'loading') {

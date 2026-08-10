@@ -490,8 +490,8 @@
     const wornSrc = combo.worn || '';
     if (wornImg) wornImg.src = wornSrc;
     if (wornBtn) wornBtn.style.display = wornSrc ? '' : 'none';
-    /* Selection changed — always fall back to the product photo */
-    setWornView(false);
+    /* Keep worn view if active — image src already updated above */
+    if (_bbIsWorn) setWornView(true);
 
     const vcap = document.getElementById('bb-modal-video-caption');
     if (vcap) vcap.textContent = (buckle.name || '—') + ' — ' + (strap.name || '—');
